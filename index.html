@@ -1,380 +1,354 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>BLACKPINK × BABYMONSTER — BLINKs & MONSTIEZ Playground (Lite + Pro)</title>
-<meta name="description" content="All-in-browser AI-style fan toolkit. Member Modes for BLACKPINK & BABYMONSTER (7). Lite=fast classical NLP; Pro=optional embeddings; No tokens; GitHub Pages ready." />
+<title>BLACKPINK × BABYMONSTER — BLINKs & MONSTIEZ Playground</title>
+<meta name="description" content="Client-side fan toolkit: Lite (always works) + optional Enhanced (local embeddings if supported). 100% browser.">
 
-<!-- Fonts (lightweight, high legibility) -->
+<!-- Fonts: Poppins + Inter (swap) with safe fallbacks -->
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
-<!-- ====== STYLES ====== -->
 <style>
   :root{
-    --radius:16px; --shadow: 0 8px 28px rgba(0,0,0,.35);
-    --font-head:"Poppins", ui-sans-serif, system-ui;
-    --font-body:"Inter", ui-sans-serif, system-ui;
-
+    --radius:14px;
+    --bg-dark:#0b0b0f; --bg-dark-2:#0f0f14;
+    --bg-light:#f5f7fb; --bg-light-2:#ffffff;
+    --text-dark:#0b0b0f; --text-light:#f4f6fb;
+    --muted-dark: #99a2b8; --muted-light:#5f6a7a;
     --ok:#2ecc71; --warn:#f1c40f; --err:#e74c3c;
 
-    --bg:#f7f7fb; --bg2:#ffffff; --ink:#0c0c12; --muted:#5f667a;
-    --card: #ffffff;
-    --divider: rgba(12,12,18,.08);
+    /* default brand: BLACKPINK */
+    --accent: #ff4da6;
+    --accent-2: #18181b;
 
-    --accent:#ff4da6;
-    --accent-2:#2a2a2e;
-
-    --glow: radial-gradient(600px 300px at 10% -10%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%),
-            radial-gradient(600px 300px at 100% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%);
+    --card-bg: rgba(255,255,255,0.03);
   }
   [data-theme="dark"]{
-    --bg:#0a0a0e; --bg2:#0f0f14; --ink:#f6f7fb; --muted:#b8c1d6;
-    --card: rgba(255,255,255,.04);
-    --divider: rgba(255,255,255,.09);
+    --page-bg: linear-gradient(180deg,var(--bg-dark) 0%, var(--bg-dark-2) 100%);
+    --text: var(--text-light);
+    --muted: var(--muted-dark);
+    --card: rgba(255,255,255,0.03);
+    --divider: rgba(255,255,255,0.06);
+  }
+  [data-theme="light"]{
+    --page-bg: linear-gradient(180deg,var(--bg-light) 0%, var(--bg-light-2) 100%);
+    --text: var(--text-dark);
+    --muted: var(--muted-light);
+    --card: #fff;
+    --divider: rgba(12,12,18,0.06);
   }
 
-  [data-brand="blackpink"]{ --accent:#ff4da6; --accent-2:#141414;}
-  [data-brand="babymonster"]{ --accent:#00e2ff; --accent-2:#ff2c8b;}
+  /* Brands */
+  [data-brand="blackpink"]{ --accent:#ff4da6; --accent-2:#141414; }
+  [data-brand="babymonster"]{ --accent:#00e2ff; --accent-2:#ff2c8b; }
 
-  [data-member="jisoo"]{ --accent:#ff7bb7; --accent-2:#d4a9ff;}
-  [data-member="jennie"]{ --accent:#ff3aa6; --accent-2:#333333;}
-  [data-member="rose"]{ --accent:#ffa2c9; --accent-2:#6ec8ff;}
-  [data-member="lisa"]{ --accent:#00ff9c; --accent-2:#ff62b6;}
+  /* Member overlays (keeps brand but lets member slightly tint) */
+  [data-member="jisoo"]{ --accent:#ff7bb7; }
+  [data-member="jennie"]{ --accent:#ff3aa6; }
+  [data-member="rose"]{ --accent:#ffa2c9; }
+  [data-member="lisa"]{ --accent:#00ff9c; }
 
-  [data-member="ahyeon"]{ --accent:#7ee6ff; --accent-2:#ff7cc3;}
-  [data-member="ruka"]{ --accent:#b084ff; --accent-2:#ff7ab9;}
-  [data-member="pharita"]{ --accent:#ffae4d; --accent-2:#ff66d4;}
-  [data-member="asa"]{ --accent:#ff5b5b; --accent-2:#22e3ff;}
-  [data-member="rami"]{ --accent:#8df0ff; --accent-2:#ff9cf3;}
-  [data-member="rora"]{ --accent:#7fff85; --accent-2:#a78bfa;}
-  [data-member="chiquita"]{ --accent:#ffd34d; --accent-2:#ff7ad1;}
+  [data-member="ahyeon"]{ --accent:#7ee6ff; }
+  [data-member="ruka"]{ --accent:#b084ff; }
+  [data-member="pharita"]{ --accent:#ffae4d; }
+  [data-member="asa"]{ --accent:#ff5b5b; }
+  [data-member="rami"]{ --accent:#8df0ff; }
+  [data-member="rora"]{ --accent:#7fff85; }
+  [data-member="chiquita"]{ --accent:#ffd34d; }
 
   *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; color:var(--ink); background: var(--glow), linear-gradient(180deg,var(--bg) 0%, var(--bg2) 100%);
-    font-family: var(--font-body); line-height:1.45;
-  }
-  .topbar{
-    position:sticky; top:0; z-index:50; display:flex; gap:12px; align-items:center; justify-content:space-between;
-    padding:10px 14px; backdrop-filter: blur(10px);
-    border-bottom:1px solid var(--divider);
-    background: color-mix(in srgb, var(--bg2) 90%, transparent);
-  }
-  .brand{display:flex; gap:10px; align-items:center}
-  .logo{font-size:24px; filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--accent), transparent 70%));}
-  h1{font:700 18px/1 var(--font-head); margin:0}
-  .tag{margin:0; color:var(--muted); font-size:12px}
+  html,body{height:100%; margin:0; font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--page-bg); color:var(--text); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+  body{transition:background .18s ease, color .18s ease;}
+  header.topbar{position:sticky; top:0; z-index:60; display:flex; gap:16px; align-items:center; justify-content:space-between; padding:12px 16px; background:color-mix(in srgb, var(--card) 18%, transparent); backdrop-filter: blur(8px); border-bottom:1px solid var(--divider)}
+  .brand{display:flex; gap:12px; align-items:center}
+  .logo{font-size:22px; line-height:1}
+  h1.title{font-family:"Poppins", "Inter", system-ui; margin:0; font-weight:800; font-size:16px; color:var(--accent)}
+  .subtitle{margin:0; font-size:12px; color:var(--muted)}
 
-  .controls{display:flex; gap:8px; flex-wrap:wrap}
-  .btn{border:0; padding:8px 12px; border-radius:999px; cursor:pointer; font-weight:800; color:var(--ink);
-       background:var(--card); border:1px solid var(--divider); box-shadow:var(--shadow); transition:.15s transform, .2s background}
-  .btn:active{transform:translateY(1px) scale(.98)}
-  .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#000; font-weight:900}
-  .btn.ok{background:color-mix(in srgb, var(--ok) 20%, var(--card)); border-color: color-mix(in srgb, var(--ok) 40%, var(--divider))}
-  .btn.warn{background:color-mix(in srgb, var(--warn) 18%, var(--card)); border-color: color-mix(in srgb, var(--warn) 45%, var(--divider))}
+  .controls{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  select, input[type="text"], input[type="file"], textarea{background:var(--card); color:var(--text); border:1px solid var(--divider); padding:8px 10px; border-radius:10px; font-size:14px}
+  .btn{border:0; padding:8px 12px; border-radius:999px; cursor:pointer; font-weight:700; background:var(--card); color:var(--text); border:1px solid var(--divider)}
+  .btn.primary{background:linear-gradient(90deg,var(--accent), color-mix(in srgb,var(--accent-2) 80%, var(--accent))); color:#000}
   .btn.ghost{background:transparent}
+  .btn.warn{background:var(--warn); color:#000}
 
-  select, input[type="number"], input[type="text"]{
-    background:var(--card); color:var(--ink); border:1px solid var(--divider); padding:8px; border-radius:10px; outline:none; width:100%;
-  }
-  input[type="file"]{color:var(--muted)}
-  textarea{width:100%; min-height:140px; background:var(--card); color:var(--ink); border:1px solid var(--divider); padding:10px; border-radius:12px; outline:none}
+  nav.tabs{display:flex; gap:8px; padding:10px 16px; overflow:auto; border-bottom:1px solid var(--divider); background:transparent}
+  .tab{padding:8px 12px; border-radius:999px; cursor:pointer; background:transparent; border:1px solid transparent; color:var(--muted); font-weight:700}
+  .tab.active{background:var(--card); border-color:var(--divider); color:var(--text)}
 
-  .tabs{display:flex; gap:8px; padding:10px 16px; overflow:auto; border-bottom:1px solid var(--divider); background: color-mix(in srgb, var(--bg2) 92%, transparent)}
-  .tab{padding:8px 12px; background:transparent; border-radius:999px; border:1px solid transparent; cursor:pointer; font-weight:800}
-  .tab.active{border:1px solid var(--divider); box-shadow:0 8px 22px rgba(0,0,0,.12); background:var(--card)}
-  .container{max-width:1180px; margin:16px auto 120px; padding:0 14px}
-  .panel{display:none; padding:14px; border-radius:var(--radius); border:1px solid var(--divider); background: var(--card)}
+  .container{max-width:1100px; margin:18px auto 140px; padding:0 14px}
+  .panel{display:none; background:var(--card); border-radius:14px; padding:12px; border:1px solid var(--divider)}
   .panel.active{display:block}
-  .panel-head{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:8px}
-  .muted{color:var(--muted)} .small{font-size:12px}
   .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-  .grid-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px}
-  @media (max-width:1100px){ .grid-3{grid-template-columns:1fr 1fr} }
-  @media (max-width:860px){ .grid-2,.grid-3{grid-template-columns:1fr} }
+  @media (max-width:980px){ .grid-2{grid-template-columns:1fr} }
 
-  .card{background:var(--card); border:1px solid var(--divider); border-radius:14px; padding:12px; box-shadow:var(--shadow)}
-  .out{background:color-mix(in srgb, var(--bg) 20%, var(--bg2)); padding:10px; border-radius:12px; max-height:360px; overflow:auto; white-space:pre-wrap}
-  .pill{display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; border:1px solid var(--divider); background: color-mix(in srgb, var(--bg) 30%, var(--bg2)); font-weight:700}
+  .card{background:transparent; border-radius:12px; padding:10px}
+  label.small{font-size:13px; color:var(--muted)}
+  textarea{min-height:120px; resize:vertical}
+  .out{background:linear-gradient(180deg, rgba(0,0,0,0.08), transparent); padding:10px; border-radius:10px; max-height:380px; overflow:auto; white-space:pre-wrap; color:var(--text)}
+  .muted{color:var(--muted)}
 
-  .footer{position:fixed; left:0; right:0; bottom:0; padding:10px 14px; display:flex; justify-content:center; gap:12px;
-          border-top:1px solid var(--divider);
-          background: linear-gradient(180deg, color-mix(in srgb, var(--bg2) 88%, transparent), color-mix(in srgb, var(--bg2) 96%, transparent))}
-  .toasts{position:fixed; right:14px; bottom:86px; display:grid; gap:10px; z-index:60}
-  .toast{padding:10px 12px; border-radius:12px; background: color-mix(in srgb, var(--bg) 25%, var(--bg2)); border:1px solid var(--divider)}
-  .toast.ok{border-color: color-mix(in srgb, var(--ok) 55%, var(--divider))}
-  .toast.warn{border-color: color-mix(in srgb, var(--warn) 55%, var(--divider))}
-  .toast.err{border-color: color-mix(in srgb, var(--err) 55%, var(--divider))}
+  footer.footer{position:fixed; left:0; right:0; bottom:0; display:flex; justify-content:center; padding:8px 12px; gap:12px; border-top:1px solid var(--divider); background:color-mix(in srgb, var(--card) 30%, transparent)}
+  .toasts{position:fixed; right:12px; bottom:86px; display:flex; flex-direction:column; gap:8px; z-index:80}
+  .toast{padding:10px 12px; border-radius:10px; background:var(--card); border:1px solid var(--divider); color:var(--text); min-width:220px}
+  .toast.err{border-color:var(--err)}
+  .pro-status{font-size:13px; color:var(--muted); padding-left:8px}
 
-  .grad-title{
-    background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent-2) 70%, var(--accent)));
-    -webkit-background-clip: text; background-clip:text; color: transparent; font-family: var(--font-head); font-weight:800;
-    text-shadow: 0 1px 0 rgba(0,0,0,.06);
-  }
+  /* nice gradient text for headings */
+  .grad-title{font-family:"Poppins",sans-serif; font-weight:800; font-size:18px; background:linear-gradient(90deg,var(--accent), var(--accent-2)); -webkit-background-clip:text; background-clip:text; color:transparent}
 
-  .graph-wrap{margin-top:10px; padding:10px; border-radius:12px; border:1px solid var(--divider); background: color-mix(in srgb, var(--bg) 24%, var(--bg2))}
-  #graphSvg{width:100%; height:520px}
-
-  #posterCanvas{width:100%; max-height:520px; border-radius:12px; border:1px solid var(--divider); background: #000}
-
-  .pulse{ position:relative; }
-  .pulse::after{
-    content:""; position:absolute; inset:-2px; border-radius:inherit; pointer-events:none;
-    background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 55%, transparent), transparent 70%);
-    filter: blur(10px); opacity:.55; z-index:-1; animation: pulse 2.6s ease-in-out infinite;
-  }
-  @keyframes pulse{ 0%,100%{opacity:.35} 50%{opacity:.75} }
+  /* small helpers */
+  .flex{display:flex; gap:8px; align-items:center}
+  .right{margin-left:auto}
+  .kbd{padding:2px 6px; border-radius:6px; background:var(--card); border:1px solid var(--divider); font-weight:700}
 </style>
 </head>
-
 <body data-theme="dark" data-brand="blackpink" data-member="jennie">
   <header class="topbar">
     <div class="brand">
       <div class="logo">🎤</div>
       <div>
-        <h1 class="grad-title">BLACKPINK × BABYMONSTER — Member Modes Playground</h1>
-        <p class="tag">For BLINKs & MONSTIEZ · Lite by default · Pro (embeddings) optional & local</p>
+        <h1 class="title">BLACKPINK × BABYMONSTER — Member Modes Playground</h1>
+        <div class="subtitle">For BLINKs & MONSTIEZ · Lite by default · Optional Enhanced (local)</div>
       </div>
     </div>
-    <div class="controls">
-      <select id="brandSelect" title="Group">
-        <option value="blackpink" selected>BLACKPINK</option>
+
+    <div class="controls" aria-hidden="false">
+      <select id="brandSelect" aria-label="Brand">
+        <option value="blackpink">BLACKPINK</option>
         <option value="babymonster">BABYMONSTER</option>
       </select>
-      <select id="memberSelect" title="Member mode"></select>
 
-      <select id="themeSelect" title="Theme">
-        <option value="dark" selected>Dark</option>
+      <select id="memberSelect" aria-label="Member"></select>
+
+      <select id="themeSelect" aria-label="Theme">
+        <option value="dark">Dark</option>
         <option value="light">Light</option>
       </select>
 
-      <select id="perfMode" title="Performance Mode">
-        <option value="lite" selected>Lite (no models)</option>
-        <option value="pro">Pro (embeddings)</option>
+      <select id="perfMode" aria-label="Mode">
+        <option value="lite">Lite (always)</option>
+        <option value="enhanced">Enhanced (optional)</option>
       </select>
-      <button id="enablePro" class="btn primary pulse" title="Load Pro embeddings (optional)">🚀 Enable Pro</button>
-      <button id="rebuildPro" class="btn ghost" title="Rebuild embeddings">🔄 Rebuild Pro</button>
-      <button id="resetPro" class="btn ghost" title="Reset Pro">♻ Reset</button>
-      <button id="clearCache" class="btn ghost" title="Clear caches">🧹</button>
-      <button id="exportAll" class="btn ok" title="Export data">⬇ Export</button>
+
+      <button id="enablePro" class="btn primary" title="Attempt to enable Enhanced (may fail on static hosts)">🚀 Enable Enhanced</button>
+      <button id="rebuildPro" class="btn" title="(Re)build enhanced index">🔄 Rebuild</button>
+      <div class="pro-status" id="proStatus">Enhanced: <strong id="proStatusText">Unavailable</strong></div>
     </div>
   </header>
 
-  <nav class="tabs" role="tablist">
+  <nav class="tabs" role="tablist" aria-label="Main tabs">
     <button class="tab active" data-tab="docs">Documents</button>
     <button class="tab" data-tab="summary">Summary</button>
-    <button class="tab" data-tab="graph">Topic Graph</button>
     <button class="tab" data-tab="search">Semantic Search</button>
-    <button class="tab" data-tab="idolchat">Idol Chat</button>
-    <button class="tab" data-tab="lyrics">Lyrics & Mood</button>
-    <button class="tab" data-tab="diary">Diary & Recs</button>
-    <button class="tab" data-tab="creative">Caption & Palette</button>
+    <button class="tab" data-tab="idol">Idol Chat</button>
+    <button class="tab" data-tab="lyrics">Lyrics</button>
+    <button class="tab" data-tab="diary">Diary</button>
+    <button class="tab" data-tab="creative">Creative</button>
     <button class="tab" data-tab="games">Games</button>
     <button class="tab" data-tab="about">About</button>
   </nav>
 
-  <main class="container">
-    <section id="docs" class="panel active">
-      <div class="panel-head">
-        <h2 class="grad-title">📄 Documents</h2>
-        <p class="muted small">Upload PDFs (local parse) and build your notebook.</p>
+  <main class="container" role="main">
+    <!-- Documents -->
+    <section id="docs" class="panel active" aria-labelledby="docs">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:8px">
+        <div><span class="grad-title">📁 Documents</span><div class="muted">Upload PDFs (parsed locally) and add to your notebook</div></div>
+        <div class="muted">Brand: <strong id="brandLabel">BLACKPINK</strong> · Members auto-switch</div>
       </div>
+
       <div class="grid-2">
         <div class="card">
-          <h3>Upload PDFs</h3>
-          <input id="pdfFiles" type="file" accept="application/pdf" multiple />
-          <div id="pdfList" class="list muted small" style="margin-top:8px"></div>
+          <label class="small">Upload PDFs</label>
+          <input id="pdfFiles" type="file" accept="application/pdf" multiple>
+          <div id="pdfList" class="muted" style="margin-top:10px"></div>
         </div>
+
         <div class="card">
-          <h3>Notebook</h3>
-          <textarea id="notebook" placeholder="Your combined notes live here…"></textarea>
-          <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap">
-            <button id="dedupeNotes" class="btn ghost">🧽 Clean/Dedup</button>
-            <button id="chunkNotes" class="btn ghost">✂ Chunk</button>
-            <span id="chunkInfo" class="muted small"></span>
+          <label class="small">Notebook</label>
+          <textarea id="notebook" placeholder="Your notes appear here..."></textarea>
+          <div style="display:flex; gap:8px; margin-top:8px; align-items:center">
+            <button id="dedupeNotes" class="btn">🧽 Dedup</button>
+            <button id="chunkNotes" class="btn">✂ Chunk</button>
+            <div class="muted" id="chunkInfo"></div>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="summary" class="panel">
-      <div class="panel-head">
-        <h2 class="grad-title">🧠 TextRank Summary (Model-Free)</h2>
-        <p class="muted small">Fast & offline. Choose length.</p>
+    <!-- Summary -->
+    <section id="summary" class="panel" aria-labelledby="summary">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+        <div><span class="grad-title">🧠 Summarizer (TextRank)</span><div class="muted">Extractive — works offline</div></div>
+        <div class="muted">Sentences: <input id="sumCount" type="number" min="2" max="20" value="5" style="width:72px"></div>
       </div>
-      <textarea id="sumInput" placeholder="Paste text or leave empty to use your Notebook"></textarea>
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:8px 0">
-        <label class="small">Sentences: <input id="sumCount" type="number" value="5" min="2" max="20" style="width:90px"></label>
+      <textarea id="sumInput" placeholder="Paste text or leave empty to summarize the notebook"></textarea>
+      <div style="margin-top:8px; display:flex; gap:8px">
         <button id="runSum" class="btn primary">Summarize</button>
+        <button id="clearSum" class="btn">Clear</button>
       </div>
-      <pre id="sumOut" class="out"></pre>
+      <pre id="sumOut" class="out" style="margin-top:8px"></pre>
     </section>
 
-    <section id="graph" class="panel">
-      <div class="panel-head">
-        <h2 class="grad-title">🕸 Topic Graph</h2>
-        <p class="muted small">Co-occurrence graph — drag nodes; export SVG</p>
+    <!-- Search -->
+    <section id="search" class="panel" aria-labelledby="search">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+        <div><span class="grad-title">🔎 Semantic Search</span><div class="muted">Lite = TF-IDF (always). Enhanced = embeddings (optional)</div></div>
+        <div class="muted">Status: <span id="proBadge">Lite</span></div>
       </div>
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
-        <label class="small">Top keywords: <input id="kwCount" type="number" value="28" min="10" max="120" style="width:110px"></label>
-        <button id="buildGraph" class="btn">Build Graph</button>
-        <button id="downloadGraph" class="btn ghost">Download SVG</button>
+
+      <div style="display:flex; gap:8px; align-items:center">
+        <input id="searchQuery" type="text" placeholder="Ask a question...">
+        <button id="runSearch" class="btn primary">Search</button>
+        <div class="muted right">Top results shown</div>
       </div>
-      <div class="graph-wrap"><svg id="graphSvg" role="img" aria-label="Topic graph"></svg></div>
+
+      <ol id="searchResults" class="out" style="margin-top:10px; padding-left:18px"></ol>
     </section>
 
-    <section id="search" class="panel">
-      <div class="panel-head">
-        <h2 class="grad-title">🔎 Semantic Search</h2>
-        <p class="muted small">Lite = TF-IDF • Pro = Embeddings (optional)</p>
+    <!-- Idol Chat -->
+    <section id="idol" class="panel" aria-labelledby="idol">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+        <div><span class="grad-title">💬 Idol Chat</span><div class="muted">Persona replies (local heuristics) + optional TTS</div></div>
+        <div class="muted">Member: <strong id="memberLabel">Jennie</strong></div>
       </div>
-      <div style="display:flex; gap:8px; flex-wrap:wrap">
-        <input id="searchQuery" type="text" placeholder="Ask a question or search concept…" />
-        <button id="runSearch" class="btn">Search</button>
-      </div>
-      <ol id="searchResults" class="out" style="margin-top:8px; padding-left:18px"></ol>
-    </section>
 
-    <section id="idolchat" class="panel">
-      <div class="panel-head">
-        <h2 class="grad-title">💬 Idol Chat (Local Personality)</h2>
-        <p class="muted small">Lightweight persona replies + optional TTS voices</p>
-      </div>
       <div class="grid-2">
         <div class="card">
-          <textarea id="chatInput" placeholder="Say hi or ask about training tips, stage outfits, practice routines…"></textarea>
-          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px">
+          <textarea id="chatInput" placeholder="Say hi to your member..."></textarea>
+          <div style="display:flex; gap:8px; margin-top:8px; align-items:center">
             <button id="sendChat" class="btn primary">Send</button>
-            <label class="small">Voice:
-              <select id="voiceSelect" style="width:220px"></select>
-            </label>
+            <select id="voiceSelect"></select>
             <button id="ttsChat" class="btn">🔊 Speak</button>
-            <span id="chatInfo" class="muted small"></span>
+            <div class="muted" id="chatInfo">TTS: system voices</div>
           </div>
         </div>
+
         <div class="card">
-          <h3>Conversation</h3>
+          <label class="small">Conversation</label>
           <div id="chatLog" class="out" style="height:260px"></div>
         </div>
       </div>
     </section>
 
-    <section id="lyrics" class="panel">
-      <div class="panel-head">
-        <h2 class="grad-title">🎶 Lyrics Sentiment & Mood</h2>
-        <p class="muted small">Paste lyrics or text → mood gauge + highlights (local lexicon; Pro can enhance)</p>
+    <!-- Lyrics -->
+    <section id="lyrics" class="panel" aria-labelledby="lyrics">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+        <div><span class="grad-title">🎶 Lyrics Mood</span><div class="muted">Simple lexicon sentiment + highlights</div></div>
+        <div class="muted">Score: <strong id="lyricsScore">0</strong></div>
       </div>
-      <textarea id="lyricsInput" placeholder="Paste lyrics or any text…"></textarea>
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:8px 0">
+
+      <textarea id="lyricsInput" placeholder="Paste lyrics or any text..."></textarea>
+      <div style="display:flex; gap:8px; margin-top:8px">
         <button id="analyzeLyrics" class="btn primary">Analyze</button>
-        <button id="lyricsClear" class="btn ghost">Clear</button>
-        <span id="lyricsScore" class="pill">Score: 0</span>
+        <button id="lyricsClear" class="btn">Clear</button>
       </div>
-      <pre id="lyricsOut" class="out"></pre>
-      <div id="lyricsChart" class="graph-wrap" style="height:220px"></div>
+      <pre id="lyricsOut" class="out" style="margin-top:8px"></pre>
     </section>
 
-    <section id="diary" class="panel">
-      <div class="panel-head">
-        <h2 class="grad-title">📔 Fan Diary & Song Recs</h2>
-        <p class="muted small">Private, localStorage only. Mood graph + daily summary + recs.</p>
+    <!-- Diary -->
+    <section id="diary" class="panel" aria-labelledby="diary">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+        <div><span class="grad-title">📔 Fan Diary</span><div class="muted">Private (localStorage). Mood graph + song recs</div></div>
+        <div class="muted">Fans: <strong>BLINKs & MONSTIEZ</strong></div>
       </div>
-      <div class="grid-2">
-        <div class="card">
-          <textarea id="diaryText" placeholder="How are you feeling today? Write anything…"></textarea>
-          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px">
-            <button id="saveDiary" class="btn ok">Save Entry</button>
-            <button id="sumDiary" class="btn">Summarize Day</button>
-            <button id="clearDiary" class="btn ghost">Clear All</button>
-            <span id="diaryInfo" class="muted small"></span>
-          </div>
-          <div id="recs" class="card" style="margin-top:8px">
-            <strong>🎧 Song Suggestions</strong>
-            <ul id="recList" style="margin:6px 0 0 18px"></ul>
-          </div>
-        </div>
-        <div class="card">
-          <h3>Mood Over Time</h3>
-          <div id="diaryChart" class="graph-wrap" style="height:280px"></div>
-          <div class="out" id="diaryList" style="margin-top:8px; max-height:220px"></div>
-        </div>
-      </div>
-    </section>
 
-    <section id="creative" class="panel">
-      <div class="panel-head">
-        <h2 class="grad-title">🎨 Caption & Palette</h2>
-        <p class="muted small">Poster maker (canvas) + theme palette ideas</p>
-      </div>
       <div class="grid-2">
         <div class="card">
-          <h3>Poster Maker</h3>
-          <input id="posterFile" type="file" accept="image/*" />
-          <input id="posterCaption" type="text" placeholder="Caption (or leave empty to auto-generate)"/>
-          <div style="display:flex; gap:8px; margin:8px 0; flex-wrap:wrap">
-            <button id="genCaption" class="btn">✨ Suggest Captions</button>
-            <button id="drawPoster" class="btn ok">Render Poster</button>
-            <button id="downloadPoster" class="btn ghost">Download</button>
+          <textarea id="diaryText" placeholder="How are you feeling..."></textarea>
+          <div style="display:flex; gap:8px; margin-top:8px">
+            <button id="saveDiary" class="btn primary">Save</button>
+            <button id="sumDiary" class="btn">Summarize</button>
+            <button id="clearDiary" class="btn">Clear All</button>
+            <div class="muted" id="diaryInfo"></div>
           </div>
-          <canvas id="posterCanvas" width="960" height="540" aria-label="Poster canvas"></canvas>
+
+          <div style="margin-top:8px" class="card">
+            <strong>🎧 Recommendations</strong>
+            <ul id="recList" class="muted" style="margin-top:8px"></ul>
+          </div>
         </div>
+
         <div class="card">
-          <h3>Theme Palette Generator</h3>
-          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center">
-            <span class="pill">Base = current member accent</span>
-            <button id="genPalette" class="btn">Generate</button>
-          </div>
-          <div id="paletteWrap" style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:10px"></div>
+          <label class="small">Recent entries</label>
+          <pre id="diaryList" class="out" style="height:320px"></pre>
         </div>
       </div>
     </section>
 
-    <section id="games" class="panel">
-      <div class="panel-head">
-        <h2 class="grad-title">🕹 Games: Who Said It? + Dance Challenge</h2>
-        <p class="muted small">Light, offline fun</p>
+    <!-- Creative -->
+    <section id="creative" class="panel" aria-labelledby="creative">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+        <div><span class="grad-title">🎨 Creative Tools</span><div class="muted">Poster caption + palette generator</div></div>
+        <div class="muted">Click color to copy</div>
       </div>
+
       <div class="grid-2">
         <div class="card">
-          <h3>Who Said It?</h3>
-          <div id="quoteBox" class="out"></div>
-          <div id="choiceWrap" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px"></div>
-          <div class="muted small" id="wsInfo"></div>
-          <button id="nextQuote" class="btn" style="margin-top:8px">Next</button>
+          <label class="small">Poster Maker</label>
+          <input id="posterFile" type="file" accept="image/*"><input id="posterCaption" type="text" placeholder="Caption (optional)" style="margin-top:8px">
+          <div style="display:flex; gap:8px; margin-top:8px">
+            <button id="genCaption" class="btn">Suggest Caption</button>
+            <button id="drawPoster" class="btn primary">Render</button>
+            <button id="downloadPoster" class="btn">Download</button>
+          </div>
+          <canvas id="posterCanvas" width="900" height="506" style="margin-top:10px; width:100%; border-radius:10px"></canvas>
         </div>
+
         <div class="card">
-          <h3>Dance Challenge</h3>
-          <div class="out" id="danceBox"></div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px">
+          <label class="small">Palette</label>
+          <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:8px" id="paletteWrap"></div>
+          <div style="margin-top:8px">
+            <button id="genPalette" class="btn primary">Generate Palette</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Games -->
+    <section id="games" class="panel" aria-labelledby="games">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+        <div><span class="grad-title">🕹 Fan Games</span><div class="muted">Who Said It? + Dance Challenge</div></div>
+        <div class="muted">Have fun!</div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <label class="small">Who Said It?</label>
+          <div id="quoteBox" class="out" style="min-height:120px"></div>
+          <div id="choiceWrap" style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap"></div>
+          <div class="muted" id="wsInfo"></div>
+          <div style="margin-top:8px"><button id="nextQuote" class="btn">Next Quote</button></div>
+        </div>
+
+        <div class="card">
+          <label class="small">Dance Challenge</label>
+          <div id="danceBox" class="out" style="min-height:120px"></div>
+          <div style="margin-top:8px; display:flex; gap:8px">
             <button id="startDance" class="btn primary">Start</button>
-            <button id="stopDance" class="btn ghost">Stop</button>
+            <button id="stopDance" class="btn">Stop</button>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="about" class="panel">
-      <div class="panel-head"><h2 class="grad-title">About</h2></div>
-      <div class="card">
-        <p><strong>Groups:</strong> BLACKPINK & BABYMONSTER (7 members inc. Ahyeon). Fans: BLINKs & MONSTIEZ.</p>
-        <p><strong>AI:</strong> All local. <em>Lite</em> = classical NLP (TextRank summarizer, TF-IDF search, lexicon sentiment). <em>Pro</em> = optional embeddings via <code>@xenova/transformers</code> (MiniLM) with WASM safe mode. No tokens, no servers.</p>
-        <ul>
-          <li>PDF parsing: <code>pdf.js</code></li>
-          <li>Graphs & charts: <code>d3</code></li>
-          <li>Speech: Web Speech Synthesis API (optional)</li>
+    <!-- About -->
+    <section id="about" class="panel" aria-labelledby="about">
+      <div>
+        <h2 class="grad-title">About</h2>
+        <p class="muted">This is a client-side playground for fans — Lite features run everywhere; Enhanced features try to load a local WASM-capable embeddings pipeline. If your host or browser blocks WASM/model downloads, Enhanced will gracefully fall back to Lite so nothing breaks.</p>
+        <ul class="muted">
+          <li>7 BABYMONSTER members included (Ahyeon present)</li>
+          <li>Fans names: BLINKs & MONSTIEZ</li>
+          <li>All data is local: notebook + diary saved in your browser</li>
         </ul>
-        <p class="muted small">Tip: Use Pro only if you need higher-quality semantic search; Lite is fastest and most compatible.</p>
       </div>
     </section>
   </main>
 
-  <footer class="footer">
-    <span>Made for BLINKs & MONSTIEZ · No tokens · No installs · 100% client-side</span>
-  </footer>
-
+  <footer class="footer">Made for BLINKs & MONSTIEZ · No tokens · No installs · 100% client-side</footer>
   <div id="toasts" class="toasts" aria-live="polite"></div>
 
   <!-- libs -->
@@ -382,23 +356,51 @@
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 
   <script>
-  // ---------- Helpers ----------
-  const $ = (s,r=document)=>r.querySelector(s);
-  const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
-  const toasts = $("#toasts");
-  const toast=(msg,kind='ok',ms=2600)=>{ const el=document.createElement('div'); el.className='toast '+kind; el.textContent=msg; toasts.appendChild(el); setTimeout(()=>el.remove(), ms); };
-  const escapeHtml=s=>s.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[m]);
+  /* ------------------------ Utilities ------------------------ */
+  const $ = (s,r=document) => r.querySelector(s);
+  const $$ = (s,r=document) => Array.from(r.querySelectorAll(s));
+  const toasts = $('#toasts');
+  function notify(msg, type='ok', ms=3000){
+    const el = document.createElement('div'); el.className='toast' + (type==='err' ? ' err' : '');
+    el.textContent = msg; toasts.appendChild(el);
+    setTimeout(()=> el.remove(), ms);
+  }
 
-  // ---------- GROUPS ----------
+  function safeLoadScript({url, testFn, timeout=25000}){
+    // returns Promise that resolves true if testFn() becomes true, rejects otherwise
+    return new Promise((resolve,reject)=>{
+      if (typeof testFn === 'function' && testFn()) return resolve(true);
+      // create script
+      const s = document.createElement('script'); s.src = url; s.async = true;
+      let done = false;
+      s.onload = () => {
+        // small delay to allow global to be set
+        setTimeout(()=>{
+          if (typeof testFn === 'function' && testFn()){ done = true; resolve(true); }
+          else if(typeof testFn !== 'function'){ done = true; resolve(true); }
+          else { done = true; reject(new Error('Loaded but check failed')); }
+        }, 80);
+      };
+      s.onerror = (e) => { if (!done) { done = true; reject(new Error('Script load failed')); } };
+      document.head.appendChild(s);
+      setTimeout(()=>{ if (!done) { done = true; reject(new Error('Timeout loading script')); } }, timeout);
+    });
+  }
+
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[m]); }
+
+  /* ------------------------ App State & UI init ------------------------ */
   const GROUPS = {
-    blackpink:{
+    blackpink: {
       label:'BLACKPINK', fans:'BLINKs',
       members:[
-        {id:'jisoo', name:'Jisoo'}, {id:'jennie', name:'Jennie'},
-        {id:'rose', name:'Rosé'}, {id:'lisa', name:'Lisa'}
+        {id:'jisoo', name:'Jisoo'},
+        {id:'jennie', name:'Jennie'},
+        {id:'rose', name:'Rosé'},
+        {id:'lisa', name:'Lisa'}
       ]
     },
-    babymonster:{
+    babymonster: {
       label:'BABYMONSTER', fans:'MONSTIEZ',
       members:[
         {id:'ahyeon', name:'Ahyeon'},
@@ -412,346 +414,575 @@
     }
   };
 
-  const brandSelect=$("#brandSelect"), memberSelect=$("#memberSelect"), themeSelect=$("#themeSelect");
-  function populateMembers(){
-    const brand = brandSelect.value;
-    document.body.dataset.brand = brand;
-    const {members} = GROUPS[brand];
-    memberSelect.innerHTML='';
-    for(const m of members){
-      const op=document.createElement('option'); op.value=m.id; op.textContent=m.name; memberSelect.appendChild(op);
+  const brandSelect = $('#brandSelect'), memberSelect = $('#memberSelect'), themeSelect = $('#themeSelect'), perfMode = $('#perfMode');
+  const proStatusText = $('#proStatusText'), proBadge = $('#proBadge');
+
+  function populateMembersForBrand(brand){
+    memberSelect.innerHTML = '';
+    const members = GROUPS[brand].members;
+    for (const m of members){
+      const op = document.createElement('option'); op.value = m.id; op.textContent = m.name; memberSelect.appendChild(op);
     }
+    // default first
     memberSelect.value = members[0].id;
     document.body.dataset.member = members[0].id;
-    $('.tag').textContent = `For ${GROUPS.blackpink.fans} & ${GROUPS.babymonster.fans} · Lite by default · Pro (embeddings) optional & local`;
+    $('#brandLabel').textContent = GROUPS[brand].label;
+    $('#memberLabel').textContent = members[0].name;
   }
-  brandSelect.addEventListener('change', ()=>{ populateMembers(); pulsePrimary(); });
-  memberSelect.addEventListener('change', ()=>{ document.body.dataset.member = memberSelect.value; pulsePrimary(); });
-  themeSelect.addEventListener('change', ()=>{ document.body.dataset.theme = themeSelect.value; pulsePrimary(); });
-  const pulsePrimary=()=>$$('.btn.primary').forEach(b=>{ b.classList.remove('pulse'); void b.offsetWidth; b.classList.add('pulse'); });
 
-  // ---------- Tabs ----------
-  $$('.tab').forEach(t=>t.addEventListener('click', ()=>{
-    $$('.tab').forEach(x=>x.classList.remove('active'));
+  brandSelect.addEventListener('change', ()=>{
+    document.body.dataset.brand = brandSelect.value;
+    populateMembersForBrand(brandSelect.value);
+    notify(`Switched to ${GROUPS[brandSelect.value].label}`, 'ok', 1600);
+    updateUIFromMember();
+  });
+  memberSelect.addEventListener('change', ()=>{
+    document.body.dataset.member = memberSelect.value;
+    $('#memberLabel').textContent = memberSelect.options[memberSelect.selectedIndex].textContent;
+    updateUIFromMember();
+  });
+  themeSelect.addEventListener('change', ()=>{ document.body.dataset.theme = themeSelect.value; notify(`Theme: ${themeSelect.value}`, 'ok', 900); });
+  function updateUIFromMember(){
+    const mem = memberSelect.value;
+    document.body.dataset.member = mem;
+    const name = memberSelect.options[memberSelect.selectedIndex].textContent;
+    $('#memberLabel').textContent = name;
+    // update gradient defs for d3 if present (safe)
+    try{ const gradStops = document.querySelectorAll('#gradStops stop'); if(gradStops && gradStops.length){ const c1 = getComputedStyle(document.body).getPropertyValue('--accent').trim(); gradStops[0].setAttribute('stop-color', c1); } }catch(e){}
+  }
+
+  // init members
+  populateMembersForBrand(brandSelect.value);
+
+  // tabs
+  $$('.tab').forEach(btn => btn.addEventListener('click', ()=>{
+    $$('.tab').forEach(t=>t.classList.remove('active'));
     $$('.panel').forEach(p=>p.classList.remove('active'));
-    t.classList.add('active'); $('#'+t.dataset.tab).classList.add('active'); window.scrollTo({top:0, behavior:'smooth'});
+    btn.classList.add('active'); $('#' + btn.dataset.tab).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
   }));
 
-  // ---------- PDF.js ----------
+  /* ------------------------ PDF parse (pdf.js) ------------------------ */
   const pdfjsLib = window['pdfjs-dist/build/pdf'];
-  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
-  $('#pdfFiles').addEventListener('change', async (ev)=>{
-    const list=$('#pdfList'); const note=$('#notebook');
-    for (const file of ev.target.files){
+  if (pdfjsLib && pdfjsLib.GlobalWorkerOptions) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+  }
+  $('#pdfFiles').addEventListener('change', async (ev) => {
+    const files = ev.target.files;
+    if (!files || !files.length) return;
+    for (const f of files){
       try{
-        const buf=await file.arrayBuffer();
-        const pdf=await pdfjsLib.getDocument({data:buf}).promise;
-        let text='';
-        for(let i=1;i<=pdf.numPages;i++){
-          const page=await pdf.getPage(i);
-          const content=await page.getTextContent();
-          const t=content.items.map(it=>it.str).join(' ');
-          text+=`\n\n# Page ${i}\n${t}`;
+        const buf = await f.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({data:buf}).promise;
+        let text = '';
+        for (let i=1;i<=pdf.numPages;i++){
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          text += '\n\n' + content.items.map(it=>it.str).join(' ');
         }
-        note.value=(note.value+`\n\n# ${file.name}\n`+text).trim();
-        const row=document.createElement('div'); row.className='card'; row.textContent=`Parsed: ${file.name} — ${text.length.toLocaleString()} chars, ${pdf.numPages} pages`; list.prepend(row);
-        toast(`Parsed ${file.name}`,'ok');
-        tfidf.docs.length=0;
-      }catch(e){ console.error(e); toast(`Failed: ${file.name}`,'err',3000); }
+        $('#notebook').value = ($('#notebook').value + '\n\n# ' + f.name + '\n' + text).trim();
+        const row = document.createElement('div'); row.className='muted'; row.textContent = `Parsed ${f.name} — ${pdf.numPages} pages`;
+        $('#pdfList').prepend(row);
+        notify(`Parsed ${f.name}`, 'ok', 1800);
+        // invalidate lite/pro indexes if any
+        liteIndexBuilt = false;
+        proVectors = null;
+      }catch(e){ console.error(e); notify('PDF parse failed','err',3000); }
     }
   });
 
-  // ---------- Notebook ----------
-  const notebook=$("#notebook"), chunkInfo=$("#chunkInfo");
-  const splitIntoChunks=(text,maxLen=800)=>{
-    const sents=text.split(/(?<=[.!?])\s+/).filter(Boolean); const out=[]; let buf='';
-    for(const s of sents){ if((buf+' '+s).trim().length>maxLen){ if(buf.trim()) out.push(buf.trim()); buf=s; } else buf=(buf?buf+' ':'')+s; }
-    if(buf.trim()) out.push(buf.trim()); return out;
-  };
-  $('#dedupeNotes').addEventListener('click', ()=>{ const lines=notebook.value.split(/\n+/).map(s=>s.trim()).filter(Boolean); const seen=new Set(), clean=[]; for(const l of lines){ const k=l.toLowerCase(); if(!seen.has(k)){ seen.add(k); clean.push(l); } } notebook.value=clean.join('\n'); toast('Deduped notebook','ok'); });
-  $('#chunkNotes').addEventListener('click', ()=>{ const chunks=splitIntoChunks(notebook.value,700); chunkInfo.textContent=`${chunks.length} chunks ready`; toast('Chunked notes','ok'); });
-
-  // ---------- TextRank ----------
-  function textrankSummarize(text,k=5){
-    const sents=text.split(/(?<=[.!?])\s+/).filter(s=>s.trim().length>0);
-    if (sents.length<=k) return sents.join(' ');
-    const norm=s=>s.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').replace(/\s+/g,' ').trim();
-    const bag=s=>{ const m=new Map(); norm(s).split(' ').forEach(w=>{ if(w.length>2){ m.set(w,(m.get(w)||0)+1); } }); return m; };
-    const cosine=(a,b)=>{ let dot=0,na=0,nb=0; const keys=new Set([...a.keys(),...b.keys()]); keys.forEach(w=>{ const x=a.get(w)||0, y=b.get(w)||0; dot+=x*y; na+=x*x; nb+=y*y; }); return dot/(Math.sqrt(na)*Math.sqrt(nb)||1); };
-    const bags=sents.map(bag); const n=sents.length; const sim=Array.from({length:n},()=>Array(n).fill(0));
-    for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){ const c=cosine(bags[i],bags[j]); sim[i][j]=sim[j][i]=c; }
-    let scores=Array(n).fill(1/n);
-    for(let it=0;it<20;it++){
-      const next=Array(n).fill(0.15/n);
-      for(let i=0;i<n;i++){
-        const denom=sim[i].reduce((a,b)=>a+b,0)||1;
-        for(let j=0;j<n;j++) if(i!==j) next[j]+=0.85*(sim[i][j]/denom)*scores[i];
+  /* ------------------------ Notebook helpers & TextRank ------------------------ */
+  function splitIntoChunks(text, maxLen=700){
+    if (!text) return [];
+    const sents = text.split(/(?<=[.?!])\s+/).filter(Boolean);
+    const out = []; let buf = '';
+    for (const s of sents){
+      if ((buf + ' ' + s).trim().length > maxLen){
+        if (buf.trim()) out.push(buf.trim());
+        buf = s;
+      } else {
+        buf = (buf? buf + ' ' : '') + s;
       }
-      scores=next;
     }
-    const idx=scores.map((s,i)=>[s,i]).sort((a,b)=>b[0]-a[0]).slice(0,k).map(x=>x[1]).sort((a,b)=>a-b);
+    if (buf.trim()) out.push(buf.trim());
+    return out;
+  }
+
+  $('#dedupeNotes').addEventListener('click', ()=>{
+    const arr = $('#notebook').value.split(/\n+/).map(l=>l.trim()).filter(Boolean);
+    const seen = new Set(); const out=[];
+    for (const l of arr){ const k = l.toLowerCase(); if (!seen.has(k)){ seen.add(k); out.push(l); } }
+    $('#notebook').value = out.join('\n');
+    notify('Notebook deduped','ok');
+  });
+  $('#chunkNotes').addEventListener('click', ()=>{ const c = splitIntoChunks($('#notebook').value,700); $('#chunkInfo').textContent = `${c.length} chunks`; notify('Chunked notebook','ok'); });
+
+  function textrankSummarize(text, k=5){
+    if (!text) return '';
+    const sents = text.split(/(?<=[.?!])\s+/).filter(Boolean);
+    if (sents.length <= k) return sents.join(' ');
+    const norm = s => s.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').replace(/\s+/g,' ').trim();
+    const bag = s => { const m=new Map(); norm(s).split(' ').forEach(w=>{ if (w.length>2) m.set(w,(m.get(w)||0)+1); }); return m; };
+    const cosine = (a,b) => { let dot=0, na=0, nb=0; const keys = new Set([...a.keys(), ...b.keys()]); keys.forEach(k=>{ const x=a.get(k)||0, y=b.get(k)||0; dot+=x*y; na+=x*x; nb+=y*y; }); return dot/(Math.sqrt(na)*Math.sqrt(nb)||1); };
+    const bags = sents.map(bag);
+    const n = sents.length; const sim = Array.from({length:n}, ()=>Array(n).fill(0));
+    for (let i=0;i<n;i++) for (let j=i+1;j<n;j++){ const sc = cosine(bags[i], bags[j]); sim[i][j]=sim[j][i]=sc; }
+    let scores = Array(n).fill(1/n);
+    for (let it=0; it<20; it++){
+      const next = Array(n).fill(0.15/n);
+      for (let i=0;i<n;i++){
+        const denom = sim[i].reduce((a,b)=>a+b,0) || 1;
+        for (let j=0;j<n;j++) if (i!==j) next[j] += 0.85 * (sim[i][j] / denom) * scores[i];
+      }
+      scores = next;
+    }
+    const idx = scores.map((s,i)=>[s,i]).sort((a,b)=>b[0]-a[0]).slice(0,k).map(x=>x[1]).sort((a,b)=>a-b);
     return idx.map(i=>sents[i]).join(' ');
   }
-  $('#runSum').addEventListener('click', ()=>{ const src=($('#sumInput').value.trim()||notebook.value.trim()); if(!src) return toast('No text to summarize','warn'); const k=Math.max(2,Math.min(20, Number($('#sumCount').value)||5)); $('#sumOut').textContent=textrankSummarize(src,k); });
 
-  // ---------- Graph (d3) ----------
-  const graphSvg=d3.select('#graphSvg');
-  function extractKeywords(text, topN=28){
-    const stop=new Set(("a,an,the,and,or,but,if,then,else,when,while,of,to,in,on,for,with,as,by,at,from,into,that,this,these,those,is,are,was,were,be,been,has,have,had,do,does,did,not,no,so,than,too,very,can,will,just,about,over,under,more,most,less,each,other,also,which,who,whom,whose,where,why,how").split(','));
-    const words=text.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w && !stop.has(w) && w.length>2);
-    const freq=new Map(); words.forEach(w=>freq.set(w,(freq.get(w)||0)+1));
-    return [...freq.entries()].sort((a,b)=>b[1]-a[1]).slice(0, topN).map(([w])=>w);
-  }
-  function buildGraph(text, topN){
-    const keywords=extractKeywords(text, topN); const index=new Map(keywords.map((k,i)=>[k,i]));
-    const words=text.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/);
-    const windowSize=6; const linkMap=new Map();
-    for(let i=0;i<words.length;i++){
-      const wi=words[i]; if(!index.has(wi)) continue;
-      for(let j=i+1;j<Math.min(i+windowSize, words.length); j++){
-        const wj=words[j]; if(!index.has(wj)||wi===wj) continue;
-        const a=index.get(wi), b=index.get(wj); const key=a<b?`${a}-${b}`:`${b}-${a}`;
-        linkMap.set(key,(linkMap.get(key)||0)+1);
-      }
-    }
-    const nodes=keywords.map((w,i)=>({id:i,label:w}));
-    const links=[...linkMap.entries()].map(([k,v])=>{ const [s,t]=k.split('-').map(Number); return {source:s,target:t,weight:v}; });
-    graphSvg.selectAll('*').remove();
-    const width=graphSvg.node().clientWidth||800, height=520;
-    const sim=d3.forceSimulation(nodes)
-      .force('link', d3.forceLink(links).id(d=>d.id).distance(d=>120/(1+Math.log1p(d.weight))))
-      .force('charge', d3.forceManyBody().strength(-240))
-      .force('center', d3.forceCenter(width/2, height/2));
-    const link=graphSvg.append('g').attr('stroke','rgba(100,100,120,.35)').selectAll('line')
-      .data(links).enter().append('line').attr('stroke-width', d=>Math.log2(1+d.weight)+.6);
-    const node=graphSvg.append('g').selectAll('g').data(nodes).enter().append('g').call(d3.drag()
-      .on('start',(e,d)=>{ if(!e.active) sim.alphaTarget(.3).restart(); d.fx=d.x; d.fy=d.y; })
-      .on('drag',(e,d)=>{ d.fx=e.x; d.fy=e.y; })
-      .on('end',(e,d)=>{ if(!e.active) sim.alphaTarget(0); d.fx=null; d.fy=null; })
-    );
-    node.append('circle').attr('r', 11).attr('fill','url(#grad)').attr('stroke','rgba(255,255,255,.22)').attr('stroke-width',1);
-    node.append('text').text(d=>d.label).attr('x',14).attr('y',4).style('fill','currentColor').style('font-size','12px');
-    sim.on('tick', ()=>{ link.attr('x1', d=>d.source.x).attr('y1', d=>d.source.y).attr('x2', d=>d.target.x).attr('y2', d=>d.target.y); node.attr('transform', d=>`translate(${d.x},${d.y})`); });
-  }
-  $('#buildGraph').addEventListener('click', ()=>{ const t=notebook.value.trim(); if(!t) return toast('Add some notes first','warn'); const n=Math.max(10,Math.min(120, Number($('#kwCount').value)||28)); buildGraph(t,n); });
-  $('#downloadGraph').addEventListener('click', ()=>{ const svg=$('#graphSvg'); const xml=new XMLSerializer().serializeToString(svg); const blob=new Blob([xml],{type:'image/svg+xml'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='topic-graph.svg'; a.click(); });
+  $('#runSum').addEventListener('click', ()=>{
+    const src = ($('#sumInput').value.trim() || $('#notebook').value.trim());
+    if (!src) return notify('No text to summarize','err');
+    const k = Math.max(2, Math.min(20, Number($('#sumCount').value) || 5));
+    $('#sumOut').textContent = textrankSummarize(src, k);
+    notify('Summary generated','ok');
+  });
+  $('#clearSum').addEventListener('click', ()=>$('#sumOut').textContent='');
 
-  // ---------- Semantic Search: Lite TF-IDF + Robust Pro (WASM safe) ----------
-  const perfMode=$("#perfMode"), enablePro=$("#enablePro"), rebuildPro=$("#rebuildPro"), resetPro=$("#resetPro");
+  /* ------------------------ Lite TF-IDF search ------------------------ */
+  let liteIndexBuilt = false;
   const tfidf = { vocab:new Map(), idf:[], docs:[], texts:[],
-    addDocs(texts){ this.vocab.clear(); this.docs=[]; this.texts=texts; const token=s=>s.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w.length>2); const dterms=texts.map(t=>token(t)); const df=new Map(); dterms.forEach(terms=>{ const uniq=new Set(terms); uniq.forEach(w=>df.set(w,(df.get(w)||0)+1));}); const entries=[...df.keys()].sort(); entries.forEach((w,i)=>this.vocab.set(w,i)); const N=texts.length; this.idf=entries.map(w=>Math.log((N+1)/((df.get(w)||0)+1))+1); this.docs=dterms.map(terms=>{ const tf=new Map(); terms.forEach(w=>tf.set(w,(tf.get(w)||0)+1)); const vec=new Map(); tf.forEach((f,w)=>{ if(this.vocab.has(w)){ const i=this.vocab.get(w); vec.set(i,(f/terms.length)*this.idf[i]); }}); return vec; }); },
-    vectorize(q){ const token=q.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w.length>2); const tf=new Map(); token.forEach(w=>tf.set(w,(tf.get(w)||0)+1)); const vec=new Map(); tf.forEach((f,w)=>{ if(this.vocab.has(w)){ const i=this.vocab.get(w); vec.set(i,(f/token.length)*this.idf[i]); }}); return vec; },
-    cosine(a,b){ let dot=0,na=0,nb=0; a.forEach((va,i)=>{ na+=va*va; const vb=b.get(i)||0; dot+=va*vb; }); b.forEach((vb,i)=>nb+=vb*vb); return dot/(Math.sqrt(na)*Math.sqrt(nb)||1); },
-    search(q,k=10){ const v=this.vectorize(q); const scores=this.docs.map((d,i)=>({i, s:this.cosine(v,d)})).sort((a,b)=>b.s-a.s).slice(0,k); return scores.map(({i,s})=>({text:this.texts[i], score:s})); }
+    build(texts){
+      this.vocab.clear(); this.docs=[]; this.texts=texts;
+      const token = s => s.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w.length>2);
+      const terms = texts.map(t=>token(t));
+      const df = new Map();
+      terms.forEach(ts=>{ new Set(ts).forEach(w=> df.set(w, (df.get(w)||0)+1)); });
+      const entries = [...df.keys()].sort();
+      entries.forEach((w,i)=> this.vocab.set(w,i));
+      const N = texts.length; this.idf = entries.map(w=> Math.log((N+1)/((df.get(w)||0)+1))+1 );
+      this.docs = terms.map(ts=> {
+        const tf = new Map(); ts.forEach(w=> tf.set(w,(tf.get(w)||0)+1));
+        const vec = new Map();
+        tf.forEach((f,w)=> { if (this.vocab.has(w)) { const i=this.vocab.get(w); vec.set(i, (f/ts.length) * this.idf[i]); }});
+        return vec;
+      });
+    },
+    vectorize(q){
+      const token = q.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w.length>2);
+      const tf = new Map(); token.forEach(w=> tf.set(w,(tf.get(w)||0)+1));
+      const vec = new Map(); tf.forEach((f,w)=>{ if (this.vocab.has(w)){ const i=this.vocab.get(w); vec.set(i,(f/token.length) * this.idf[i]); }});
+      return vec;
+    },
+    cosine(a,b){ let dot=0, na=0, nb=0; a.forEach((va,i)=>{ na+=va*va; dot+=va*(b.get(i)||0); }); b.forEach((vb,i)=> nb+=vb*vb ); return dot/(Math.sqrt(na)*Math.sqrt(nb)||1); },
+    search(q, top=6){ const v = this.vectorize(q); const sc = this.docs.map((d,i)=>({i, s:this.cosine(v,d)})).sort((a,b)=>b.s-a.s).slice(0,top); return sc.map(x=>({text:this.texts[x.i], score:x.s})); }
   };
-  function buildLiteIndex(){ const raw=notebook.value.trim(); if(!raw) return 0; const parts=splitIntoChunks(raw,400); tfidf.addDocs(parts); return parts.length; }
 
-  // ===== PRO EMBEDDINGS — BULLETPROOF WASM (NO WEBGPU, NO THREADS, NO SIMD) =====
-  let proReady=false, embedder=null, proVectors=null, proTexts=null, proDevice='wasm';
-
-  async function ensureTransformersSafe(){
-    if (window.transformers) return;
-    await new Promise((res, rej)=>{ const s=document.createElement('script'); s.src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js"; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
-    try{
-      const env = window.transformers.env;
-      env.allowLocalModels = false;
-      env.allowRemoteModels = true;
-      env.useBrowserCache = true;
-      env.backends.onnx.wasm.wasmPaths = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.0/dist/";
-      env.backends.onnx.wasm.numThreads = 1;
-      env.backends.onnx.wasm.simd = false;
-      env.backends.onnx.wasm.proxy = false;
-    }catch(e){ console.warn('Env patch non-fatal:', e); }
+  function buildLite(){
+    const raw = $('#notebook').value.trim();
+    if (!raw) return 0;
+    const parts = splitIntoChunks(raw, 380);
+    tfidf.build(parts);
+    liteIndexBuilt = true;
+    notify(`Lite index: ${parts.length} chunks`, 'ok');
+    return parts.length;
   }
 
-  function showErrorToast(prefix, err){
-    let msg = (err && (err.message || err.toString())) || 'Unknown error';
-    if (msg.length > 160) msg = msg.slice(0,160) + '…';
-    toast(`${prefix}: ${msg}`, 'err', 5000);
+  /* ------------------------ Enhanced (optional) - robust loader ------------------------ */
+  let enhancedReady = false;
+  let transformersLoaded = false;
+  let embedder = null;
+  let proVectors = null;
+  let proTexts = null;
+
+  const ENABLE_URL = 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js';
+  async function enableEnhanced(){
+    // guard: don't call if already ready
+    if (enhancedReady && embedder) { notify('Enhanced ready','ok'); return; }
+    $('#enablePro').disabled = true;
+    notify('Attempting to enable Enhanced (will fall back if blocked)...','warn', 3500);
+    try {
+      // attempt safe load and check for window.transformers.pipeline presence
+      await safeLoadScript({ url: ENABLE_URL, testFn: () => !!(window.transformers && window.transformers.pipeline), timeout:25000 });
+      transformersLoaded = !!(window.transformers && window.transformers.pipeline);
+      if (!transformersLoaded) throw new Error('transformers lib loaded but pipeline not present');
+    } catch (e){
+      // load failed or check failed
+      console.warn('Enhanced loader error:', e);
+      transformersLoaded = false;
+      notify('Enhanced loader failed: will remain in Lite (no crash).', 'err', 4500);
+      $('#proStatusText').textContent = 'Unavailable';
+      $('#proBadge').textContent = 'Lite';
+      $('#enablePro').disabled = false;
+      return;
+    }
+
+    // try to initialize pipeline in WASM safe mode
+    try {
+      // optionally patch environment if available (non-fatal)
+      try{
+        if (window.transformers && window.transformers.env && window.transformers.env.backends && window.transformers.env.backends.onnx && window.transformers.env.backends.onnx.wasm){
+          window.transformers.env.backends.onnx.wasm.numThreads = 1;
+          window.transformers.env.backends.onnx.wasm.simd = false;
+        }
+      }catch(e){ /* non-fatal */ }
+
+      // instantiate the feature-extraction pipeline (may download model files)
+      embedder = await window.transformers.pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', { quantized:true, device:'wasm' });
+      // quick sanity call
+      const test = await embedder('ok', { pooling:'mean', normalize:true });
+      if (!test) throw new Error('Embedding sanity check failed');
+      enhancedReady = true;
+      $('#proStatusText').textContent = 'Ready';
+      $('#proBadge').textContent = 'Enhanced';
+      notify('Enhanced ready (WASM). Rebuild embeddings to use.', 'ok', 3000);
+    } catch (err){
+      console.error('Enhanced init error', err);
+      transformedFallback();
+      $('#enablePro').disabled = false;
+      notify('Enhanced initialization failed — staying in Lite mode', 'err', 4200);
+    } finally {
+      $('#enablePro').disabled = false;
+    }
   }
 
-  async function enableProFlow(){
-    if (proReady) return toast('Pro already enabled','ok');
-    try{
-      toast('Loading Pro (WASM safe mode)…','warn',3800);
-      await ensureTransformersSafe();
-      embedder = await window.transformers.pipeline('feature-extraction','Xenova/all-MiniLM-L6-v2',{ quantized:true, device:'wasm', progress_callback:(e)=>{ if(e?.status) toast(e.status,'warn',1200);} });
-      const testOut = await embedder('ok');
-      const vec = testOut?.data ? testOut.data : testOut?.[0];
-      if (!vec || (Array.isArray(vec) && vec.length===0)) throw new Error('Sanity check failed (no embedding vector).');
-      proReady=true; toast('Pro ready (WASM safe mode)','ok',2600);
-    }catch(e){ proReady=false; embedder=null; showErrorToast('Pro failed to enable', e); }
+  function transformedFallback(){
+    enhancedReady = false; embedder = null; proVectors = null; proTexts = null;
+    $('#proStatusText').textContent = 'Unavailable';
+    $('#proBadge').textContent = 'Lite';
   }
 
-  async function buildProEmbeddings(){
-    if (!proReady){ toast('Enable Pro first','warn'); return false; }
-    const raw=notebook.value.trim(); if(!raw){ toast('Notebook empty','warn'); return false; }
-    const parts=splitIntoChunks(raw,400); proTexts=parts; proVectors=[];
-    try{
-      for(let i=0;i<parts.length;i++){
+  // rebuild embeddings: chunk notebook and call embedder on each chunk
+  $('#rebuildPro').addEventListener('click', async ()=>{
+    if (!enhancedReady || !embedder) { notify('Enhanced not enabled — click Enable Enhanced first', 'err'); return; }
+    const raw = $('#notebook').value.trim(); if (!raw) { notify('Notebook empty','err'); return; }
+    const parts = splitIntoChunks(raw, 380); proTexts = parts; proVectors = [];
+    notify(`Building ${parts.length} embeddings...`, 'warn', 7000);
+    for (let i=0;i<parts.length;i++){
+      try{
         const out = await embedder(parts[i], { pooling:'mean', normalize:true });
-        const v = out?.data ? Array.from(out.data) : Array.from(out?.[0]||[]);
-        if (!v.length) throw new Error('Empty embedding vector');
-        proVectors.push(v);
-        if ((i+1)%6===0) toast(`Embedded ${i+1}/${parts.length}…`, 'warn', 1200);
-      }
-      toast(`Built ${parts.length} embeddings`, 'ok', 2800);
-      return true;
-    }catch(e){ proVectors=null; proTexts=null; showErrorToast('Embedding build failed', e); return false; }
-  }
-
-  enablePro.addEventListener('click', enableProFlow);
-  rebuildPro.addEventListener('click', buildProEmbeddings);
-  resetPro.addEventListener('click', ()=>{ proReady=false; embedder=null; proVectors=null; proTexts=null; toast('Pro reset','ok'); });
-
-  // search handler with graceful fallback
-  $('#runSearch').addEventListener('click', async ()=>{
-    const q=$('#searchQuery').value.trim(); const out=$('#searchResults'); out.innerHTML='';
-    if(!q) return toast('Enter a query','warn');
-    if (perfMode.value==='pro'){
-      if(!proReady){ toast('Pro not ready — falling back to Lite','warn',2800); perfMode.value='lite'; }
-      else{
-        try{
-          if(!proVectors || !proTexts){ const ok = await buildProEmbeddings(); if(!ok) return; }
-          const qvRaw = await embedder(q, { pooling:'mean', normalize:true });
-          const qv = qvRaw?.data ? Array.from(qvRaw.data) : Array.from(qvRaw?.[0]||[]);
-          const cos=(a,b)=>a.reduce((s,x,i)=>s+x*(b[i]||0),0);
-          const scores=proVectors.map((v,i)=>({i,s:cos(qv,v)})).sort((a,b)=>b.s-a.s).slice(0,10);
-          scores.forEach(({i,s})=>{ const li=document.createElement('li'); li.innerHTML=`<strong>${s.toFixed(3)}</strong> — ${escapeHtml(proTexts[i])}`; out.appendChild(li); });
-          return;
-        }catch(e){ showErrorToast('Pro search failed (fallback to Lite)', e); perfMode.value='lite'; }
+        const vec = out?.data ? Array.from(out.data) : Array.from(out?.[0]||[]);
+        proVectors.push(vec);
+        if ((i+1) % 6 === 0) notify(`Embedded ${i+1}/${parts.length}`, 'ok', 900);
+      }catch(e){
+        console.error('Embedding chunk failed', e);
+        notify('Embedding failed on a chunk; aborting', 'err', 3000);
+        proVectors = null; proTexts = null; return;
       }
     }
-    if(!tfidf.docs.length){ const n=buildLiteIndex(); if(!n) return toast('Notebook empty','warn'); toast(`Lite index built (${n} chunks)`,'ok'); }
-    const res=tfidf.search(q,10); res.forEach(r=>{ const li=document.createElement('li'); li.innerHTML=`<strong>${r.score.toFixed(3)}</strong> — ${escapeHtml(r.text)}`; out.appendChild(li); });
+    notify(`Built ${parts.length} embeddings. Search will use Enhanced if selected.`, 'ok', 3000);
   });
 
-  // ---------- Idol Chat ----------
-  const CHAT_TEMPLATES={
-    jisoo: {tone:["sweet","calm","playful"], emoji:"🌸"}, jennie:{tone:["confident","cool","witty"], emoji:"🖤"},
-    rose:{tone:["warm","dreamy","artsy"], emoji:"🌹"}, lisa:{tone:["energetic","fun","bold"], emoji:"💚"},
-    ahyeon:{tone:["bright","powerful","cheeky"], emoji:"✨"}, ruka:{tone:["chill","stylish","grounded"], emoji:"💜"},
-    pharita:{tone:["radiant","kind","sunny"], emoji:"☀️"}, asa:{tone:["spicy","fearless","spirited"], emoji:"🔥"},
-    rami:{tone:["soulful","poised","caring"], emoji:"💠"}, rora:{tone:["sparkly","smart","curious"], emoji:"⭐"},
-    chiquita:{tone:["cute","quick","sparkplug"], emoji:"🔷"}
+  $('#enablePro').addEventListener('click', enableEnhanced);
+
+  /* ------------------------ Search handler (uses Enhanced if available & selected) ------------------------ */
+  $('#runSearch').addEventListener('click', async ()=>{
+    const q = $('#searchQuery').value.trim(); const out = $('#searchResults'); out.innerHTML='';
+    if (!q) return notify('Type a search query','err');
+    if (perfMode.value === 'enhanced' && enhancedReady && embedder && proVectors && proTexts){
+      // use proVectors
+      try{
+        const qvRaw = await embedder(q, { pooling:'mean', normalize:true });
+        const qv = qvRaw?.data ? Array.from(qvRaw.data) : Array.from(qvRaw?.[0]||[]);
+        const cos = (a,b)=> a.reduce((s,x,i)=>s + x*(b[i]||0), 0);
+        const scores = proVectors.map((v,i)=>({i, s: cos(qv, v)})).sort((a,b)=>b.s - a.s).slice(0,8);
+        for (const r of scores){
+          const li = document.createElement('li'); li.innerHTML = `<strong>${r.s.toFixed(3)}</strong> — ${escapeHtml(proTexts[r.i])}`; out.appendChild(li);
+        }
+        notify('Enhanced search complete','ok');
+        return;
+      }catch(e){ console.error(e); notify('Enhanced search failed — falling back to Lite','err', 3500); }
+    }
+    // Fallback to Lite
+    if (!liteIndexBuilt) {
+      const n = buildLite();
+      if (!n) { notify('Notebook empty — add notes or PDFs','err'); return; }
+    }
+    const res = tfidf.search(q, 8);
+    if (!res.length) { notify('No matches found','warn'); return; }
+    for (const r of res){
+      const li = document.createElement('li'); li.innerHTML = `<strong>${r.score.toFixed(3)}</strong> — ${escapeHtml(r.text)}`; out.appendChild(li);
+    }
+    notify('Lite search complete', 'ok');
+  });
+
+  /* ------------------------ Idol chat (local heuristics) ------------------------ */
+  const CHAT = {
+    jisoo:{emoji:'🌸', tones:['gentle','warm']},
+    jennie:{emoji:'🖤', tones:['cool','direct']},
+    rose:{emoji:'🌹', tones:['dreamy','soft']},
+    lisa:{emoji:'💚', tones:['energetic','spicy']},
+    ahyeon:{emoji:'✨', tones:['bright','strong']},
+    ruka:{emoji:'💜', tones:['calm','stylish']},
+    pharita:{emoji:'☀️', tones:['sunny','sweet']},
+    asa:{emoji:'🔥', tones:['bold','brave']},
+    rami:{emoji:'💠', tones:['soulful','steady']},
+    rora:{emoji:'⭐', tones:['curious','smart']},
+    chiquita:{emoji:'🔷', tones:['cute','peppy']}
   };
-  const chatLog=$("#chatLog"), chatInput=$("#chatInput"), chatInfo=$("#chatInfo");
-  function retrieveLite(q){ if(!tfidf.docs.length){ const n=buildLiteIndex(); if(!n) return null; } const top=tfidf.search(q,3).map(x=>x.text).join('\n'); return top || null; }
-  function synthReply(user, member){
-    const t=CHAT_TEMPLATES[member]||{tone:["friendly"],emoji:"🎤"};
-    const tone=t.tone[Math.floor(Math.random()*t.tone.length)];
-    const facts=retrieveLite(user);
-    let reply = `${t.emoji} **${member.toUpperCase()}** (${tone}): `;
-    const openers=["Love that question!","Let me share a quick tip:","Here’s how I think about it:","From practice room to stage—","Backstage secret:"];
-    const closer=["You got this. 💪","Keep shining!","Teamwork makes it iconic.","Practice smart, not just hard.","Let’s make it legendary."];
-    reply += `${openers[Math.floor(Math.random()*openers.length)]} `;
-    if (facts){ reply += `I peeked at your notes: “${facts.slice(0,180)}”. `; }
-    reply += `For “${user.slice(0,80)}”, try small reps, record, then iterate. ${closer[Math.floor(Math.random()*closer.length)]}`;
-    return reply;
-  }
-  $('#sendChat').addEventListener('click', ()=>{ const msg=chatInput.value.trim(); if(!msg) return; const mem=memberSelect.value; chatLog.innerHTML += `\n👤 You: ${escapeHtml(msg)}\n` + synthReply(msg, mem); chatInput.value=''; chatLog.scrollTop=chatLog.scrollHeight; });
 
-  // TTS voices
-  const voiceSelect=$("#voiceSelect"), ttsBtn=$("#ttsChat");
-  function loadVoices(){ const voices=speechSynthesis.getVoices(); voiceSelect.innerHTML=''; voices.forEach(v=>{ const op=document.createElement('option'); op.value=v.name; op.textContent=`${v.name} (${v.lang})`; voiceSelect.appendChild(op); }); chatInfo.textContent = voices.length? `${voices.length} voices available` : 'No system voices available'; }
-  if ('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
-  ttsBtn.addEventListener('click', ()=>{ if(!('speechSynthesis' in window)) return toast('TTS not supported','warn'); const text=(chatLog.textContent||'').slice(-450) || 'Hello BLINKs and MONSTIEZ!'; const u=new SpeechSynthesisUtterance(text); const v=[...speechSynthesis.getVoices()].find(v=>v.name===voiceSelect.value); if(v) u.voice=v; u.rate=1.03; u.pitch=1; u.volume=1; speechSynthesis.speak(u); });
-
-  // ---------- Lyrics sentiment ----------
-  const LEX_POS=['love','shine','bright','happy','bloom','wow','power','win','free','fun','light','sweet','dream','glow','good','brave','fire'];
-  const LEX_NEG=['sad','cry','tears','alone','cold','hate','dark','fear','bad','break','pain','fall','lost','angry'];
-  $('#analyzeLyrics').addEventListener('click', ()=>{
-    const src=$('#lyricsInput').value.trim(); if(!src) return toast('Paste lyrics or text','warn'); const toks=(src.toLowerCase().match(/[a-z0-9']+/g)||[]); let pos=0,neg=0; for(const t of toks){ if(LEX_POS.includes(t)) pos++; if(LEX_NEG.includes(t)) neg++; } const score=pos-neg; $('#lyricsScore').textContent=`Score: ${score} (pos ${pos} / neg ${neg})`;
-    let out=escapeHtml(src); for(const w of [...LEX_POS,...LEX_NEG]){ const re=new RegExp('\\b('+w+')\\b','gi'); out = out.replace(re, (m)=>LEX_POS.includes(w)?`<mark style="background:rgba(46,204,113,.35)">${m}</mark>`:`<mark style="background:rgba(231,76,60,.35)">${m}</mark>`); }
-    $('#lyricsOut').innerHTML=out;
-    const data=[{k:'Positive', v:pos},{k:'Negative', v:neg},{k:'Net', v:Math.max(0,score)}];
-    const el=d3.select('#lyricsChart'); el.selectAll('*').remove(); const w=el.node().clientWidth||600, h=+el.style('height').replace('px','')||220, m={t:12,r:10,b:30,l:30};
-    const x=d3.scaleBand().domain(data.map(d=>d.k)).range([m.l, w-m.r]).padding(0.25); const y=d3.scaleLinear().domain([0, d3.max(data,d=>d.v)||1]).nice().range([h-m.b, m.t]); const svg=el.append('svg').attr('width','100%').attr('height',h);
-    svg.append('g').attr('transform',`translate(0,${h-m.b})`).call(d3.axisBottom(x)); svg.append('g').attr('transform',`translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4));
-    svg.append('g').selectAll('rect').data(data).enter().append('rect').attr('x',d=>x(d.k)).attr('y',d=>y(d.v)).attr('width',x.bandwidth()).attr('height',d=>h-m.b - y(d.v)).attr('fill','url(#grad)');
+  $('#sendChat').addEventListener('click', ()=>{
+    const q = $('#chatInput').value.trim(); if (!q) return;
+    const mem = memberSelect.value; const meta = CHAT[mem] || {emoji:'🎤', tones:['friendly']};
+    const tone = meta.tones[Math.floor(Math.random()*meta.tones.length)];
+    // retrieval-supported hint
+    const hint = (function(){ if (!liteIndexBuilt) buildLite(); if (tfidf.docs && tfidf.docs.length) { const top = tfidf.search(q,2).map(x=>x.text).join(' — '); return top ? ` I saw notes: ${top.slice(0,140)}.` : ''; } return ''; })();
+    const reply = `${meta.emoji} ${memberSelect.options[memberSelect.selectedIndex].textContent} (${tone}): ${['Good question!','Nice ask!','Here’s a tip:','I would say:'][Math.floor(Math.random()*4)]} ${hint} Try breaking it down into small steps.`;
+    $('#chatLog').textContent += `\nYou: ${q}\n${reply}\n`;
+    $('#chatInput').value = '';
+    notify('Reply generated (local)', 'ok', 1200);
   });
-  $('#lyricsClear').addEventListener('click', ()=>{ $('#lyricsInput').value=''; $('#lyricsOut').textContent=''; $('#lyricsScore').textContent='Score: 0'; d3.select('#lyricsChart').selectAll('*').remove(); });
 
-  // ---------- Diary ----------
-  const DIARY_KEY='bp_bm_diary_v1';
-  function getDiary(){ try{ return JSON.parse(localStorage.getItem(DIARY_KEY)||'[]'); }catch{ return []; } }
-  function setDiary(arr){ localStorage.setItem(DIARY_KEY, JSON.stringify(arr)); }
-  function diaryMood(s){ const toks=(s.toLowerCase().match(/[a-z0-9']+/g)||[]); let pos=0,neg=0; for(const t of toks){ if(LEX_POS.includes(t)) pos++; if(LEX_NEG.includes(t)) neg++; } return pos-neg; }
-  function renderDiary(){ const data=getDiary(); $('#diaryList').textContent = data.map(d=>`• ${new Date(d.t).toLocaleString()} [${d.m>=0?'+':''}${d.m}] — ${d.text.slice(0,120)}`).join('\n');
-    const el=d3.select('#diaryChart'); el.selectAll('*').remove(); const w=el.node().clientWidth||600, h=+el.style('height').replace('px','')||280, m={t:10,r:10,b:30,l:36};
-    const x=d3.scaleLinear().domain([0, Math.max(1,data.length-1)]).range([m.l, w-m.r]); const y=d3.scaleLinear().domain([d3.min(data,d=>d.m)||-3, d3.max(data,d=>d.m)||3]).nice().range([h-m.b, m.t]);
-    const svg=el.append('svg').attr('width','100%').attr('height',h); svg.append('g').attr('transform',`translate(0,${h-m.b})`).call(d3.axisBottom(x).ticks(Math.min(6, data.length))); svg.append('g').attr('transform',`translate(${m.l},0)`).call(d3.axisLeft(y));
-    const line=d3.line().x((d,i)=>x(i)).y(d=>y(d.m)); svg.append('path').datum(data).attr('d',line).attr('fill','none').attr('stroke','currentColor').attr('stroke-width',2);
-    svg.append('g').selectAll('circle').data(data).enter().append('circle').attr('cx',(d,i)=>x(i)).attr('cy',d=>y(d.m)).attr('r',3.5).attr('fill','url(#grad)');
+  // TTS voices (safe)
+  function loadVoicesSafe(){ try{ const voices = speechSynthesis.getVoices() || []; const sel = $('#voiceSelect'); sel.innerHTML=''; voices.forEach(v=>{ const op = document.createElement('option'); op.value=v.name; op.textContent = `${v.name} (${v.lang})`; sel.appendChild(op); }); $('#chatInfo').textContent = voices.length ? `${voices.length} voices` : 'No voices'; }catch(e){ $('#chatInfo').textContent='TTS unsupported'; } }
+  if ('speechSynthesis' in window){ loadVoicesSafe(); speechSynthesis.onvoiceschanged = loadVoicesSafe; }
+  $('#ttsChat').addEventListener('click', ()=>{
+    if (!('speechSynthesis' in window)) return notify('TTS not supported in this browser','err');
+    const text = $('#chatLog').textContent.trim().slice(-800) || 'Hello BLINKs and MONSTIEZ!';
+    const u = new SpeechSynthesisUtterance(text);
+    const selName = $('#voiceSelect').value;
+    const v = speechSynthesis.getVoices().find(x=>x.name===selName);
+    if (v) u.voice = v;
+    u.rate = 1; speechSynthesis.speak(u); notify('Playing TTS','ok');
+  });
+
+  /* ------------------------ Lyrics (lexicon) ------------------------ */
+  const POS = ['love','shine','bright','happy','free','good','glow','dream','sweet','win','power','light'];
+  const NEG = ['sad','cry','tears','hate','dark','pain','lost','alone','cold','angry','break'];
+  $('#analyzeLyrics').addEventListener('click', ()=>{
+    const src = $('#lyricsInput').value.trim(); if (!src) return notify('Paste some text to analyze','err');
+    const toks = (src.toLowerCase().match(/[a-z0-9']+/g) || []);
+    let p=0,n=0; toks.forEach(t=>{ if (POS.includes(t)) p++; if (NEG.includes(t)) n++; });
+    const score = p - n;
+    $('#lyricsScore').textContent = score;
+    // highlight (simple)
+    let out = escapeHtml(src);
+    for (const w of [...POS, ...NEG]){
+      const re = new RegExp('\\b'+w+'\\b','gi');
+      out = out.replace(re, m => POS.includes(w) ? `<mark style="background:rgba(46,204,113,0.25)">${m}</mark>` : `<mark style="background:rgba(231,76,60,0.22)">${m}</mark>`);
+    }
+    $('#lyricsOut').innerHTML = out;
+    notify('Lyrics analyzed','ok');
+  });
+  $('#lyricsClear').addEventListener('click', ()=>{ $('#lyricsInput').value=''; $('#lyricsOut').textContent=''; $('#lyricsScore').textContent='0'; });
+
+  /* ------------------------ Diary (localStorage) ------------------------ */
+  const DIARY_KEY = 'bp_bm_diary_v1';
+  function getDiary(){ try{ return JSON.parse(localStorage.getItem(DIARY_KEY) || '[]'); }catch{ return []; } }
+  function setDiary(d){ localStorage.setItem(DIARY_KEY, JSON.stringify(d)); }
+  function renderDiary(){
+    const arr = getDiary();
+    $('#diaryList').textContent = arr.map(x=>`${new Date(x.t).toLocaleString()} [${x.m>=0?'+':''}${x.m}] — ${x.text.slice(0,120)}`).join('\n\n');
   }
-  function recSongs(mood){ const picks = [ {g:'blackpink', title:'DDU-DU DDU-DU', mood:2}, {g:'blackpink', title:'As If It’s Your Last', mood:3}, {g:'blackpink', title:'Kill This Love', mood:1}, {g:'blackpink', title:'Stay', mood:-1}, {g:'babymonster', title:'SHEESH', mood:2}, {g:'babymonster', title:'Stuck In The Middle', mood:-2}, {g:'babymonster', title:'Batter Up', mood:1}, {g:'babymonster', title:'Dream', mood:3} ]; const near = picks.filter(p=>Math.abs(p.mood - mood)<=1); return (near.length?near:picks).slice(0,4); }
-  $('#saveDiary').addEventListener('click', ()=>{ const text=$('#diaryText').value.trim(); if(!text) return toast('Write something first','warn'); const data=getDiary(); const m=diaryMood(text); data.push({t:Date.now(), text, m}); setDiary(data); $('#diaryText').value=''; renderDiary(); $('#recList').innerHTML=''; for(const r of recSongs(m)){ const li=document.createElement('li'); li.textContent=`${GROUPS[r.g].label}: ${r.title}`; $('#recList').appendChild(li); } $('#diaryInfo').textContent = `Saved. Mood score ${m>=0?'+':''}${m}`; });
-  $('#sumDiary').addEventListener('click', ()=>{ const data=getDiary(); if(!data.length) return toast('No entries yet','warn'); const combined=data.map(d=>d.text).join(' '); const s=textrankSummarize(combined, 4); $('#diaryInfo').textContent='Summary: '+s.slice(0,180)+'…'; });
-  $('#clearDiary').addEventListener('click', ()=>{ if(confirm('Clear all diary entries?')){ setDiary([]); renderDiary(); $('#recList').innerHTML=''; $('#diaryInfo').textContent=''; }});
+  $('#saveDiary').addEventListener('click', ()=>{
+    const txt = $('#diaryText').value.trim(); if (!txt) return notify('Write something','err');
+    const m = (function(){ const toks = (txt.toLowerCase().match(/[a-z0-9']+/g) || []); let p=0,n=0; toks.forEach(t=>{ if (POS.includes(t)) p++; if (NEG.includes(t)) n++; }); return p-n; })();
+    const d = getDiary(); d.push({t:Date.now(), text:txt, m}); setDiary(d); $('#diaryText').value=''; renderDiary();
+    $('#diaryInfo').textContent = `Saved (mood ${m})`;
+    // simple recs:
+    const recs = [{
+      g:'blackpink', title:'DDU-DU DDU-DU', mood:2
+    },{g:'babymonster', title:'SHEESH', mood:2},{g:'blackpink', title:'Stay', mood:-1},{g:'babymonster', title:'Dream', mood:3}];
+    const picks = recs.filter(r=>Math.abs(r.mood - m) <= 1).slice(0,4);
+    $('#recList').innerHTML = '';
+    for (const p of picks) { const li = document.createElement('li'); li.textContent = `${GROUPS[p.g].label}: ${p.title}`; $('#recList').appendChild(li); }
+    notify('Diary saved locally','ok');
+  });
+  $('#sumDiary').addEventListener('click', ()=>{
+    const arr = getDiary(); if (!arr.length) return notify('No diary entries','err');
+    const combined = arr.map(x=>x.text).join(' ');
+    $('#diaryInfo').textContent = textrankSummarize(combined, 4).slice(0,200) + '…';
+  });
+  $('#clearDiary').addEventListener('click', ()=>{ if (confirm('Clear diary?')){ setDiary([]); renderDiary(); $('#recList').innerHTML=''; $('#diaryInfo').textContent=''; notify('Diary cleared','ok'); } });
   renderDiary();
 
-  // ---------- Creative poster & palette ----------
-  const CAPTION_TEMPLATES=["Born {vibe} • {member} mode.","Glow up in {city} • {group} energy.","No skips • {group} playlist on repeat.","Practice. Pink. Power. {emoji}","Legendary incoming • {member} says hi!"];
-  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-  function genCaption(){ const brand=brandSelect.value, member=memberSelect.options[memberSelect.selectedIndex].textContent; const map={blackpink:'BLACKPINK', babymonster:'BABYMONSTER'}; const data={ vibe:rand(['loud','soft','fierce','glitter','neon','stellar']), member, group:map[brand], emoji:'✨' }; let s=rand(CAPTION_TEMPLATES); for(const k of Object.keys(data)) s=s.replace(`{${k}}`, data[k]); return s; }
-  $('#genCaption').addEventListener('click', ()=>{ $('#posterCaption').value = genCaption(); });
-
-  const posterCanvas=$("#posterCanvas"); const ctx=posterCanvas.getContext('2d'); let posterImg=null;
-  $('#posterFile').addEventListener('change', async (e)=>{ posterImg=null; const f=e.target.files[0]; if(!f) return; const url=URL.createObjectURL(f); const img=new Image(); img.onload=()=>{ posterImg=img; drawPoster(); URL.revokeObjectURL(url); }; img.src=url; });
-  function drawPoster(){
-    const caption = ($('#posterCaption').value.trim()||genCaption()); const w=posterCanvas.width, h=posterCanvas.height;
-    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg2'); ctx.fillRect(0,0,w,h);
-    if(posterImg){ const scale=Math.min(w/posterImg.width, h/posterImg.height); const nw=posterImg.width*scale, nh=posterImg.height*scale; ctx.drawImage(posterImg, (w-nw)/2, (h-nh)/2, nw, nh); }
-    const accent=getComputedStyle(document.body).getPropertyValue('--accent').trim();
-    const grad=ctx.createLinearGradient(0,h*0.65,0,h); grad.addColorStop(0, hexToRgba(accent,0)); grad.addColorStop(1, hexToRgba(accent,0.85)); ctx.fillStyle=grad; ctx.fillRect(0,h*0.6,w,h*0.4);
-    ctx.fillStyle='#000'; ctx.font='700 40px Poppins, sans-serif'; ctx.shadowColor='rgba(0,0,0,.25)'; ctx.shadowBlur=4; ctx.shadowOffsetY=2;
-    wrapText(ctx, caption, 28, h-80, w-56, 44, '#fff');
+  /* ------------------------ Creative: poster & palette ------------------------ */
+  function generatePalette(baseHex){
+    // very lightweight palette: shift hues
+    try{
+      const hsl = hexToHsl(baseHex);
+      const shifts = [0, 30, 210, 150, 330];
+      return shifts.map(s=> hslToHex({h: (hsl.h + s) % 360, s: Math.min(100,hsl.s+6), l: Math.min(70,hsl.l+10)}));
+    }catch(e){ return ['#222','#555','#888','#bbb','#eee']; }
   }
-  function hexToRgba(hex,a=1){ const c=hex.replace('#',''); const n=parseInt(c,16); const r=(n>>16)&255, g=(n>>8)&255, b=n&255; return `rgba(${r},${g},${b},${a})`; }
-  function wrapText(ctx, text, x, y, maxWidth, lineHeight, color='#fff'){ const words=text.split(' '); let line=''; ctx.fillStyle=color; for(let n=0;n<words.length;n++){ const testLine = line + words[n] + ' '; const metrics = ctx.measureText(testLine); if(metrics.width > maxWidth && n>0){ ctx.fillText(line, x, y); line = words[n]+' '; y += lineHeight; } else line = testLine; } ctx.fillText(line, x, y); }
+  function hexToHsl(H){
+    let h=0,s=0,l=0; let r=0,g=0,b=0; H = H.replace('#',''); if (H.length===3) H=H.split('').map(x=>x+x).join('');
+    r = parseInt(H.substring(0,2),16)/255; g = parseInt(H.substring(2,4),16)/255; b = parseInt(H.substring(4,6),16)/255;
+    const cmin = Math.min(r,g,b), cmax = Math.max(r,g,b), delta = cmax-cmin;
+    if (delta === 0) h = 0; else if (cmax === r) h = ((g - b) / delta) % 6; else if (cmax === g) h = (b - r) / delta + 2; else h = (r - g) / delta + 4;
+    h = Math.round(h * 60); if (h < 0) h += 360;
+    l = (cmax + cmin) / 2;
+    s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+    return { h, s: +(s*100).toFixed(1), l: +(l*100).toFixed(1) };
+  }
+  function hslToHex({h,s,l}){
+    s/=100; l/=100;
+    const C = (1 - Math.abs(2*l - 1)) * s;
+    const X = C * (1 - Math.abs((h/60) % 2 - 1));
+    const m = l - C/2;
+    let r=0,g=0,b=0;
+    if (0<=h && h<60){ r=C; g=X; b=0; }
+    else if (60<=h && h<120){ r=X; g=C; b=0; }
+    else if (120<=h && h<180){ r=0; g=C; b=X; }
+    else if (180<=h && h<240){ r=0; g=X; b=C; }
+    else if (240<=h && h<300){ r=X; g=0; b=C; }
+    else { r=C; g=0; b=X; }
+    const R = Math.round((r+m)*255).toString(16).padStart(2,'0');
+    const G = Math.round((g+m)*255).toString(16).padStart(2,'0');
+    const B = Math.round((b+m)*255).toString(16).padStart(2,'0');
+    return '#' + R + G + B;
+  }
+
+  $('#genPalette').addEventListener('click', ()=>{
+    const base = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#ff4da6';
+    const colors = generatePalette(base);
+    const wrap = $('#paletteWrap'); wrap.innerHTML = '';
+    for (const c of colors){
+      const box = document.createElement('div'); box.style = `background:${c}; height:64px; border-radius:8px; border:1px solid var(--divider); display:flex; align-items:end; justify-content:center; font-weight:800; color: #fff; padding:6px; cursor:pointer`;
+      box.textContent = c; box.title = 'Click to copy';
+      box.addEventListener('click', ()=>{ navigator.clipboard.writeText(c).then(()=>notify('Copied '+c,'ok')); });
+      wrap.appendChild(box);
+    }
+  });
+
+  // Poster: simple draw
+  const posterCanvas = $('#posterCanvas'); const posterCtx = posterCanvas.getContext('2d'); let posterImg = null;
+  $('#posterFile').addEventListener('change', (ev)=>{
+    const f = ev.target.files && ev.target.files[0]; if(!f) return;
+    const url = URL.createObjectURL(f); const img = new Image();
+    img.onload = ()=>{ posterImg = img; drawPoster(); URL.revokeObjectURL(url); };
+    img.src = url;
+  });
+  function drawPoster(){
+    const w = posterCanvas.width, h = posterCanvas.height;
+    posterCtx.clearRect(0,0,w,h);
+    posterCtx.fillStyle = getComputedStyle(document.body).getPropertyValue('--card'); posterCtx.fillRect(0,0,w,h);
+    if (posterImg){
+      const scale = Math.min(w/posterImg.width, h/posterImg.height);
+      const nw = posterImg.width * scale, nh = posterImg.height * scale;
+      posterCtx.drawImage(posterImg, (w-nw)/2, (h-nh)/2, nw, nh);
+    }
+    // overlay
+    const accent = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#ff4da6';
+    const g = posterCtx.createLinearGradient(0, h*0.6, 0, h); g.addColorStop(0, hexToRgba(accent, 0)); g.addColorStop(1, hexToRgba(accent, 0.85));
+    posterCtx.fillStyle = g; posterCtx.fillRect(0, h*0.6, w, h*0.4);
+    // caption
+    const cap = $('#posterCaption').value.trim() || memberSelect.options[memberSelect.selectedIndex].text + ' ✨';
+    posterCtx.fillStyle = '#fff'; posterCtx.font = '700 32px Poppins, Inter, sans-serif'; posterCtx.textBaseline = 'bottom';
+    wrapText(posterCtx, cap, 24, h-30, w-48, 34);
+  }
+  function hexToRgba(hex, a=1){
+    const c = hex.replace('#',''); const n = parseInt(c,16);
+    const r = (n>>16)&255, g = (n>>8)&255, b = n&255;
+    return `rgba(${r},${g},${b},${a})`;
+  }
+  function wrapText(ctx, text, x, y, maxWidth, lineHeight){
+    const words = text.split(' '); let line = '', curY = y;
+    for (let n=0;n<words.length;n++){
+      const test = line + words[n] + ' ';
+      if (ctx.measureText(test).width > maxWidth && n>0){ ctx.fillText(line, x, curY); line = words[n] + ' '; curY -= lineHeight; }
+      else line = test;
+    }
+    ctx.fillText(line, x, curY);
+  }
   $('#drawPoster').addEventListener('click', drawPoster);
-  $('#downloadPoster').addEventListener('click', ()=>{ const a=document.createElement('a'); a.href=posterCanvas.toDataURL('image/png'); a.download='poster.png'; a.click(); });
+  $('#downloadPoster').addEventListener('click', ()=>{ const a = document.createElement('a'); a.href = posterCanvas.toDataURL('image/png'); a.download = 'poster.png'; a.click(); });
+  $('#genCaption').addEventListener('click', ()=>{ $('#posterCaption').value = `${memberSelect.options[memberSelect.selectedIndex].textContent} mode ✨`; });
 
-  $('#genPalette').addEventListener('click', ()=>{ const base = getComputedStyle(document.body).getPropertyValue('--accent').trim(); const colors = generatePalette(base); const wrap=$("#paletteWrap"); wrap.innerHTML=''; for(const c of colors){ const div=document.createElement('div'); div.style.cssText=`height:72px; border-radius:10px; border:1px solid var(--divider); background:${c}; display:flex; align-items:end; justify-content:center; padding:6px; font-weight:800`; div.textContent=c; div.title='Click to copy'; div.addEventListener('click', ()=>{ navigator.clipboard.writeText(c); toast('Copied '+c,'ok'); }); wrap.appendChild(div); } });
-  function generatePalette(hex){ const hsl=hexToHsl(hex); const out=[]; const shifts=[0,30,210,150,330]; for(const s of shifts){ const t=(hsl.h+s)%360; out.push(hslToHex({h:t, s:Math.min(100,hsl.s+5), l:Math.min(70,hsl.l+10)})); } return out; }
-  function hexToHsl(H){ let r=0,g=0,b=0; H=H.replace('#',''); if(H.length===3) H=H.split('').map(x=>x+x).join(''); r=parseInt(H.substring(0,2),16)/255; g=parseInt(H.substring(2,4),16)/255; b=parseInt(H.substring(4,6),16)/255; const cmin=Math.min(r,g,b), cmax=Math.max(r,g,b), delta=cmax-cmin; let h=0,s=0,l=0; if(delta===0) h=0; else if(cmax===r) h=((g-b)/delta)%6; else if(cmax===g) h=(b-r)/delta+2; else h=(r-g)/delta+4; h=Math.round(h*60); if(h<0) h+=360; l=(cmax+cmin)/2; s=delta===0?0:delta/(1-Math.abs(2*l-1)); s=+(s*100).toFixed(1); l=+(l*100).toFixed(1); return {h,s,l}; }
-  function hslToHex({h,s,l}){ s/=100; l/=100; const C=(1-Math.abs(2*l-1))*s; const X=C*(1-Math.abs((h/60)%2-1)); const m=l-C/2; let r=0,g=0,b=0; if(0<=h && h<60){ r=C; g=X; b=0; } else if(60<=h && h<120){ r=X; g=C; b=0;} else if(120<=h && h<180){ r=0; g=C; b=X; } else if(180<=h && h<240){ r=0; g=X; b=C;} else if(240<=h && h<300){ r=X; g=0; b=C;} else { r=C; g=0; b=X;} r=Math.round((r+m)*255).toString(16).padStart(2,'0'); g=Math.round((g+m)*255).toString(16).padStart(2,'0'); b=Math.round((b+m)*255).toString(16).padStart(2,'0'); return `#${r}${g}${b}`; }
-
-  // ---------- Games ----------
-  const QUOTES={
-    blackpink:{
-      jisoo:["Stay soft, but never weak.","Confidence is a habit you practice.","Good vibes, better timing."],
-      jennie:["Own the stage like it’s your room.","Small details make big statements.","Cool head, warm heart."],
-      rose:["Turn feelings into melodies.","Practice until it feels like you.","Gentle doesn’t mean fragile."],
-      lisa:["Energy is a choice.","Train smart, then go wild.","Smile first, then slay."]
+  /* ------------------------ Games ------------------------ */
+  const QUOTES = {
+    blackpink: {
+      jisoo:["Stay soft, but never weak.","Confidence is practice.","Good vibes only."],
+      jennie:["Own the stage.","Small details, big effect.","Cool head, warm heart."],
+      rose:["Turn feelings into melodies.","Practice patiently.","Gentle is power."],
+      lisa:["Energy is a choice.","Train smart then slay.","Smile then dance."]
     },
-    babymonster:{
-      ahyeon:["Focus sharp, heart louder.","Sing like you mean it.","Power has precision."],
-      ruka:["Style is rhythm you wear.","Stay patient, stay ready.","Grace under lights."],
-      pharita:["Shine kindly, shine brightly.","Warmth is a strength.","Make effort aesthetic."],
-      asa:["Spice the moment.","Fear less, try more.","Clap for small wins."],
-      rami:["Soul speaks when you listen.","Breath first, then belt.","Quiet focus, big results."],
-      rora:["Curiosity is a superpower.","Learn the pattern, play the art.","Ideas need motion."],
-      chiquita:["Tiny but thunder.","Speed is nothing without control.","Cute is also strong."]
+    babymonster: {
+      ahyeon:["Power with precision.","Sing like you mean it.","Shine bright."],
+      ruka:["Style is movement.","Be patient, be ready.","Grace under lights."],
+      pharita:["Warmth is strength.","Make effort artful.","Shine kindly."],
+      asa:["Bold steps win.","Fear less, do more.","Celebrate small wins."],
+      rami:["Listen to your soul.","Breath then belt.","Quiet focus, big results."],
+      rora:["Curiosity is power.","Learn then play.","Ideas need motion."],
+      chiquita:["Small but thunderous.","Speed with control.","Cute and strong."]
     }
   };
-  function nextWhoSaid(){ const brand=brandSelect.value; const pool=QUOTES[brand]; const members=Object.keys(pool); const pick=members[Math.floor(Math.random()*members.length)]; const quote=rand(pool[pick]); $('#quoteBox').textContent='“'+quote+'”'; const choices=new Set([pick]); while(choices.size<Math.min(4,members.length)){ choices.add(rand(members)); } const wrap=$('#choiceWrap'); wrap.innerHTML=''; [...choices].sort(()=>Math.random()-0.5).forEach(name=>{ const b=document.createElement('button'); b.className='btn'; b.textContent=name.toUpperCase(); b.addEventListener('click', ()=>{ $('#wsInfo').textContent = name===pick? 'Correct! 🎉' : `Oops—It was ${pick.toUpperCase()}`; }); wrap.appendChild(b); }); }
-  $('#nextQuote').addEventListener('click', nextWhoSaid); nextWhoSaid();
+  function nextWhoSaid(){
+    const brand = brandSelect.value;
+    const pool = QUOTES[brand];
+    const members = Object.keys(pool);
+    const pick = members[Math.floor(Math.random()*members.length)];
+    const quote = pool[pick][Math.floor(Math.random()*pool[pick].length)];
+    $('#quoteBox').textContent = `“${quote}”`;
+    const choices = new Set([pick]);
+    while (choices.size < Math.min(4, members.length)) choices.add(members[Math.floor(Math.random()*members.length)]);
+    $('#choiceWrap').innerHTML = '';
+    for (const c of shuffle(Array.from(choices))){
+      const btn = document.createElement('button'); btn.className='btn'; btn.textContent = c.toUpperCase();
+      btn.addEventListener('click', ()=>{ $('#wsInfo').textContent = c === pick ? 'Correct! 🎉' : `Nope — it was ${pick.toUpperCase()}`; });
+      $('#choiceWrap').appendChild(btn);
+    }
+  }
+  $('#nextQuote').addEventListener('click', nextWhoSaid);
+  nextWhoSaid();
 
-  const MOVES=["Finger hearts","Body roll","High-kick pose","Shoulder pop x4","Spin & point","Wave wave clap","Walk walk hit","Slide & snap"];
-  let danceTimer=null, danceT=0;
-  function startDance(){ if(danceTimer) return; const seq=Array.from({length:6}, ()=>rand(MOVES)); danceT=20; $('#danceBox').textContent = `Do this sequence:\n• ${seq.join('\n• ')}\n\nTimer: ${danceT}s`; danceTimer=setInterval(()=>{ danceT--; $('#danceBox').textContent = `Do this sequence:\n• ${seq.join('\n• ')}\n\nTimer: ${danceT}s`; if(danceT<=0){ stopDance(); toast('Challenge over! Score yourself 1-10.','ok'); } }, 1000); }
-  function stopDance(){ clearInterval(danceTimer); danceTimer=null; }
-  $('#startDance').addEventListener('click', startDance); $('#stopDance').addEventListener('click', stopDance);
+  function shuffle(arr){ for (let i=arr.length-1;i>0;i--){ const j = Math.floor(Math.random()* (i+1)); [arr[i],arr[j]] = [arr[j],arr[i]]; } return arr; }
 
-  // ---------- Export & cache ----------
-  $('#exportAll').addEventListener('click', ()=>{ const data={ brand: brandSelect.value, member: memberSelect.value, theme: themeSelect.value, mode: perfMode.value, notebook: notebook.value, summary: $('#sumOut').textContent, chat: $('#chatLog').textContent, diary: getDiary() }; const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='playground-export.json'; a.click(); });
-  $('#clearCache').addEventListener('click', async ()=>{ try{ if (window.caches) for (const k of await caches.keys()) await caches.delete(k); if (indexedDB && indexedDB.databases){ const dbs=await indexedDB.databases(); for(const d of dbs) if(d.name) indexedDB.deleteDatabase(d.name); } toast('Caches cleared (reload recommended)','ok',2800); }catch(e){ console.warn(e); toast('Could not fully clear caches','warn'); } });
+  // simple dance challenge
+  const MOVES = ["Finger hearts","Body roll","High-kick pose","Shoulder pop x4","Spin & point","Wave & clap","Slide & snap","Step touch"];
+  let danceTimer = null, danceSeconds=0;
+  $('#startDance').addEventListener('click', ()=>{
+    if (danceTimer) return;
+    const seq = Array.from({length:6}, ()=> MOVES[Math.floor(Math.random()*MOVES.length)]);
+    danceSeconds = 18;
+    $('#danceBox').textContent = `Do this sequence:\n• ${seq.join('\n• ')}\n\nTimer: ${danceSeconds}s`;
+    danceTimer = setInterval(()=>{
+      danceSeconds--; $('#danceBox').textContent = `Do this sequence:\n• ${seq.join('\n• ')}\n\nTimer: ${danceSeconds}s`;
+      if (danceSeconds <= 0){ clearInterval(danceTimer); danceTimer = null; notify('Challenge finished — rate yourself!','ok'); }
+    }, 1000);
+  });
+  $('#stopDance').addEventListener('click', ()=>{ if (danceTimer) clearInterval(danceTimer); danceTimer=null; $('#danceBox').textContent=''; });
 
-  // ---------- Init ----------
-  function initGradDef(){ const svg = d3.select('body').append('svg').attr('width',0).attr('height',0); const defs=svg.append('defs'); const grad=defs.append('linearGradient').attr('id','grad'); grad.append('stop').attr('offset','0%').attr('stop-color', getComputedStyle(document.body).getPropertyValue('--accent').trim()); grad.append('stop').attr('offset','100%').attr('stop-color', getComputedStyle(document.body).getPropertyValue('--accent-2').trim()); }
-  populateMembers(); initGradDef(); toast('Lite mode active — fast & device-friendly. Pro embeddings are optional.','ok',4200);
-  $('#chatInput').addEventListener('keydown', (e)=>{ if((e.ctrlKey||e.metaKey) && e.key==='Enter') $('#sendChat').click(); });
+  /* ------------------------ Export & Cache helpers ------------------------ */
+  function exportAll(){
+    const data = {
+      brand: brandSelect.value, member: memberSelect.value, theme: themeSelect.value, mode: perfMode.value,
+      notebook: $('#notebook').value, diary: getDiary()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'export.json'; a.click();
+    notify('Export ready','ok');
+  }
+  // small UI hookup
+  // not exposing heavily: polite minimal APIs
+  // attach export to top-level (simple)
+  window.exportAll = exportAll;
+
+  /* ------------------------ Init visuals & accessibility ------------------------ */
+  // gradient defs for d3 usage (if any)
+  (function addGrad() {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.style.width='0'; svg.style.height='0';
+    const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+    const grad = document.createElementNS('http://www.w3.org/2000/svg','linearGradient');
+    grad.setAttribute('id','grad'); const s1 = document.createElementNS('http://www.w3.org/2000/svg','stop'); s1.setAttribute('offset','0%'); s1.setAttribute('stop-color', getComputedStyle(document.body).getPropertyValue('--accent').trim());
+    const s2 = document.createElementNS('http://www.w3.org/2000/svg','stop'); s2.setAttribute('offset','100%'); s2.setAttribute('stop-color', getComputedStyle(document.body).getPropertyValue('--accent-2').trim());
+    grad.appendChild(s1); grad.appendChild(s2); defs.appendChild(grad); svg.appendChild(defs); document.body.appendChild(svg);
+  })();
+
+  // small toasts on load
+  notify('Lite ready — fast & device friendly', 'ok', 3500);
+  $('#proStatusText').textContent = 'Unavailable';
+  $('#proBadge').textContent = 'Lite';
+
+  // ensure body theme attribute used
+  document.body.dataset.theme = themeSelect.value;
+  document.body.dataset.brand = brandSelect.value;
+  document.body.dataset.member = memberSelect.value;
+
+  // keyboard send chat (cmd/ctrl+enter)
+  $('#chatInput').addEventListener('keydown', (e)=>{ if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') $('#sendChat').click(); });
+
   </script>
 </body>
 </html>
