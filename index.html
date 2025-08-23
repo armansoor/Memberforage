@@ -3,102 +3,139 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>BLACKPINK × BABYMONSTER — Member Modes AI Forge (Lite + Pro)</title>
-<meta name="description" content="All-in-browser AI study/creative tool. Lite = no models. Pro = optional embeddings. BLACKPINK × BABYMONSTER member modes. Fully responsive, free, no tokens." />
+<title>BLACKPINK × BABYMONSTER — BLINKs & MONSTIEZ Playground (Lite + Pro)</title>
+<meta name="description" content="All-in-browser AI-style fan toolkit. Member Modes for BLACKPINK & BABYMONSTER (7). Lite=fast classical NLP; Pro=optional embeddings; No tokens; GitHub Pages ready." />
+
+<!-- Fonts (lightweight, high legibility) -->
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
 <!-- ====== STYLES ====== -->
 <style>
+  /* ------------------ THEME TOKENS ------------------ */
   :root{
-    --bg: #0b0b0d; --bg2:#0f0f12; --card:rgba(255,255,255,.04); --ink:#f5f7fb; --muted:#b9c3d6;
-    --accent:#ff3aa6; --accent2:#9b6bff; --ok:#2ecc71; --warn:#f1c40f; --err:#e74c3c;
-    --radius:16px; --shadow:0 10px 28px rgba(0,0,0,.45);
-  }
-  /* Brand presets */
-  [data-brand="blackpink"]{ --accent:#ff4da6; --accent2:#141414; --bg: #0a0a0b; --bg2:#101014; }
-  [data-brand="babymonster"]{ --accent:#00e2ff; --accent2:#ff007d; --bg:#05050a; --bg2:#0a0a14; }
-  /* Member modes—overlays the accents (keeps brand bg) */
-  [data-member="jisoo"]{ --accent:#ff7bb7; --accent2:#ffdbe9; }
-  [data-member="jennie"]{ --accent:#ff3aa6; --accent2:#333; }
-  [data-member="rose"]{ --accent:#ffa0c7; --accent2:#6cc4ff; }
-  [data-member="lisa"]{ --accent:#00ff9c; --accent2:#ff5ab3; }
-  [data-member="ruka"]{ --accent:#b084ff; --accent2:#ff7ab9; }
-  [data-member="pharita"]{ --accent:#ffae4d; --accent2:#ff66d4; }
-  [data-member="asa"]{ --accent:#ff5b5b; --accent2:#22e3ff; }
-  [data-member="rami"]{ --accent:#8df0ff; --accent2:#ff9cf3; }
-  [data-member="rora"]{ --accent:#7fff85; --accent2:#a78bfa; }
-  [data-member="chiquita"]{ --accent:#ffd34d; --accent2:#ff7ad1; }
+    --radius:16px; --shadow: 0 8px 28px rgba(0,0,0,.35);
+    --font-head:"Poppins", ui-sans-serif, system-ui;
+    --font-body:"Inter", ui-sans-serif, system-ui;
 
+    /* base neutrals (used by both light & dark) */
+    --ok:#2ecc71; --warn:#f1c40f; --err:#e74c3c;
+
+    /* light default */
+    --bg:#f7f7fb; --bg2:#ffffff; --ink:#0c0c12; --muted:#5f667a;
+    --card: #ffffff;
+    --divider: rgba(12,12,18,.08);
+
+    /* brand defaults updated dynamically */
+    --accent:#ff4da6;         /* BLACKPINK */
+    --accent-2:#2a2a2e;
+
+    /* gradients */
+    --glow: radial-gradient(600px 300px at 10% -10%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%),
+            radial-gradient(600px 300px at 100% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%);
+  }
+  [data-theme="dark"]{
+    --bg:#0a0a0e; --bg2:#0f0f14; --ink:#f6f7fb; --muted:#b8c1d6;
+    --card: rgba(255,255,255,.04);
+    --divider: rgba(255,255,255,.09);
+  }
+
+  /* BRAND PALETTES */
+  [data-brand="blackpink"]{ --accent:#ff4da6; --accent-2:#141414;}
+  [data-brand="babymonster"]{ --accent:#00e2ff; --accent-2:#ff2c8b;}
+
+  /* MEMBER OVERLAYS (accent only; background keeps theme) */
+  [data-member="jisoo"]{ --accent:#ff7bb7; --accent-2:#d4a9ff;}
+  [data-member="jennie"]{ --accent:#ff3aa6; --accent-2:#333333;}
+  [data-member="rose"]{ --accent:#ffa2c9; --accent-2:#6ec8ff;}
+  [data-member="lisa"]{ --accent:#00ff9c; --accent-2:#ff62b6;}
+
+  /* BABYMONSTER 7 (includes Ahyeon) */
+  [data-member="ahyeon"]{ --accent:#7ee6ff; --accent-2:#ff7cc3;}
+  [data-member="ruka"]{ --accent:#b084ff; --accent-2:#ff7ab9;}
+  [data-member="pharita"]{ --accent:#ffae4d; --accent-2:#ff66d4;}
+  [data-member="asa"]{ --accent:#ff5b5b; --accent-2:#22e3ff;}
+  [data-member="rami"]{ --accent:#8df0ff; --accent-2:#ff9cf3;} /* (Haram stage name Rami) */
+  [data-member="rora"]{ --accent:#7fff85; --accent-2:#a78bfa;}
+  [data-member="chiquita"]{ --accent:#ffd34d; --accent-2:#ff7ad1;}
+
+  /* -------------- BASE LAYOUT -------------- */
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
-    margin:0; color:var(--ink); background:
-      radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,.03), transparent 60%),
-      radial-gradient(1000px 500px at 110% 0%, rgba(255,255,255,.02), transparent 60%),
-      linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
-    font-family: ui-sans-serif, system-ui, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial;
+    margin:0; color:var(--ink); background: var(--glow), linear-gradient(180deg,var(--bg) 0%, var(--bg2) 100%);
+    font-family: var(--font-body); line-height:1.45;
   }
-
   .topbar{
-    position:sticky; top:0; z-index:40; display:flex; gap:12px; align-items:center; justify-content:space-between;
-    padding:12px 16px; backdrop-filter: blur(10px);
-    border-bottom:1px solid rgba(255,255,255,.06);
-    background:linear-gradient(90deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent);
+    position:sticky; top:0; z-index:50; display:flex; gap:12px; align-items:center; justify-content:space-between;
+    padding:10px 14px; backdrop-filter: blur(10px);
+    border-bottom:1px solid var(--divider);
+    background: color-mix(in srgb, var(--bg2) 90%, transparent);
   }
   .brand{display:flex; gap:10px; align-items:center}
-  .logo{font-size:26px; filter: drop-shadow(0 8px 18px color-mix(in srgb, var(--accent), transparent 70%));}
-  h1{font-size:18px; margin:0}
+  .logo{font-size:24px; filter: drop-shadow(0 6px 14px color-mix(in srgb, var(--accent), transparent 70%));}
+  h1{font:700 18px/1 var(--font-head); margin:0}
   .tag{margin:0; color:var(--muted); font-size:12px}
 
   .controls{display:flex; gap:8px; flex-wrap:wrap}
-  .btn{border:0; padding:8px 12px; border-radius:999px; cursor:pointer; font-weight:700; color:var(--ink);
-       background:var(--card); box-shadow:var(--shadow); transition:.15s transform}
+  .btn{border:0; padding:8px 12px; border-radius:999px; cursor:pointer; font-weight:800; color:var(--ink);
+       background:var(--card); border:1px solid var(--divider); box-shadow:var(--shadow); transition:.15s transform, .2s background}
   .btn:active{transform:translateY(1px) scale(.98)}
-  .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#000; font-weight:800}
-  .btn.ghost{background:transparent; border:1px solid rgba(255,255,255,.08)}
-  .btn.ok{background:color-mix(in srgb, var(--ok) 40%, transparent); border:1px solid color-mix(in srgb, var(--ok) 60%, transparent)}
-  .btn.warn{background:color-mix(in srgb, var(--warn) 25%, transparent); border:1px solid color-mix(in srgb, var(--warn) 45%, transparent)}
+  .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#000; font-weight:900}
+  .btn.ok{background:color-mix(in srgb, var(--ok) 20%, var(--card)); border-color: color-mix(in srgb, var(--ok) 40%, var(--divider))}
+  .btn.warn{background:color-mix(in srgb, var(--warn) 18%, var(--card)); border-color: color-mix(in srgb, var(--warn) 45%, var(--divider))}
+  .btn.ghost{background:transparent}
 
   select, input[type="number"], input[type="text"]{
-    background:rgba(255,255,255,.02); color:var(--ink); border:1px solid rgba(255,255,255,.08);
-    padding:8px; border-radius:10px; outline:none; width:100%;
+    background:var(--card); color:var(--ink); border:1px solid var(--divider); padding:8px; border-radius:10px; outline:none; width:100%;
   }
   input[type="file"]{color:var(--muted)}
+  textarea{width:100%; min-height:140px; background:var(--card); color:var(--ink); border:1px solid var(--divider); padding:10px; border-radius:12px; outline:none}
 
-  .tabs{display:flex; gap:8px; padding:10px 16px; overflow:auto; border-bottom:1px solid rgba(255,255,255,.06)}
+  .tabs{display:flex; gap:8px; padding:10px 16px; overflow:auto; border-bottom:1px solid var(--divider); background: color-mix(in srgb, var(--bg2) 92%, transparent)}
   .tab{padding:8px 12px; background:transparent; border-radius:999px; border:1px solid transparent; cursor:pointer; font-weight:800}
-  .tab.active{border:1px solid rgba(255,255,255,.2); box-shadow:0 8px 22px rgba(0,0,0,.4)}
-
-  .container{max-width:1100px; margin:16px auto 120px; padding:0 14px}
-  .panel{display:none; padding:14px; border-radius:var(--radius); border:1px solid rgba(255,255,255,.06);
-         background:linear-gradient(180deg, rgba(255,255,255,.02), transparent)}
+  .tab.active{border:1px solid var(--divider); box-shadow:0 8px 22px rgba(0,0,0,.12); background:var(--card)}
+  .container{max-width:1180px; margin:16px auto 120px; padding:0 14px}
+  .panel{display:none; padding:14px; border-radius:var(--radius); border:1px solid var(--divider); background: var(--card)}
   .panel.active{display:block}
   .panel-head{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:8px}
   .muted{color:var(--muted)} .small{font-size:12px}
   .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-  @media (max-width:960px){ .grid-2{grid-template-columns:1fr} }
+  .grid-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px}
+  @media (max-width:1100px){ .grid-3{grid-template-columns:1fr 1fr} }
+  @media (max-width:860px){ .grid-2,.grid-3{grid-template-columns:1fr} }
 
-  .card{background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:12px; box-shadow:var(--shadow)}
-  textarea{width:100%; min-height:140px; background:transparent; color:var(--ink); border:1px solid rgba(255,255,255,.08); padding:10px; border-radius:12px; outline:none}
-  .out{background:rgba(0,0,0,.25); padding:10px; border-radius:12px; max-height:360px; overflow:auto; white-space:pre-wrap}
+  .card{background:var(--card); border:1px solid var(--divider); border-radius:14px; padding:12px; box-shadow:var(--shadow)}
+  .out{background:color-mix(in srgb, var(--bg) 20%, var(--bg2)); padding:10px; border-radius:12px; max-height:360px; overflow:auto; white-space:pre-wrap}
+  .pill{display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; border:1px solid var(--divider); background: color-mix(in srgb, var(--bg) 30%, var(--bg2)); font-weight:700}
+
+  .footer{position:fixed; left:0; right:0; bottom:0; padding:10px 14px; display:flex; justify-content:center; gap:12px;
+          border-top:1px solid var(--divider);
+          background: linear-gradient(180deg, color-mix(in srgb, var(--bg2) 88%, transparent), color-mix(in srgb, var(--bg2) 96%, transparent))}
+  .toasts{position:fixed; right:14px; bottom:86px; display:grid; gap:10px; z-index:60}
+  .toast{padding:10px 12px; border-radius:12px; background: color-mix(in srgb, var(--bg) 25%, var(--bg2)); border:1px solid var(--divider)}
+  .toast.ok{border-color: color-mix(in srgb, var(--ok) 55%, var(--divider))}
+  .toast.warn{border-color: color-mix(in srgb, var(--warn) 55%, var(--divider))}
+  .toast.err{border-color: color-mix(in srgb, var(--err) 55%, var(--divider))}
+
+  /* perfect readable gradients on headers */
+  .grad-title{
+    background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent-2) 70%, var(--accent)));
+    -webkit-background-clip: text; background-clip:text; color: transparent; font-family: var(--font-head); font-weight:800;
+    text-shadow: 0 1px 0 rgba(0,0,0,.06);
+  }
 
   /* Graph */
-  .graph-wrap{margin-top:10px; padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,.06)}
+  .graph-wrap{margin-top:10px; padding:10px; border-radius:12px; border:1px solid var(--divider); background: color-mix(in srgb, var(--bg) 24%, var(--bg2))}
   #graphSvg{width:100%; height:520px}
 
-  /* Footer & Toasts */
-  .footer{position:fixed; left:0; right:0; bottom:0; padding:10px 14px; display:flex; justify-content:center; gap:12px;
-          border-top:1px solid rgba(255,255,255,.06);
-          background:linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,.8))}
-  .toasts{position:fixed; right:14px; bottom:86px; display:grid; gap:10px; z-index:50}
-  .toast{padding:10px 12px; border-radius:12px; background:rgba(0,0,0,.6); border:1px solid rgba(255,255,255,.08)}
-  .toast.ok{border-color:color-mix(in srgb, var(--ok) 50%, transparent)}
-  .toast.warn{border-color:color-mix(in srgb, var(--warn) 50%, transparent)}
-  .toast.err{border-color:color-mix(in srgb, var(--err) 50%, transparent)}
+  /* Canvas poster */
+  #posterCanvas{width:100%; max-height:520px; border-radius:12px; border:1px solid var(--divider); background: #000}
 
-  /* Micro-anim accents */
+  /* micro pulse */
   .pulse{ position:relative; }
   .pulse::after{
-    content:""; position:absolute; inset:-2px; border-radius:inherit;
+    content:""; position:absolute; inset:-2px; border-radius:inherit; pointer-events:none;
     background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 55%, transparent), transparent 70%);
     filter: blur(10px); opacity:.55; z-index:-1; animation: pulse 2.6s ease-in-out infinite;
   }
@@ -106,57 +143,51 @@
 </style>
 </head>
 
-<body data-brand="blackpink" data-member="jennie">
+<body data-theme="dark" data-brand="blackpink" data-member="jennie">
   <!-- ====== TOP BAR ====== -->
   <header class="topbar">
     <div class="brand">
       <div class="logo">🎤</div>
       <div>
-        <h1>BLACKPINK × BABYMONSTER — Member Modes AI Forge</h1>
-        <p class="tag">Lite (no models) by default • Pro embeddings optional • 100% browser</p>
+        <h1 class="grad-title">BLACKPINK × BABYMONSTER — Member Modes Playground</h1>
+        <p class="tag">For BLINKs & MONSTIEZ · Lite by default · Pro (embeddings) optional & local</p>
       </div>
     </div>
     <div class="controls">
-      <select id="brandSelect" title="Brand">
-        <option value="blackpink">BLACKPINK</option>
+      <select id="brandSelect" title="Group">
+        <option value="blackpink" selected>BLACKPINK</option>
         <option value="babymonster">BABYMONSTER</option>
       </select>
-      <select id="memberSelect" title="Member mode">
-        <!-- BLACKPINK -->
-        <optgroup label="BLACKPINK">
-          <option value="jisoo">Jisoo</option>
-          <option value="jennie" selected>Jennie</option>
-          <option value="rose">Rosé</option>
-          <option value="lisa">Lisa</option>
-        </optgroup>
-        <!-- BABYMONSTER -->
-        <optgroup label="BABYMONSTER">
-          <option value="ruka">Ruka</option>
-          <option value="pharita">Pharita</option>
-          <option value="asa">Asa</option>
-          <option value="rami">Rami</option>
-          <option value="rora">Rora</option>
-          <option value="chiquita">Chiquita</option>
-        </optgroup>
+      <select id="memberSelect" title="Member mode"></select>
+
+      <select id="themeSelect" title="Theme">
+        <option value="dark" selected>Dark</option>
+        <option value="light">Light</option>
       </select>
 
       <select id="perfMode" title="Performance Mode">
         <option value="lite" selected>Lite (no models)</option>
         <option value="pro">Pro (embeddings)</option>
       </select>
-      <button id="loadPro" class="btn primary pulse" title="Load Pro features (optional)">🚀 Enable Pro</button>
+      <button id="enablePro" class="btn primary pulse" title="Load Pro embeddings (optional)">🚀 Enable Pro</button>
+      <button id="rebuildPro" class="btn ghost" title="Rebuild embeddings">🔄 Rebuild Pro</button>
+      <button id="resetPro" class="btn ghost" title="Reset Pro">♻ Reset</button>
       <button id="clearCache" class="btn ghost" title="Clear caches">🧹</button>
       <button id="exportAll" class="btn ok" title="Export data">⬇ Export</button>
     </div>
   </header>
 
   <!-- ====== TABS ====== -->
-  <nav class="tabs" role="tablist" aria-label="Main tabs">
+  <nav class="tabs" role="tablist">
     <button class="tab active" data-tab="docs">Documents</button>
     <button class="tab" data-tab="summary">Summary</button>
     <button class="tab" data-tab="graph">Topic Graph</button>
     <button class="tab" data-tab="search">Semantic Search</button>
-    <button class="tab" data-tab="quiz">Quiz & Flashcards</button>
+    <button class="tab" data-tab="idolchat">Idol Chat</button>
+    <button class="tab" data-tab="lyrics">Lyrics & Mood</button>
+    <button class="tab" data-tab="diary">Diary & Recs</button>
+    <button class="tab" data-tab="creative">Caption & Palette</button>
+    <button class="tab" data-tab="games">Games</button>
     <button class="tab" data-tab="about">About</button>
   </nav>
 
@@ -164,8 +195,8 @@
     <!-- DOCUMENTS -->
     <section id="docs" class="panel active">
       <div class="panel-head">
-        <h2>📄 Documents</h2>
-        <p class="muted small">Upload PDFs (parsed locally) and build your notebook.</p>
+        <h2 class="grad-title">📄 Documents</h2>
+        <p class="muted small">Upload PDFs (local parse) and build your notebook.</p>
       </div>
       <div class="grid-2">
         <div class="card">
@@ -175,7 +206,7 @@
         </div>
         <div class="card">
           <h3>Notebook</h3>
-          <textarea id="notebook" placeholder="Your combined notes will live here…"></textarea>
+          <textarea id="notebook" placeholder="Your combined notes live here…"></textarea>
           <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap">
             <button id="dedupeNotes" class="btn ghost">🧽 Clean/Dedup</button>
             <button id="chunkNotes" class="btn ghost">✂ Chunk</button>
@@ -188,8 +219,8 @@
     <!-- SUMMARY -->
     <section id="summary" class="panel">
       <div class="panel-head">
-        <h2>🧠 TextRank Summary (No Model)</h2>
-        <p class="muted small">Works offline — adjustable length</p>
+        <h2 class="grad-title">🧠 TextRank Summary (Model-Free)</h2>
+        <p class="muted small">Fast & offline. Choose length.</p>
       </div>
       <textarea id="sumInput" placeholder="Paste text or leave empty to use your Notebook"></textarea>
       <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:8px 0">
@@ -202,13 +233,13 @@
     <!-- GRAPH -->
     <section id="graph" class="panel">
       <div class="panel-head">
-        <h2>🕸 Topic Graph</h2>
-        <p class="muted small">Keyword co-occurrence — drag nodes, export PNG</p>
+        <h2 class="grad-title">🕸 Topic Graph</h2>
+        <p class="muted small">Co-occurrence graph — drag nodes; export SVG</p>
       </div>
-      <div style="display:flex; gap:10px; flex-wrap:wrap">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
         <label class="small">Top keywords: <input id="kwCount" type="number" value="28" min="10" max="120" style="width:110px"></label>
         <button id="buildGraph" class="btn">Build Graph</button>
-        <button id="downloadGraph" class="btn ghost">Download Image</button>
+        <button id="downloadGraph" class="btn ghost">Download SVG</button>
       </div>
       <div class="graph-wrap"><svg id="graphSvg" role="img" aria-label="Topic graph"></svg></div>
     </section>
@@ -216,8 +247,8 @@
     <!-- SEARCH -->
     <section id="search" class="panel">
       <div class="panel-head">
-        <h2>🔎 Semantic Search</h2>
-        <p class="muted small">Lite = TF-IDF • Pro = Embeddings (optional load)</p>
+        <h2 class="grad-title">🔎 Semantic Search</h2>
+        <p class="muted small">Lite = TF-IDF • Pro = Embeddings (optional)</p>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap">
         <input id="searchQuery" type="text" placeholder="Ask a question or search concept…" />
@@ -226,424 +257,729 @@
       <ol id="searchResults" class="out" style="margin-top:8px; padding-left:18px"></ol>
     </section>
 
-    <!-- QUIZ -->
-    <section id="quiz" class="panel">
+    <!-- IDOL CHAT -->
+    <section id="idolchat" class="panel">
       <div class="panel-head">
-        <h2>🧩 Quiz & Flashcards</h2>
-        <p class="muted small">Smart rule-based generator (lightweight)</p>
+        <h2 class="grad-title">💬 Idol Chat (Local Personality)</h2>
+        <p class="muted small">Lightweight persona replies + optional TTS voices</p>
       </div>
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
-        <label class="small">Questions: <input id="qCount" type="number" value="12" min="3" max="50" style="width:90px"></label>
-        <button id="genQuiz" class="btn primary">Generate</button>
-        <button id="exportCSV" class="btn ghost">Export CSV</button>
+      <div class="grid-2">
+        <div class="card">
+          <textarea id="chatInput" placeholder="Say hi or ask about training tips, stage outfits, practice routines…"></textarea>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px">
+            <button id="sendChat" class="btn primary">Send</button>
+            <label class="small">Voice:
+              <select id="voiceSelect" style="width:220px"></select>
+            </label>
+            <button id="ttsChat" class="btn">🔊 Speak</button>
+            <span id="chatInfo" class="muted small"></span>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Conversation</h3>
+          <div id="chatLog" class="out" style="height:260px"></div>
+        </div>
       </div>
-      <div id="quizList" style="margin-top:8px"></div>
+    </section>
+
+    <!-- LYRICS & MOOD -->
+    <section id="lyrics" class="panel">
+      <div class="panel-head">
+        <h2 class="grad-title">🎶 Lyrics Sentiment & Mood</h2>
+        <p class="muted small">Paste lyrics or text → mood gauge + highlights (local lexicon; Pro can enhance)</p>
+      </div>
+      <textarea id="lyricsInput" placeholder="Paste lyrics or any text…"></textarea>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:8px 0">
+        <button id="analyzeLyrics" class="btn primary">Analyze</button>
+        <button id="lyricsClear" class="btn ghost">Clear</button>
+        <span id="lyricsScore" class="pill">Score: 0</span>
+      </div>
+      <pre id="lyricsOut" class="out"></pre>
+      <div id="lyricsChart" class="graph-wrap" style="height:220px"></div>
+    </section>
+
+    <!-- DIARY & RECS -->
+    <section id="diary" class="panel">
+      <div class="panel-head">
+        <h2 class="grad-title">📔 Fan Diary & Song Recs</h2>
+        <p class="muted small">Private, localStorage only. Mood graph + daily summary + recs.</p>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <textarea id="diaryText" placeholder="How are you feeling today? Write anything…"></textarea>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px">
+            <button id="saveDiary" class="btn ok">Save Entry</button>
+            <button id="sumDiary" class="btn">Summarize Day</button>
+            <button id="clearDiary" class="btn ghost">Clear All</button>
+            <span id="diaryInfo" class="muted small"></span>
+          </div>
+          <div id="recs" class="card" style="margin-top:8px">
+            <strong>🎧 Song Suggestions</strong>
+            <ul id="recList" style="margin:6px 0 0 18px"></ul>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Mood Over Time</h3>
+          <div id="diaryChart" class="graph-wrap" style="height:280px"></div>
+          <div class="out" id="diaryList" style="margin-top:8px; max-height:220px"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CREATIVE -->
+    <section id="creative" class="panel">
+      <div class="panel-head">
+        <h2 class="grad-title">🎨 Caption & Palette</h2>
+        <p class="muted small">Poster maker (canvas) + theme palette ideas</p>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Poster Maker</h3>
+          <input id="posterFile" type="file" accept="image/*" />
+          <input id="posterCaption" type="text" placeholder="Caption (or leave empty to auto-generate)"/>
+          <div style="display:flex; gap:8px; margin:8px 0; flex-wrap:wrap">
+            <button id="genCaption" class="btn">✨ Suggest Captions</button>
+            <button id="drawPoster" class="btn ok">Render Poster</button>
+            <button id="downloadPoster" class="btn ghost">Download</button>
+          </div>
+          <canvas id="posterCanvas" width="960" height="540" aria-label="Poster canvas"></canvas>
+        </div>
+        <div class="card">
+          <h3>Theme Palette Generator</h3>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center">
+            <span class="pill">Base = current member accent</span>
+            <button id="genPalette" class="btn">Generate</button>
+          </div>
+          <div id="paletteWrap" style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:10px"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAMES -->
+    <section id="games" class="panel">
+      <div class="panel-head">
+        <h2 class="grad-title">🕹 Games: Who Said It? + Dance Challenge</h2>
+        <p class="muted small">Light, offline fun</p>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Who Said It?</h3>
+          <div id="quoteBox" class="out"></div>
+          <div id="choiceWrap" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px"></div>
+          <div class="muted small" id="wsInfo"></div>
+          <button id="nextQuote" class="btn" style="margin-top:8px">Next</button>
+        </div>
+        <div class="card">
+          <h3>Dance Challenge</h3>
+          <div class="out" id="danceBox"></div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px">
+            <button id="startDance" class="btn primary">Start</button>
+            <button id="stopDance" class="btn ghost">Stop</button>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- ABOUT -->
     <section id="about" class="panel">
-      <div class="panel-head"><h2>About</h2></div>
+      <div class="panel-head"><h2 class="grad-title">About</h2></div>
       <div class="card">
-        <p><strong>Design:</strong> BLACKPINK × BABYMONSTER with Member Modes.</p>
-        <p><strong>AI:</strong> All local. Default <em>Lite</em> uses classical NLP (TextRank summarizer + TF-IDF search). Optional <em>Pro</em> loads a tiny sentence embedding model for improved search — still 100% in the browser, free.</p>
+        <p><strong>Groups:</strong> BLACKPINK & BABYMONSTER (7 members inc. Ahyeon). Fans: BLINKs & MONSTIEZ.</p>
+        <p><strong>AI stack:</strong> All local. <em>Lite</em> = classical NLP (TextRank summarizer, TF-IDF search, lexicon sentiment). <em>Pro</em> = optional embeddings via <code>@xenova/transformers</code> (MiniLM) with WebGPU→WASM fallback. No tokens, no servers.</p>
         <ul>
           <li>PDF parsing: <code>pdf.js</code></li>
-          <li>Graph: <code>d3</code></li>
-          <li>Pro embeddings (optional): <code>@xenova/transformers</code> + <code>all-MiniLM-L6-v2</code></li>
+          <li>Graphs & charts: <code>d3</code></li>
+          <li>Speech: Web Speech Synthesis API (optional)</li>
         </ul>
-        <p class="muted small">Tip: Use Pro mode only if you need higher-quality semantic search; Lite is fastest and works on all devices.</p>
+        <p class="muted small">Tip: Use Pro only if you need stronger semantic search. Lite is fastest & most compatible.</p>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <span>Made for BLINKs & MONSTERS · No tokens · No installs · 100% client-side</span>
+    <span>Made for BLINKs & MONSTIEZ · No tokens · No installs · 100% client-side</span>
   </footer>
 
   <div id="toasts" class="toasts" aria-live="polite"></div>
 
-  <!-- ====== SCRIPTS (lightweight by default; Pro loads lazily) ====== -->
+  <!-- ====== SCRIPTS ====== -->
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 
   <script>
-  // ---------- Helpers ----------
+  // ------------------ UTILITIES ------------------
   const $ = (s, r=document)=>r.querySelector(s);
   const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
-  const toasts = $("#toasts");
-  const toast=(msg,kind='ok',ms=2800)=>{ const el=document.createElement('div'); el.className='toast '+kind; el.textContent=msg; toasts.appendChild(el); setTimeout(()=>el.remove(), ms); };
+  const toasts=$("#toasts");
+  const toast=(msg,kind='ok',ms=2600)=>{ const el=document.createElement('div'); el.className='toast '+kind; el.textContent=msg; toasts.appendChild(el); setTimeout(()=>el.remove(), ms); };
+  const escapeHtml=s=>s.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[m]);
 
-  // ---------- Brand & Member modes ----------
-  const brandSelect = $("#brandSelect");
-  const memberSelect = $("#memberSelect");
-  const body = document.body;
-  brandSelect.addEventListener("change", ()=>{ body.dataset.brand = brandSelect.value; pulseBrand(); });
-  memberSelect.addEventListener("change", ()=>{ body.dataset.member = memberSelect.value; pulseBrand(); });
-  function pulseBrand(){ document.querySelectorAll('.btn.primary').forEach(b=>{ b.classList.remove('pulse'); void b.offsetWidth; b.classList.add('pulse'); }); }
+  // ------------------ GROUPS / MEMBERS (AUTO SWITCH) ------------------
+  const GROUPS = {
+    blackpink:{
+      label:'BLACKPINK', fans:'BLINKs',
+      members:[
+        {id:'jisoo', name:'Jisoo'}, {id:'jennie', name:'Jennie'},
+        {id:'rose', name:'Rosé'}, {id:'lisa', name:'Lisa'}
+      ]
+    },
+    babymonster:{
+      label:'BABYMONSTER', fans:'MONSTIEZ',
+      members:[
+        {id:'ahyeon', name:'Ahyeon'},
+        {id:'ruka', name:'Ruka'},
+        {id:'pharita', name:'Pharita'},
+        {id:'asa', name:'Asa'},
+        {id:'rami', name:'Rami'},     // (Haram)
+        {id:'rora', name:'Rora'},
+        {id:'chiquita', name:'Chiquita'}
+      ]
+    }
+  };
 
-  // ---------- Tabs ----------
+  const brandSelect=$("#brandSelect"), memberSelect=$("#memberSelect"), themeSelect=$("#themeSelect");
+  function populateMembers(){
+    const brand = brandSelect.value;
+    document.body.dataset.brand = brand;
+    const {members} = GROUPS[brand];
+    memberSelect.innerHTML='';
+    for(const m of members){
+      const op=document.createElement('option'); op.value=m.id; op.textContent=m.name; memberSelect.appendChild(op);
+    }
+    // default to first member of that brand
+    memberSelect.value = members[0].id;
+    document.body.dataset.member = members[0].id;
+    // update tagline fans
+    $('.tag').textContent = `For ${GROUPS.blackpink.fans} & ${GROUPS.babymonster.fans} · Lite by default · Pro (embeddings) optional & local`;
+  }
+  brandSelect.addEventListener('change', ()=>{ populateMembers(); pulsePrimary(); });
+  memberSelect.addEventListener('change', ()=>{ document.body.dataset.member = memberSelect.value; pulsePrimary(); });
+  themeSelect.addEventListener('change', ()=>{ document.body.dataset.theme = themeSelect.value; pulsePrimary(); });
+  const pulsePrimary=()=>$$('.btn.primary').forEach(b=>{ b.classList.remove('pulse'); void b.offsetWidth; b.classList.add('pulse'); });
+
+  // ------------------ TABS ------------------
   $$('.tab').forEach(t=>{
     t.addEventListener('click', ()=>{
       $$('.tab').forEach(x=>x.classList.remove('active'));
       $$('.panel').forEach(p=>p.classList.remove('active'));
-      t.classList.add('active');
-      $('#'+t.dataset.tab).classList.add('active');
+      t.classList.add('active'); $('#'+t.dataset.tab).classList.add('active');
       window.scrollTo({top:0, behavior:'smooth'});
     });
   });
 
-  // ---------- PDF.js parsing ----------
-  const pdfInput = $('#pdfFiles'); const pdfList = $('#pdfList'); const notebook = $('#notebook');
+  // ------------------ PDF.js ------------------
   const pdfjsLib = window['pdfjs-dist/build/pdf'];
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
-
-  pdfInput.addEventListener('change', async ()=>{
-    if (!pdfInput.files || !pdfInput.files.length) return;
-    for (const file of pdfInput.files){
+  $('#pdfFiles').addEventListener('change', async (ev)=>{
+    const list=$('#pdfList'); const note=$('#notebook');
+    for (const file of ev.target.files){
       try{
-        const buf = await file.arrayBuffer();
-        const pdf = await pdfjsLib.getDocument({data:buf}).promise;
-        let text = '';
-        for (let i=1;i<=pdf.numPages;i++){
-          const page = await pdf.getPage(i);
-          const content = await page.getTextContent();
-          const t = content.items.map(it=>it.str).join(' ');
-          text += `\n\n# Page ${i}\n${t}`;
+        const buf=await file.arrayBuffer();
+        const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+        let text='';
+        for(let i=1;i<=pdf.numPages;i++){
+          const page=await pdf.getPage(i);
+          const content=await page.getTextContent();
+          const t=content.items.map(it=>it.str).join(' ');
+          text+=`\n\n# Page ${i}\n${t}`;
         }
-        notebook.value = (notebook.value + `\n\n# ${file.name}\n` + text).trim();
-        const item = document.createElement('div'); item.className='card';
-        item.textContent = `Parsed: ${file.name} — ${text.length.toLocaleString()} chars, ${pdf.numPages} pages`;
-        pdfList.prepend(item);
-        toast(`Parsed ${file.name}`,'ok',2200);
+        note.value=(note.value+`\n\n# ${file.name}\n`+text).trim();
+        const row=document.createElement('div'); row.className='card'; row.textContent=`Parsed: ${file.name} — ${text.length.toLocaleString()} chars, ${pdf.numPages} pages`; list.prepend(row);
+        toast(`Parsed ${file.name}`,'ok');
+        tfidf.docs.length=0; // invalidate lite index so user rebuilds on next search
       }catch(e){ console.error(e); toast(`Failed: ${file.name}`,'err',3000); }
     }
   });
 
-  // ---------- Notebook utilities ----------
-  const dedupeNotesBtn = $('#dedupeNotes');
-  const chunkNotesBtn = $('#chunkNotes');
-  const chunkInfo = $('#chunkInfo');
-  let chunks = [];
+  // ------------------ NOTEBOOK UTILS ------------------
+  const notebook=$("#notebook"), chunkInfo=$("#chunkInfo");
   const splitIntoChunks=(text,maxLen=800)=>{
-    const sents = text.split(/(?<=[.!?])\s+/); const out=[]; let buf='';
-    for(const s of sents){
-      if((buf+' '+s).trim().length>maxLen){ if(buf.trim()) out.push(buf.trim()); buf=s; } else buf=(buf?buf+' ':'')+s;
-    }
-    if(buf.trim()) out.push(buf.trim());
-    return out;
+    const sents=text.split(/(?<=[.!?])\s+/).filter(Boolean); const out=[]; let buf='';
+    for(const s of sents){ if((buf+' '+s).trim().length>maxLen){ if(buf.trim()) out.push(buf.trim()); buf=s; } else buf=(buf?buf+' ':'')+s; }
+    if(buf.trim()) out.push(buf.trim()); return out;
   };
-  dedupeNotesBtn.addEventListener('click', ()=>{
-    const lines = notebook.value.split(/\n+/).map(s=>s.trim()).filter(Boolean);
-    const seen=new Set(); const clean=[];
-    for(const l of lines){ const k=l.toLowerCase(); if(!seen.has(k)){ seen.add(k); clean.push(l); } }
-    notebook.value = clean.join('\n');
-    toast('Deduped notebook','ok');
+  $('#dedupeNotes').addEventListener('click', ()=>{
+    const lines=notebook.value.split(/\n+/).map(s=>s.trim()).filter(Boolean);
+    const seen=new Set(), clean=[]; for(const l of lines){ const k=l.toLowerCase(); if(!seen.has(k)){ seen.add(k); clean.push(l); } }
+    notebook.value=clean.join('\n'); toast('Deduped notebook','ok');
   });
-  chunkNotesBtn.addEventListener('click', ()=>{
-    chunks = splitIntoChunks(notebook.value, 700);
-    chunkInfo.textContent = `${chunks.length} chunks ready`;
-    toast('Chunked notes','ok');
+  $('#chunkNotes').addEventListener('click', ()=>{
+    const chunks=splitIntoChunks(notebook.value,700); chunkInfo.textContent=`${chunks.length} chunks ready`; toast('Chunked notes','ok');
   });
 
-  // ---------- TextRank Summarizer (extractive, model-free) ----------
-  const sumInput = $('#sumInput'); const sumCount = $('#sumCount'); const sumOut = $('#sumOut');
-  const runSumBtn = $('#runSum');
-  function textrankSummarize(text, k=5){
-    const sents = text.split(/(?<=[.!?])\s+/).filter(s=>s.trim().length>0);
+  // ------------------ TEXTRANK SUMMARIZER ------------------
+  function textrankSummarize(text,k=5){
+    const sents=text.split(/(?<=[.!?])\s+/).filter(s=>s.trim().length>0);
     if (sents.length<=k) return sents.join(' ');
-    const norm = s => s.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').replace(/\s+/g,' ').trim();
-    const bag = s => { const m=new Map(); norm(s).split(' ').forEach(w=>{ if(w.length>2){ m.set(w,(m.get(w)||0)+1); } }); return m; };
-    const cosine=(a,b)=>{
-      let dot=0,na=0,nb=0;
-      const keys = new Set([...a.keys(),...b.keys()]);
-      keys.forEach(w=>{ const x=a.get(w)||0, y=b.get(w)||0; dot+=x*y; na+=x*x; nb+=y*y; });
-      return dot/(Math.sqrt(na)*Math.sqrt(nb)||1);
+    const norm=s=>s.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').replace(/\s+/g,' ').trim();
+    const bag=s=>{ const m=new Map(); norm(s).split(' ').forEach(w=>{ if(w.length>2){ m.set(w,(m.get(w)||0)+1); } }); return m; };
+    const cosine=(a,b)=>{ let dot=0,na=0,nb=0; const keys=new Set([...a.keys(),...b.keys()]);
+      keys.forEach(w=>{ const x=a.get(w)||0, y=b.get(w)||0; dot+=x*y; na+=x*x; nb+=y*y; }); return dot/(Math.sqrt(na)*Math.sqrt(nb)||1);
     };
-    const bags = sents.map(bag);
-    const n = sents.length; const sim = Array.from({length:n},()=>Array(n).fill(0));
+    const bags=sents.map(bag); const n=sents.length; const sim=Array.from({length:n},()=>Array(n).fill(0));
     for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){ const c=cosine(bags[i],bags[j]); sim[i][j]=sim[j][i]=c; }
-    let scores = Array(n).fill(1/n);
-    for(let it=0; it<20; it++){
-      const next = Array(n).fill(0.15/n);
+    let scores=Array(n).fill(1/n);
+    for(let it=0;it<20;it++){
+      const next=Array(n).fill(0.15/n);
       for(let i=0;i<n;i++){
-        const denom = sim[i].reduce((a,b)=>a+b,0)||1;
+        const denom=sim[i].reduce((a,b)=>a+b,0)||1;
         for(let j=0;j<n;j++) if(i!==j) next[j]+=0.85*(sim[i][j]/denom)*scores[i];
       }
-      scores = next;
+      scores=next;
     }
-    const idx = scores.map((s,i)=>[s,i]).sort((a,b)=>b[0]-a[0]).slice(0,k).map(x=>x[1]).sort((a,b)=>a-b);
+    const idx=scores.map((s,i)=>[s,i]).sort((a,b)=>b[0]-a[0]).slice(0,k).map(x=>x[1]).sort((a,b)=>a-b);
     return idx.map(i=>sents[i]).join(' ');
   }
-  runSumBtn.addEventListener('click', ()=>{
-    const src = (sumInput.value.trim() || notebook.value.trim());
-    if(!src) return toast('No text to summarize','warn');
-    const k = Math.max(2, Math.min(20, Number(sumCount.value)||5));
-    const out = textrankSummarize(src, k);
-    sumOut.textContent = out;
+  $('#runSum').addEventListener('click', ()=>{
+    const src=($('#sumInput').value.trim()||notebook.value.trim()); if(!src) return toast('No text to summarize','warn');
+    const k=Math.max(2,Math.min(20, Number($('#sumCount').value)||5)); $('#sumOut').textContent=textrankSummarize(src,k);
   });
 
-  // ---------- Topic Graph (d3) ----------
-  const graphSvg = d3.select('#graphSvg');
-  const buildGraphBtn = $('#buildGraph'); const downloadGraphBtn = $('#downloadGraph');
+  // ------------------ GRAPH (d3) ------------------
+  const graphSvg=d3.select('#graphSvg');
   function extractKeywords(text, topN=28){
-    const stop = new Set(("a,an,the,and,or,but,if,then,else,when,while,of,to,in,on,for,with,as,by,at,from,into,that,this,these,those,is,are,was,were,be,been,has,have,had,do,does,did,not,no,so,than,too,very,can,will,just,about,over,under,more,most,less,into,each,other,also,which,who,whom,whose,where,why,how").split(','));
-    const words = text.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w && !stop.has(w) && w.length>2);
-    const freq = new Map(); words.forEach(w=>freq.set(w,(freq.get(w)||0)+1));
+    const stop=new Set(("a,an,the,and,or,but,if,then,else,when,while,of,to,in,on,for,with,as,by,at,from,into,that,this,these,those,is,are,was,were,be,been,has,have,had,do,does,did,not,no,so,than,too,very,can,will,just,about,over,under,more,most,less,each,other,also,which,who,whom,whose,where,why,how").split(','));
+    const words=text.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w && !stop.has(w) && w.length>2);
+    const freq=new Map(); words.forEach(w=>freq.set(w,(freq.get(w)||0)+1));
     return [...freq.entries()].sort((a,b)=>b[1]-a[1]).slice(0, topN).map(([w])=>w);
   }
   function buildGraph(text, topN){
-    const keywords = extractKeywords(text, topN);
-    const index = new Map(keywords.map((k,i)=>[k,i]));
-    const words = text.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/);
-    const windowSize = 6; const linkMap=new Map();
+    const keywords=extractKeywords(text, topN); const index=new Map(keywords.map((k,i)=>[k,i]));
+    const words=text.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/);
+    const windowSize=6; const linkMap=new Map();
     for(let i=0;i<words.length;i++){
       const wi=words[i]; if(!index.has(wi)) continue;
       for(let j=i+1;j<Math.min(i+windowSize, words.length); j++){
-        const wj=words[j]; if(!index.has(wj) || wi===wj) continue;
+        const wj=words[j]; if(!index.has(wj)||wi===wj) continue;
         const a=index.get(wi), b=index.get(wj); const key=a<b?`${a}-${b}`:`${b}-${a}`;
         linkMap.set(key,(linkMap.get(key)||0)+1);
       }
     }
-    const nodes = keywords.map((w,i)=>({id:i, label:w}));
-    const links = [...linkMap.entries()].map(([k,v])=>{ const [s,t]=k.split('-').map(Number); return {source:s, target:t, weight:v}; });
+    const nodes=keywords.map((w,i)=>({id:i,label:w}));
+    const links=[...linkMap.entries()].map(([k,v])=>{ const [s,t]=k.split('-').map(Number); return {source:s,target:t,weight:v}; });
     graphSvg.selectAll('*').remove();
-    const width = graphSvg.node().clientWidth || 800, height = 520;
-    const sim = d3.forceSimulation(nodes)
+    const width=graphSvg.node().clientWidth||800, height=520;
+    const sim=d3.forceSimulation(nodes)
       .force('link', d3.forceLink(links).id(d=>d.id).distance(d=>120/(1+Math.log1p(d.weight))))
-      .force('charge', d3.forceManyBody().strength(-260))
+      .force('charge', d3.forceManyBody().strength(-240))
       .force('center', d3.forceCenter(width/2, height/2));
-    const link = graphSvg.append('g').attr('stroke','rgba(255,255,255,.16)').selectAll('line')
+    const link=graphSvg.append('g').attr('stroke','rgba(100,100,120,.35)').selectAll('line')
       .data(links).enter().append('line').attr('stroke-width', d=>Math.log2(1+d.weight)+.6);
-    const node = graphSvg.append('g').selectAll('g').data(nodes).enter().append('g').call(d3.drag()
-      .on('start', (e,d)=>{ if(!e.active) sim.alphaTarget(.3).restart(); d.fx=d.x; d.fy=d.y; })
-      .on('drag', (e,d)=>{ d.fx=e.x; d.fy=e.y; })
-      .on('end',  (e,d)=>{ if(!e.active) sim.alphaTarget(0); d.fx=null; d.fy=null; }));
-    node.append('circle').attr('r', 11).attr('fill','url(#grad)').attr('stroke','rgba(255,255,255,.12)').attr('stroke-width',1.2);
-    node.append('text').text(d=>d.label).attr('x',14).attr('y',4).style('fill','#f5f7fb').style('font-size','12px');
+    const node=graphSvg.append('g').selectAll('g').data(nodes).enter().append('g').call(d3.drag()
+      .on('start',(e,d)=>{ if(!e.active) sim.alphaTarget(.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag',(e,d)=>{ d.fx=e.x; d.fy=e.y; })
+      .on('end',(e,d)=>{ if(!e.active) sim.alphaTarget(0); d.fx=null; d.fy=null; })
+    );
+    node.append('circle').attr('r', 11).attr('fill','url(#grad)').attr('stroke','rgba(255,255,255,.22)').attr('stroke-width',1);
+    node.append('text').text(d=>d.label).attr('x',14).attr('y',4).style('fill','currentColor').style('font-size','12px');
     sim.on('tick', ()=>{
       link.attr('x1', d=>d.source.x).attr('y1', d=>d.source.y).attr('x2', d=>d.target.x).attr('y2', d=>d.target.y);
       node.attr('transform', d=>`translate(${d.x},${d.y})`);
     });
   }
-  buildGraphBtn.addEventListener('click', ()=>{
-    const t = notebook.value.trim();
-    if(!t) return toast('Add some notes first','warn');
-    const n = Math.max(10, Math.min(120, Number($('#kwCount').value)||28));
-    buildGraph(t, n);
-  });
-  downloadGraphBtn.addEventListener('click', ()=>{
-    const svg = $('#graphSvg');
-    const xml = new XMLSerializer().serializeToString(svg);
-    const blob = new Blob([xml], {type:'image/svg+xml'}); const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href=url; a.download='topic-graph.svg'; a.click();
+  $('#buildGraph').addEventListener('click', ()=>{ const t=notebook.value.trim(); if(!t) return toast('Add some notes first','warn'); const n=Math.max(10,Math.min(120, Number($('#kwCount').value)||28)); buildGraph(t,n); });
+  $('#downloadGraph').addEventListener('click', ()=>{
+    const svg=$('#graphSvg'); const xml=new XMLSerializer().serializeToString(svg); const blob=new Blob([xml],{type:'image/svg+xml'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='topic-graph.svg'; a.click();
   });
 
-  // ---------- Semantic Search ----------
-  // Lite: TF-IDF; Pro (optional): MiniLM embeddings
-  const perfMode = $('#perfMode'); const loadProBtn = $('#loadPro');
-  let proReady = false, embedder = null, proVectors = null, proTexts = null;
-
-  // Lite TF-IDF vectorizer
+  // ------------------ SEMANTIC SEARCH ------------------
+  const perfMode=$("#perfMode"), enablePro=$("#enablePro"), rebuildPro=$("#rebuildPro"), resetPro=$("#resetPro");
+  // Lite TF-IDF
   const tfidf = {
-    vocab: new Map(), idf: [], docs: [], texts: [],
-    addDocs(texts){ this.vocab.clear(); this.docs=[]; this.texts=texts;
-      const token = s=>s.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w.length>2);
-      const dterms = texts.map(t=>token(t));
-      // build vocab
-      const df = new Map();
-      dterms.forEach(terms=>{
-        const uniq = new Set(terms);
-        uniq.forEach(w=> df.set(w, (df.get(w)||0)+1 ));
-      });
-      const entries = [...df.keys()].sort();
-      entries.forEach((w,i)=> this.vocab.set(w,i));
-      const N = texts.length; this.idf = entries.map(w=> Math.log((N+1)/((df.get(w)||0)+1))+1 );
-      // docs -> sparse vectors
-      this.docs = dterms.map(terms=>{
-        const tf = new Map(); terms.forEach(w=> tf.set(w, (tf.get(w)||0)+1));
-        const vec = new Map();
-        tf.forEach((f,w)=>{ if(this.vocab.has(w)){ const i=this.vocab.get(w); vec.set(i, (f/terms.length)*this.idf[i]); }});
+    vocab:new Map(), idf:[], docs:[], texts:[],
+    addDocs(texts){
+      this.vocab.clear(); this.docs=[]; this.texts=texts;
+      const token=s=>s.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w.length>2);
+      const dterms=texts.map(t=>token(t));
+      const df=new Map();
+      dterms.forEach(terms=>{ const uniq=new Set(terms); uniq.forEach(w=>df.set(w,(df.get(w)||0)+1));});
+      const entries=[...df.keys()].sort(); entries.forEach((w,i)=>this.vocab.set(w,i));
+      const N=texts.length; this.idf=entries.map(w=>Math.log((N+1)/((df.get(w)||0)+1))+1);
+      this.docs=dterms.map(terms=>{
+        const tf=new Map(); terms.forEach(w=>tf.set(w,(tf.get(w)||0)+1));
+        const vec=new Map(); tf.forEach((f,w)=>{ if(this.vocab.has(w)){ const i=this.vocab.get(w); vec.set(i,(f/terms.length)*this.idf[i]); }});
         return vec;
       });
     },
-    vectorize(query){
-      const token = query.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w.length>2);
-      const tf = new Map(); token.forEach(w=> tf.set(w,(tf.get(w)||0)+1));
-      const vec = new Map(); tf.forEach((f,w)=>{ if(this.vocab.has(w)){ const i=this.vocab.get(w); vec.set(i,(f/token.length)*this.idf[i]); }});
-      return vec;
+    vectorize(q){ const token=q.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w.length>2);
+      const tf=new Map(); token.forEach(w=>tf.set(w,(tf.get(w)||0)+1)); const vec=new Map();
+      tf.forEach((f,w)=>{ if(this.vocab.has(w)){ const i=this.vocab.get(w); vec.set(i,(f/token.length)*this.idf[i]); }}); return vec;
     },
-    cosineSparse(a,b){
-      let dot=0, na=0, nb=0;
-      a.forEach((va,i)=>{ na+=va*va; const vb=b.get(i)||0; dot+=va*vb; });
-      b.forEach((vb,i)=>{ nb+=vb*vb; });
+    cosine(a,b){ let dot=0,na=0,nb=0; a.forEach((va,i)=>{ na+=va*va; const vb=b.get(i)||0; dot+=va*vb; }); b.forEach((vb,i)=>nb+=vb*vb);
       return dot/(Math.sqrt(na)*Math.sqrt(nb)||1);
     },
-    search(query, topK=10){
-      const q=this.vectorize(query);
-      const scores = this.docs.map((d,i)=>({i, s:this.cosineSparse(q,d)})).sort((a,b)=>b.s-a.s).slice(0,topK);
+    search(q, k=10){
+      const v=this.vectorize(q); const scores=this.docs.map((d,i)=>({i, s:this.cosine(v,d)})).sort((a,b)=>b.s-a.s).slice(0,k);
       return scores.map(({i,s})=>({text:this.texts[i], score:s}));
     }
   };
+  function buildLiteIndex(){ const raw=notebook.value.trim(); if(!raw) return 0; const parts=splitIntoChunks(raw,400); tfidf.addDocs(parts); return parts.length; }
 
-  // Build Lite index on demand
-  function buildLiteIndex(){
-    const raw = notebook.value.trim();
-    if(!raw) return null;
-    const parts = splitIntoChunks(raw, 400);
-    tfidf.addDocs(parts);
-    return parts.length;
+  // Pro embeddings
+  let proReady=false, embedder=null, proVectors=null, proTexts=null, proDevice='wasm';
+  async function ensureTransformers(){
+    if (window.transformers) return;
+    await new Promise((res,rej)=>{ const s=document.createElement('script'); s.src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js"; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
   }
-
-  // Optional: load Pro embeddings lazily
-  loadProBtn.addEventListener('click', async ()=>{
+  async function enableProFlow(){
     if (proReady) return toast('Pro already enabled','ok');
     try{
-      toast('Loading Pro embeddings…','warn',3800);
-      // Load transformers on demand
-      if (!window.transformers){
-        const s=document.createElement('script');
-        s.src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js";
-        await new Promise((res,rej)=>{ s.onload=res; s.onerror=rej; document.head.appendChild(s); });
-      }
-      const device = navigator.gpu ? 'webgpu' : 'wasm';
-      embedder = await window.transformers.pipeline('feature-extraction','Xenova/all-MiniLM-L6-v2',{ quantized:true, device, progress_callback:(ev)=>{ if(ev?.status) toast(ev.status,'warn',1400); } });
-      // Build vectors from notebook chunks
-      const raw = notebook.value.trim();
-      if(!raw) { proReady = true; toast('Pro ready — build embeddings after adding notes.','ok'); return; }
-      const parts = splitIntoChunks(raw, 400);
-      proTexts = parts;
-      proVectors = [];
-      for(let i=0;i<parts.length;i++){
-        const out = await embedder(parts[i], { pooling:'mean', normalize:true });
-        const vec = out.data ? Array.from(out.data) : Array.from(out[0]);
-        proVectors.push(vec);
-      }
-      proReady = true;
-      toast(`Pro ready with ${parts.length} chunks`,`ok`,3000);
-    }catch(e){ console.error(e); toast('Failed to enable Pro','err',3500); }
+      toast('Loading Pro…','warn',3800);
+      await ensureTransformers();
+      proDevice = (navigator.gpu ? 'webgpu' : 'wasm');
+      embedder = await window.transformers.pipeline('feature-extraction','Xenova/all-MiniLM-L6-v2',{ quantized:true, device:proDevice, progress_callback:(e)=>{ if(e?.status) toast(e.status,'warn',1200);} });
+      proReady=true; toast(`Pro ready (${proDevice})`,'ok',2600);
+    }catch(e){
+      console.warn('Pro load failed, retrying with wasm…', e);
+      try{
+        embedder = await window.transformers.pipeline('feature-extraction','Xenova/all-MiniLM-L6-v2',{ quantized:true, device:'wasm' });
+        proDevice='wasm'; proReady=true; toast('Pro ready (wasm fallback)','ok',2600);
+      }catch(err){ console.error(err); proReady=false; toast('Pro failed to enable. Use Lite or check CSP.', 'err',3600); }
+    }
+  }
+  enablePro.addEventListener('click', enableProFlow);
+  rebuildPro.addEventListener('click', async ()=>{
+    if(!proReady){ toast('Enable Pro first','warn'); return; }
+    const raw=notebook.value.trim(); if(!raw){ toast('Notebook empty','warn'); return; }
+    const parts=splitIntoChunks(raw, 400); proTexts=parts; proVectors=[];
+    for(let i=0;i<parts.length;i++){ const out=await embedder(parts[i],{pooling:'mean', normalize:true}); const v=out.data?Array.from(out.data):Array.from(out[0]); proVectors.push(v); }
+    toast(`Built ${parts.length} embeddings`,'ok',2800);
   });
+  resetPro.addEventListener('click', ()=>{ proReady=false; embedder=null; proVectors=null; proTexts=null; toast('Pro reset','ok'); });
 
-  // Search click
   $('#runSearch').addEventListener('click', async ()=>{
-    const q = $('#searchQuery').value.trim();
-    const out = $('#searchResults'); out.innerHTML='';
+    const q=$('#searchQuery').value.trim(); const out=$('#searchResults'); out.innerHTML='';
     if(!q) return toast('Enter a query','warn');
-    if (perfMode.value === 'pro'){
-      if (!proReady){ return toast('Enable Pro first (button above)','warn'); }
-      // Ensure vectors exist
-      if (!proVectors || !proTexts){ toast('Building embeddings from notebook…','warn');
-        const raw = notebook.value.trim(); if(!raw) return toast('Notebook empty','warn');
-        const parts = splitIntoChunks(raw, 400);
-        proTexts = parts; proVectors=[];
-        for(let i=0;i<parts.length;i++){ const outv = await embedder(parts[i], {pooling:'mean', normalize:true}); const v = outv.data?Array.from(outv.data):Array.from(outv[0]); proVectors.push(v); }
-      }
-      // Query vector
-      const qvRaw = await embedder(q, {pooling:'mean', normalize:true});
-      const qv = qvRaw.data ? Array.from(qvRaw.data) : Array.from(qvRaw[0]);
-      const cos=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0);
-      const scores = proVectors.map((v,i)=>({i, s:cos(qv,v)})).sort((a,b)=>b.s-a.s).slice(0,10);
-      scores.forEach(({i,s})=>{
-        const li=document.createElement('li'); li.innerHTML=`<strong>${s.toFixed(3)}</strong> — ${escapeHtml(proTexts[i])}`; out.appendChild(li);
-      });
-    } else {
-      // Lite TF-IDF
-      if (!tfidf.docs.length){ const n = buildLiteIndex(); if(!n){ return toast('Notebook empty','warn'); } toast(`Lite index built (${n} chunks)`,'ok'); }
-      const res = tfidf.search(q, 10);
-      res.forEach(r=>{ const li=document.createElement('li'); li.innerHTML=`<strong>${r.score.toFixed(3)}</strong> — ${escapeHtml(r.text)}`; out.appendChild(li); });
+    if (perfMode.value==='pro'){
+      if(!proReady) return toast('Enable Pro first','warn');
+      if(!proVectors || !proTexts){ await rebuildPro.click(); if(!proVectors){ return; } }
+      const qvRaw=await embedder(q,{pooling:'mean', normalize:true});
+      const qv=qvRaw.data?Array.from(qvRaw.data):Array.from(qvRaw[0]);
+      const cos=(a,b)=>a.reduce((s,x,i)=>s+x*(b[i]||0),0);
+      const scores=proVectors.map((v,i)=>({i,s:cos(qv,v)})).sort((a,b)=>b.s-a.s).slice(0,10);
+      scores.forEach(({i,s})=>{ const li=document.createElement('li'); li.innerHTML=`<strong>${s.toFixed(3)}</strong> — ${escapeHtml(proTexts[i])}`; out.appendChild(li); });
+    }else{
+      if(!tfidf.docs.length){ const n=buildLiteIndex(); if(!n) return toast('Notebook empty','warn'); toast(`Lite index built (${n} chunks)`,'ok'); }
+      const res=tfidf.search(q,10); res.forEach(r=>{ const li=document.createElement('li'); li.innerHTML=`<strong>${r.score.toFixed(3)}</strong> — ${escapeHtml(r.text)}`; out.appendChild(li); });
     }
   });
 
-  // ---------- Quiz (rule-based, light) ----------
-  const genQuizBtn = $('#genQuiz'); const quizList = $('#quizList'); const exportCSVBtn = $('#exportCSV');
-  const qCount = $('#qCount');
-  function nounPhrases(text){
-    const tokens = text.match(/[A-Za-z0-9\-']+/g) || [];
-    const phrases=[]; let buf=[];
-    for(const t of tokens){
-      if (/^[A-Z][a-zA-Z0-9\-']+$/.test(t) || t.length>6){ buf.push(t); }
-      else { if(buf.length){ phrases.push(buf.join(' ')); buf=[]; } }
-    }
-    if(buf.length) phrases.push(buf.join(' '));
-    return Array.from(new Set(phrases)).filter(p=>p.length>4).slice(0,100);
+  // ------------------ IDOL CHAT (light persona + optional retrieval + TTS) ------------------
+  const CHAT_TEMPLATES={
+    // brief styles; more flair handled with member accent
+    jisoo: {tone:["sweet","calm","playful"], emoji:"🌸"}, jennie:{tone:["confident","cool","witty"], emoji:"🖤"},
+    rose:{tone:["warm","dreamy","artsy"], emoji:"🌹"}, lisa:{tone:["energetic","fun","bold"], emoji:"💚"},
+    ahyeon:{tone:["bright","powerful","cheeky"], emoji:"✨"}, ruka:{tone:["chill","stylish","grounded"], emoji:"💜"},
+    pharita:{tone:["radiant","kind","sunny"], emoji:"☀️"}, asa:{tone:["spicy","fearless","spirited"], emoji:"🔥"},
+    rami:{tone:["soulful","poised","caring"], emoji:"💠"}, rora:{tone:["sparkly","smart","curious"], emoji:"⭐"},
+    chiquita:{tone:["cute","quick","sparkplug"], emoji:"🔷"}
+  };
+  const chatLog=$("#chatLog"), chatInput=$("#chatInput"), chatInfo=$("#chatInfo");
+  function retrieveLite(q){ // small retrieval from notebook to ground reply
+    if(!tfidf.docs.length){ const n=buildLiteIndex(); if(!n) return null; }
+    const top=tfidf.search(q,3).map(x=>x.text).join('\n');
+    return top || null;
   }
-  function makeQuiz(text, n=12){
-    const parts = splitIntoChunks(text, 300);
-    const phrases = nounPhrases(text);
-    const items=[];
-    let i=0;
-    while(items.length<n && (parts[i]||phrases[i])){
-      const context = parts[i%parts.length] || text;
-      const term = phrases[i%phrases.length] || (context.split(/\s+/).find(w=>w.length>6) || 'the concept');
-      const q = `What does “${term}” refer to in this context?`;
-      const a = context;
-      items.push({q,a});
-      i++;
-    }
-    return items;
+  function synthReply(user, member){
+    const t=CHAT_TEMPLATES[member]||{tone:["friendly"],emoji:"🎤"};
+    const tone=t.tone[Math.floor(Math.random()*t.tone.length)];
+    const facts=retrieveLite(user);
+    let reply = `${t.emoji} **${member.toUpperCase()}** (${tone}): `;
+    const openers=[
+      "Love that question!",
+      "Let me share a quick tip:",
+      "Here’s how I think about it:",
+      "From practice room to stage—",
+      "Backstage secret:"
+    ];
+    const closer=[
+      "You got this. 💪",
+      "Keep shining!", "Teamwork makes it iconic.",
+      "Practice smart, not just hard.",
+      "Let’s make it legendary."
+    ];
+    reply += `${openers[Math.floor(Math.random()*openers.length)]} `;
+    if (facts){ reply += `I peeked at your notes and found this helpful: “${facts.slice(0,180)}”. `; }
+    reply += `For “${user.slice(0,80)}”, try breaking it into small reps, record yourself, then iterate. ${closer[Math.floor(Math.random()*closer.length)]}`;
+    return reply;
   }
-  function renderQuiz(items){
-    quizList.innerHTML='';
-    items.forEach((p,idx)=>{
-      const card=document.createElement('div'); card.className='card';
-      card.innerHTML = `<strong>${idx+1}. ${escapeHtml(p.q)}</strong>
-        <details><summary>Show answer</summary><div style="margin-top:6px">${escapeHtml(p.a)}</div></details>`;
-      quizList.appendChild(card);
-    });
-  }
-  genQuizBtn.addEventListener('click', ()=>{
-    const src = (notebook.value.trim() || sumOut.textContent.trim());
-    if(!src) return toast('No source text for quiz','warn');
-    const n = Math.max(3, Math.min(50, Number(qCount.value)||12));
-    const items = makeQuiz(src, n);
-    renderQuiz(items);
-    toast('Quiz generated','ok');
-  });
-  exportCSVBtn.addEventListener('click', ()=>{
-    const cards = [...quizList.querySelectorAll('div.card')];
-    if(!cards.length) return toast('No quiz to export','warn');
-    const rows = [['Question','Answer']];
-    cards.forEach(c=>{
-      const q = c.querySelector('strong')?.innerText.replace(/^\d+\.\s*/,'') || '';
-      const a = c.querySelector('details div')?.innerText || '';
-      rows.push([q,a].map(s=>`"${s.replace(/"/g,'""')}"`).join(','));
-    });
-    const csv = rows.join('\n');
-    const blob = new Blob([csv], {type:'text/csv'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='flashcards.csv'; a.click();
+  $('#sendChat').addEventListener('click', ()=>{
+    const msg=chatInput.value.trim(); if(!msg) return;
+    const mem=memberSelect.value;
+    chatLog.innerHTML += `\n👤 You: ${escapeHtml(msg)}\n` + synthReply(msg, mem);
+    chatInput.value=''; chatLog.scrollTop=chatLog.scrollHeight;
   });
 
-  // ---------- Export all ----------
-  $('#exportAll').addEventListener('click', ()=>{
-    const data = {
-      brand: body.dataset.brand, member: body.dataset.member,
-      mode: perfMode.value,
-      notebook: notebook.value,
-      summary: sumOut.textContent,
-      quiz: [...quizList.querySelectorAll('div.card')].map(c=>({
-        q: c.querySelector('strong')?.innerText.replace(/^\d+\.\s*/,'') || '',
-        a: c.querySelector('details div')?.innerText || ''
-      }))
+  // TTS voices
+  const voiceSelect=$("#voiceSelect"); const ttsBtn=$("#ttsChat");
+  function loadVoices(){
+    const voices=speechSynthesis.getVoices();
+    voiceSelect.innerHTML=''; voices.forEach(v=>{ const op=document.createElement('option'); op.value=v.name; op.textContent=`${v.name} (${v.lang})`; voiceSelect.appendChild(op); });
+    chatInfo.textContent = voices.length? `${voices.length} voices available` : 'No system voices available';
+  }
+  if ('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
+  ttsBtn.addEventListener('click', ()=>{
+    if(!('speechSynthesis' in window)) return toast('TTS not supported on this device','warn');
+    const text=(chatLog.textContent||'').slice(-450) || 'Hello BLINKs and MONSTIEZ!';
+    const u=new SpeechSynthesisUtterance(text); const v=[...speechSynthesis.getVoices()].find(v=>v.name===voiceSelect.value);
+    if(v) u.voice=v; u.rate=1.03; u.pitch=1; u.volume=1; speechSynthesis.speak(u);
+  });
+
+  // ------------------ LYRICS SENTIMENT & MOOD ------------------
+  const LEX_POS=['love','shine','bright','happy','bloom','wow','power','win','free','fun','light','sweet','dream','glow','good','brave','fire'];
+  const LEX_NEG=['sad','cry','tears','alone','cold','hate','dark','fear','bad','break','pain','fall','lost','angry'];
+  function lexSentiment(text){
+    const toks=(text.toLowerCase().match(/[a-z0-9']+/g)||[]);
+    let pos=0,neg=0; for(const t of toks){ if(LEX_POS.includes(t)) pos++; if(LEX_NEG.includes(t)) neg++; }
+    const score=pos-neg; return {score,pos,neg};
+  }
+  $('#analyzeLyrics').addEventListener('click', ()=>{
+    const src=$('#lyricsInput').value.trim(); if(!src) return toast('Paste lyrics or text','warn');
+    const {score,pos,neg}=lexSentiment(src);
+    $('#lyricsScore').textContent=`Score: ${score} (pos ${pos} / neg ${neg})`;
+    // highlight
+    let out=escapeHtml(src);
+    for(const w of [...LEX_POS,...LEX_NEG]){
+      const re=new RegExp(`\\b(${w})\\b`,'gi');
+      out = out.replace(re, (m)=>LEX_POS.includes(w)?`<mark style="background:rgba(46,204,113,.35)">${m}</mark>`:`<mark style="background:rgba(231,76,60,.35)">${m}</mark>`);
+    }
+    $('#lyricsOut').innerHTML=out;
+    // chart
+    const data=[{k:'Positive', v:pos},{k:'Negative', v:neg},{k:'Net', v:Math.max(0,score)}];
+    const el=d3.select('#lyricsChart'); el.selectAll('*').remove();
+    const w=el.node().clientWidth||600, h=+el.style('height').replace('px','')||220, m={t:12,r:10,b:30,l:30};
+    const x=d3.scaleBand().domain(data.map(d=>d.k)).range([m.l, w-m.r]).padding(0.25);
+    const y=d3.scaleLinear().domain([0, d3.max(data,d=>d.v)||1]).nice().range([h-m.b, m.t]);
+    const svg=el.append('svg').attr('width','100%').attr('height',h);
+    svg.append('g').attr('transform',`translate(0,${h-m.b})`).call(d3.axisBottom(x));
+    svg.append('g').attr('transform',`translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4));
+    svg.append('g').selectAll('rect').data(data).enter().append('rect')
+      .attr('x',d=>x(d.k)).attr('y',d=>y(d.v)).attr('width',x.bandwidth()).attr('height',d=>h-m.b - y(d.v))
+      .attr('fill','url(#grad)');
+  });
+  $('#lyricsClear').addEventListener('click', ()=>{ $('#lyricsInput').value=''; $('#lyricsOut').textContent=''; $('#lyricsScore').textContent='Score: 0'; d3.select('#lyricsChart').selectAll('*').remove(); });
+
+  // ------------------ DIARY (localStorage) + MOOD GRAPH + RECS ------------------
+  const DIARY_KEY='bp_bm_diary_v1';
+  function getDiary(){ try{ return JSON.parse(localStorage.getItem(DIARY_KEY)||'[]'); }catch{ return []; } }
+  function setDiary(arr){ localStorage.setItem(DIARY_KEY, JSON.stringify(arr)); }
+  function diaryMood(s){ return lexSentiment(s).score; }
+  function renderDiary(){
+    const data=getDiary();
+    $('#diaryList').textContent = data.map(d=>`• ${new Date(d.t).toLocaleString()} [${d.m>=0?'+':''}${d.m}] — ${d.text.slice(0,120)}`).join('\n');
+    const el=d3.select('#diaryChart'); el.selectAll('*').remove();
+    const w=el.node().clientWidth||600, h=+el.style('height').replace('px','')||280, m={t:10,r:10,b:30,l:36};
+    const x=d3.scaleLinear().domain([0, Math.max(1,data.length-1)]).range([m.l, w-m.r]);
+    const y=d3.scaleLinear().domain([d3.min(data,d=>d.m)||-3, d3.max(data,d=>d.m)||3]).nice().range([h-m.b, m.t]);
+    const svg=el.append('svg').attr('width','100%').attr('height',h);
+    svg.append('g').attr('transform',`translate(0,${h-m.b})`).call(d3.axisBottom(x).ticks(Math.min(6, data.length)));
+    svg.append('g').attr('transform',`translate(${m.l},0)`).call(d3.axisLeft(y));
+    const line=d3.line().x((d,i)=>x(i)).y(d=>y(d.m));
+    svg.append('path').datum(data).attr('d',line).attr('fill','none').attr('stroke','currentColor').attr('stroke-width',2);
+    svg.append('g').selectAll('circle').data(data).enter().append('circle').attr('cx',(d,i)=>x(i)).attr('cy',d=>y(d.m)).attr('r',3.5).attr('fill','url(#grad)');
+  }
+  function recSongs(mood){
+    // lightweight curated suggestions
+    const picks = [
+      {g:'blackpink', title:'DDU-DU DDU-DU', mood:2},
+      {g:'blackpink', title:'As If It’s Your Last', mood:3},
+      {g:'blackpink', title:'Kill This Love', mood:1},
+      {g:'blackpink', title:'Stay', mood:-1},
+      {g:'babymonster', title:'SHEESH', mood:2},
+      {g:'babymonster', title:'Stuck In The Middle', mood:-2},
+      {g:'babymonster', title:'Batter Up', mood:1},
+      {g:'babymonster', title:'Dream', mood:3}
+    ];
+    // near mood
+    const near = picks.filter(p=>Math.abs(p.mood - mood)<=1);
+    return (near.length?near:picks).slice(0,4);
+  }
+  $('#saveDiary').addEventListener('click', ()=>{
+    const text=$('#diaryText').value.trim(); if(!text) return toast('Write something first','warn');
+    const data=getDiary(); const m=diaryMood(text);
+    data.push({t:Date.now(), text, m}); setDiary(data); $('#diaryText').value=''; renderDiary();
+    // recs
+    $('#recList').innerHTML='';
+    for(const r of recSongs(m)){ const li=document.createElement('li'); li.textContent=`${GROUPS[r.g].label}: ${r.title}`; $('#recList').appendChild(li); }
+    $('#diaryInfo').textContent = `Saved. Mood score ${m>=0?'+':''}${m}`;
+  });
+  $('#sumDiary').addEventListener('click', ()=>{
+    const data=getDiary(); if(!data.length) return toast('No entries yet','warn');
+    const combined=data.map(d=>d.text).join(' ');
+    const s=textrankSummarize(combined, 4); $('#diaryInfo').textContent='Summary: '+s.slice(0,180)+'…';
+  });
+  $('#clearDiary').addEventListener('click', ()=>{ if(confirm('Clear all diary entries?')){ setDiary([]); renderDiary(); $('#recList').innerHTML=''; $('#diaryInfo').textContent=''; }});
+  renderDiary();
+
+  // ------------------ CREATIVE: CAPTION & PALETTE ------------------
+  const CAPTION_TEMPLATES=[
+    "Born {vibe} • {member} mode.",
+    "Glow up in {city} • {group} energy.",
+    "No skips • {group} playlist on repeat.",
+    "Practice. Pink. Power. {emoji}",
+    "Legendary incoming • {member} says hi!"
+  ];
+  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function genCaption(){
+    const brand=brandSelect.value, member=memberSelect.options[memberSelect.selectedIndex].textContent;
+    const map={blackpink:'BLACKPINK', babymonster:'BABYMONSTER'}; const data={
+      vibe:rand(['loud','soft','fierce','glitter','neon','stellar']),
+      member, group:map[brand], emoji:'✨'
     };
-    const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ai-forge-export.json'; a.click();
-  });
+    let s=rand(CAPTION_TEMPLATES); for(const k of Object.keys(data)) s=s.replace(`{${k}}`, data[k]); return s;
+  }
+  $('#genCaption').addEventListener('click', ()=>{ $('#posterCaption').value = genCaption(); });
 
-  // ---------- Clear caches ----------
+  const posterCanvas=$("#posterCanvas"); const ctx=posterCanvas.getContext('2d'); let posterImg=null;
+  $('#posterFile').addEventListener('change', async (e)=>{
+    posterImg=null; const f=e.target.files[0]; if(!f) return;
+    const url=URL.createObjectURL(f); const img=new Image(); img.onload=()=>{ posterImg=img; drawPoster(); URL.revokeObjectURL(url); }; img.src=url;
+  });
+  function drawPoster(){
+    const caption = ($('#posterCaption').value.trim()||genCaption());
+    const w=posterCanvas.width, h=posterCanvas.height;
+    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg2'); ctx.fillRect(0,0,w,h);
+    if(posterImg){
+      const scale=Math.min(w/posterImg.width, h/posterImg.height);
+      const nw=posterImg.width*scale, nh=posterImg.height*scale;
+      ctx.drawImage(posterImg, (w-nw)/2, (h-nh)/2, nw, nh);
+    }
+    // overlay gradient from member accent
+    const accent=getComputedStyle(document.body).getPropertyValue('--accent').trim();
+    const grad=ctx.createLinearGradient(0,h*0.65,0,h);
+    grad.addColorStop(0, hexToRgba(accent,0));
+    grad.addColorStop(1, hexToRgba(accent,0.85));
+    ctx.fillStyle=grad; ctx.fillRect(0,h*0.6,w,h*0.4);
+
+    ctx.fillStyle='#000'; ctx.font='700 40px Poppins, sans-serif';
+    ctx.shadowColor='rgba(0,0,0,.25)'; ctx.shadowBlur=4; ctx.shadowOffsetY=2;
+    wrapText(ctx, caption, 28, h-80, w-56, 44, '#fff');
+  }
+  function hexToRgba(hex, a=1){ const c=hex.replace('#',''); const n=parseInt(c,16); const r=(n>>16)&255, g=(n>>8)&255, b=n&255; return `rgba(${r},${g},${b},${a})`; }
+  function wrapText(ctx, text, x, y, maxWidth, lineHeight, color='#fff'){
+    const words=text.split(' '); let line=''; ctx.fillStyle=color;
+    for(let n=0;n<words.length;n++){
+      const testLine = line + words[n] + ' '; const metrics = ctx.measureText(testLine);
+      if(metrics.width > maxWidth && n>0){ ctx.fillText(line, x, y); line = words[n]+' '; y += lineHeight;
+      } else line = testLine;
+    } ctx.fillText(line, x, y);
+  }
+  $('#drawPoster').addEventListener('click', drawPoster);
+  $('#downloadPoster').addEventListener('click', ()=>{ const a=document.createElement('a'); a.href=posterCanvas.toDataURL('image/png'); a.download='poster.png'; a.click(); });
+
+  // Palette generator from current accent
+  $('#genPalette').addEventListener('click', ()=>{
+    const base = getComputedStyle(document.body).getPropertyValue('--accent').trim();
+    const colors = generatePalette(base); const wrap=$("#paletteWrap"); wrap.innerHTML='';
+    for(const c of colors){
+      const div=document.createElement('div'); div.style.cssText=`height:72px; border-radius:10px; border:1px solid var(--divider); background:${c}; display:flex; align-items:end; justify-content:center; padding:6px; font-weight:800`;
+      div.textContent=c; div.title='Click to copy';
+      div.addEventListener('click', ()=>{ navigator.clipboard.writeText(c); toast('Copied '+c,'ok'); });
+      wrap.appendChild(div);
+    }
+  });
+  function generatePalette(hex){
+    const hsl=hexToHsl(hex); const out=[];
+    const shifts=[0,30,210,150,330]; // base, triad, etc.
+    for(const s of shifts){ const t=(hsl.h+s)%360; out.push(hslToHex({h:t, s:Math.min(100,hsl.s+5), l:Math.min(70,hsl.l+10)})); }
+    return out;
+  }
+  function hexToHsl(H){
+    let r=0,g=0,b=0; H=H.replace('#',''); if(H.length===3) H=H.split('').map(x=>x+x).join('');
+    r=parseInt(H.substring(0,2),16)/255; g=parseInt(H.substring(2,4),16)/255; b=parseInt(H.substring(4,6),16)/255;
+    const cmin=Math.min(r,g,b), cmax=Math.max(r,g,b), delta=cmax-cmin; let h=0,s=0,l=0;
+    if(delta===0) h=0; else if(cmax===r) h=((g-b)/delta)%6; else if(cmax===g) h=(b-r)/delta+2; else h=(r-g)/delta+4;
+    h=Math.round(h*60); if(h<0) h+=360; l=(cmax+cmin)/2; s=delta===0?0:delta/(1-Math.abs(2*l-1)); s=+(s*100).toFixed(1); l=+(l*100).toFixed(1);
+    return {h,s,l};
+  }
+  function hslToHex({h,s,l}){ s/=100; l/=100; const C=(1-Math.abs(2*l-1))*s; const X=C*(1-Math.abs((h/60)%2-1)); const m=l-C/2;
+    let r=0,g=0,b=0;
+    if(0<=h && h<60){ r=C; g=X; b=0; } else if(60<=h && h<120){ r=X; g=C; b=0;}
+    else if(120<=h && h<180){ r=0; g=C; b=X; } else if(180<=h && h<240){ r=0; g=X; b=C;}
+    else if(240<=h && h<300){ r=X; g=0; b=C;} else { r=C; g=0; b=X;}
+    r=Math.round((r+m)*255).toString(16).padStart(2,'0'); g=Math.round((g+m)*255).toString(16).padStart(2,'0'); b=Math.round((b+m)*255).toString(16).padStart(2,'0');
+    return `#${r}${g}${b}`;
+  }
+
+  // ------------------ GAMES ------------------
+  const QUOTES={
+    blackpink:{
+      jisoo:["Stay soft, but never weak.","Confidence is a habit you practice.","Good vibes, better timing."],
+      jennie:["Own the stage like it’s your room.","Small details make big statements.","Cool head, warm heart."],
+      rose:["Turn feelings into melodies.","Practice until it feels like you.","Gentle doesn’t mean fragile."],
+      lisa:["Energy is a choice.","Train smart, then go wild.","Smile first, then slay."]
+    },
+    babymonster:{
+      ahyeon:["Focus sharp, heart louder.","Sing like you mean it.","Power has precision."],
+      ruka:["Style is rhythm you wear.","Stay patient, stay ready.","Grace under lights."],
+      pharita:["Shine kindly, shine brightly.","Warmth is a strength.","Make effort aesthetic."],
+      asa:["Spice the moment.","Fear less, try more.","Clap for small wins."],
+      rami:["Soul speaks when you listen.","Breath first, then belt.","Quiet focus, big results."],
+      rora:["Curiosity is a superpower.","Learn the pattern, play the art.","Ideas need motion."],
+      chiquita:["Tiny but thunder.","Speed is nothing without control.","Cute is also strong."]
+    }
+  };
+  function nextWhoSaid(){
+    const brand=brandSelect.value; const pool=QUOTES[brand]; const members=Object.keys(pool);
+    const pick=members[Math.floor(Math.random()*members.length)];
+    const quote=rand(pool[pick]);
+    $('#quoteBox').textContent='“'+quote+'”';
+    const choices=new Set([pick]); while(choices.size<Math.min(4,members.length)){ choices.add(rand(members)); }
+    const wrap=$('#choiceWrap'); wrap.innerHTML='';
+    [...choices].sort(()=>Math.random()-0.5).forEach(name=>{
+      const b=document.createElement('button'); b.className='btn'; b.textContent=name.toUpperCase(); b.addEventListener('click', ()=>{
+        $('#wsInfo').textContent = name===pick? 'Correct! 🎉' : `Oops—It was ${pick.toUpperCase()}`;
+      }); wrap.appendChild(b);
+    });
+  }
+  $('#nextQuote').addEventListener('click', nextWhoSaid); nextWhoSaid();
+
+  // Dance Challenge
+  const MOVES=["Finger hearts","Body roll","High-kick pose","Shoulder pop x4","Spin & point","Wave wave clap","Walk walk hit","Slide & snap"];
+  let danceTimer=null, danceT=0;
+  function startDance(){ if(danceTimer) return; const seq=Array.from({length:6}, ()=>rand(MOVES)); danceT=20;
+    $('#danceBox').textContent = `Do this sequence:\n• ${seq.join('\n• ')}\n\nTimer: ${danceT}s`;
+    danceTimer=setInterval(()=>{ danceT--; $('#danceBox').textContent = `Do this sequence:\n• ${seq.join('\n• ')}\n\nTimer: ${danceT}s`; if(danceT<=0){ stopDance(); toast('Challenge over! Score yourself 1-10.','ok'); } }, 1000);
+  }
+  function stopDance(){ clearInterval(danceTimer); danceTimer=null; }
+  $('#startDance').addEventListener('click', startDance); $('#stopDance').addEventListener('click', stopDance);
+
+  // ------------------ EXPORT & CACHE ------------------
+  $('#exportAll').addEventListener('click', ()=>{
+    const data={
+      brand: brandSelect.value, member: memberSelect.value, theme: themeSelect.value, mode: perfMode.value,
+      notebook: notebook.value, summary: $('#sumOut').textContent, chat: $('#chatLog').textContent,
+      diary: getDiary()
+    };
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='playground-export.json'; a.click();
+  });
   $('#clearCache').addEventListener('click', async ()=>{
     try{
-      if (window.caches) { for (const k of await caches.keys()) await caches.delete(k); }
-      if (indexedDB && indexedDB.databases){
-        const dbs = await indexedDB.databases(); for (const d of dbs) if (d.name) indexedDB.deleteDatabase(d.name);
-      }
-      toast('Caches cleared (reload recommended)','ok',3000);
-    }catch(e){ console.warn(e); toast('Could not fully clear caches','warn',3000); }
+      if (window.caches) for (const k of await caches.keys()) await caches.delete(k);
+      if (indexedDB && indexedDB.databases){ const dbs=await indexedDB.databases(); for(const d of dbs) if(d.name) indexedDB.deleteDatabase(d.name); }
+      toast('Caches cleared (reload recommended)','ok',2800);
+    }catch(e){ console.warn(e); toast('Could not fully clear caches','warn'); }
   });
 
-  // ---------- Utilities ----------
-  function escapeHtml(s){ return s.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[m]); }
+  // ------------------ SUMMARY / QUIZ (kept compact) ------------------
+  // (Quiz is available in previous version; to keep lightweight, we retain core learning features via Diary & Graph.)
 
-  // ---------- Init ----------
+  // ------------------ INIT ------------------
+  function initGradDef(){
+    // add a reusable gradient fill to the page for visuals
+    const svg = d3.select('body').append('svg').attr('width',0).attr('height',0);
+    const defs=svg.append('defs'); const grad=defs.append('linearGradient').attr('id','grad');
+    grad.append('stop').attr('offset','0%').attr('stop-color', getComputedStyle(document.body).getPropertyValue('--accent').trim());
+    grad.append('stop').attr('offset','100%').attr('stop-color', getComputedStyle(document.body).getPropertyValue('--accent-2').trim());
+  }
+  populateMembers(); initGradDef();
   toast('Lite mode active — fast & device-friendly. Pro embeddings are optional.','ok',4200);
+
+  // Accessibility: keyboard send on Ctrl+Enter
+  $('#chatInput').addEventListener('keydown', (e)=>{ if((e.ctrlKey||e.metaKey) && e.key==='Enter') $('#sendChat').click(); });
+
   </script>
 </body>
 </html>
