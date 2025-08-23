@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>BLACKPINK × BABYMONSTER — Member Modes AI Forge (Lite + Pro)</title>
+<meta name="description" content="All-in-browser AI study/creative tool. Lite = no models. Pro = optional embeddings. BLACKPINK × BABYMONSTER member modes. Fully responsive, free, no tokens." />
+
+<!-- ====== STYLES ====== -->
+<style>
+  :root{
+    --bg: #0b0b0d; --bg2:#0f0f12; --card:rgba(255,255,255,.04); --ink:#f5f7fb; --muted:#b9c3d6;
+    --accent:#ff3aa6; --accent2:#9b6bff; --ok:#2ecc71; --warn:#f1c40f; --err:#e74c3c;
+    --radius:16px; --shadow:0 10px 28px rgba(0,0,0,.45);
+  }
+  /* Brand presets */
+  [data-brand="blackpink"]{ --accent:#ff4da6; --accent2:#141414; --bg: #0a0a0b; --bg2:#101014; }
+  [data-brand="babymonster"]{ --accent:#00e2ff; --accent2:#ff007d; --bg:#05050a; --bg2:#0a0a14; }
+  /* Member modes—overlays the accents (keeps brand bg) */
+  [data-member="jisoo"]{ --accent:#ff7bb7; --accent2:#ffdbe9; }
+  [data-member="jennie"]{ --accent:#ff3aa6; --accent2:#333; }
+  [data-member="rose"]{ --accent:#ffa0c7; --accent2:#6cc4ff; }
+  [data-member="lisa"]{ --accent:#00ff9c; --accent2:#ff5ab3; }
+  [data-member="ruka"]{ --accent:#b084ff; --accent2:#ff7ab9; }
+  [data-member="pharita"]{ --accent:#ffae4d; --accent2:#ff66d4; }
+  [data-member="asa"]{ --accent:#ff5b5b; --accent2:#22e3ff; }
+  [data-member="rami"]{ --accent:#8df0ff; --accent2:#ff9cf3; }
+  [data-member="rora"]{ --accent:#7fff85; --accent2:#a78bfa; }
+  [data-member="chiquita"]{ --accent:#ffd34d; --accent2:#ff7ad1; }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; color:var(--ink); background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(255,255,255,.03), transparent 60%),
+      radial-gradient(1000px 500px at 110% 0%, rgba(255,255,255,.02), transparent 60%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+    font-family: ui-sans-serif, system-ui, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial;
+  }
+
+  .topbar{
+    position:sticky; top:0; z-index:40; display:flex; gap:12px; align-items:center; justify-content:space-between;
+    padding:12px 16px; backdrop-filter: blur(10px);
+    border-bottom:1px solid rgba(255,255,255,.06);
+    background:linear-gradient(90deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent);
+  }
+  .brand{display:flex; gap:10px; align-items:center}
+  .logo{font-size:26px; filter: drop-shadow(0 8px 18px color-mix(in srgb, var(--accent), transparent 70%));}
+  h1{font-size:18px; margin:0}
+  .tag{margin:0; color:var(--muted); font-size:12px}
+
+  .controls{display:flex; gap:8px; flex-wrap:wrap}
+  .btn{border:0; padding:8px 12px; border-radius:999px; cursor:pointer; font-weight:700; color:var(--ink);
+       background:var(--card); box-shadow:var(--shadow); transition:.15s transform}
+  .btn:active{transform:translateY(1px) scale(.98)}
+  .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#000; font-weight:800}
+  .btn.ghost{background:transparent; border:1px solid rgba(255,255,255,.08)}
+  .btn.ok{background:color-mix(in srgb, var(--ok) 40%, transparent); border:1px solid color-mix(in srgb, var(--ok) 60%, transparent)}
+  .btn.warn{background:color-mix(in srgb, var(--warn) 25%, transparent); border:1px solid color-mix(in srgb, var(--warn) 45%, transparent)}
+
+  select, input[type="number"], input[type="text"]{
+    background:rgba(255,255,255,.02); color:var(--ink); border:1px solid rgba(255,255,255,.08);
+    padding:8px; border-radius:10px; outline:none; width:100%;
+  }
+  input[type="file"]{color:var(--muted)}
+
+  .tabs{display:flex; gap:8px; padding:10px 16px; overflow:auto; border-bottom:1px solid rgba(255,255,255,.06)}
+  .tab{padding:8px 12px; background:transparent; border-radius:999px; border:1px solid transparent; cursor:pointer; font-weight:800}
+  .tab.active{border:1px solid rgba(255,255,255,.2); box-shadow:0 8px 22px rgba(0,0,0,.4)}
+
+  .container{max-width:1100px; margin:16px auto 120px; padding:0 14px}
+  .panel{display:none; padding:14px; border-radius:var(--radius); border:1px solid rgba(255,255,255,.06);
+         background:linear-gradient(180deg, rgba(255,255,255,.02), transparent)}
+  .panel.active{display:block}
+  .panel-head{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:8px}
+  .muted{color:var(--muted)} .small{font-size:12px}
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  @media (max-width:960px){ .grid-2{grid-template-columns:1fr} }
+
+  .card{background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:12px; box-shadow:var(--shadow)}
+  textarea{width:100%; min-height:140px; background:transparent; color:var(--ink); border:1px solid rgba(255,255,255,.08); padding:10px; border-radius:12px; outline:none}
+  .out{background:rgba(0,0,0,.25); padding:10px; border-radius:12px; max-height:360px; overflow:auto; white-space:pre-wrap}
+
+  /* Graph */
+  .graph-wrap{margin-top:10px; padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,.06)}
+  #graphSvg{width:100%; height:520px}
+
+  /* Footer & Toasts */
+  .footer{position:fixed; left:0; right:0; bottom:0; padding:10px 14px; display:flex; justify-content:center; gap:12px;
+          border-top:1px solid rgba(255,255,255,.06);
+          background:linear-gradient(180deg, rgba(0,0,0,.65), rgba(0,0,0,.8))}
+  .toasts{position:fixed; right:14px; bottom:86px; display:grid; gap:10px; z-index:50}
+  .toast{padding:10px 12px; border-radius:12px; background:rgba(0,0,0,.6); border:1px solid rgba(255,255,255,.08)}
+  .toast.ok{border-color:color-mix(in srgb, var(--ok) 50%, transparent)}
+  .toast.warn{border-color:color-mix(in srgb, var(--warn) 50%, transparent)}
+  .toast.err{border-color:color-mix(in srgb, var(--err) 50%, transparent)}
+
+  /* Micro-anim accents */
+  .pulse{ position:relative; }
+  .pulse::after{
+    content:""; position:absolute; inset:-2px; border-radius:inherit;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 55%, transparent), transparent 70%);
+    filter: blur(10px); opacity:.55; z-index:-1; animation: pulse 2.6s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:.35} 50%{opacity:.75} }
+</style>
+</head>
+
+<body data-brand="blackpink" data-member="jennie">
+  <!-- ====== TOP BAR ====== -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">🎤</div>
+      <div>
+        <h1>BLACKPINK × BABYMONSTER — Member Modes AI Forge</h1>
+        <p class="tag">Lite (no models) by default • Pro embeddings optional • 100% browser</p>
+      </div>
+    </div>
+    <div class="controls">
+      <select id="brandSelect" title="Brand">
+        <option value="blackpink">BLACKPINK</option>
+        <option value="babymonster">BABYMONSTER</option>
+      </select>
+      <select id="memberSelect" title="Member mode">
+        <!-- BLACKPINK -->
+        <optgroup label="BLACKPINK">
+          <option value="jisoo">Jisoo</option>
+          <option value="jennie" selected>Jennie</option>
+          <option value="rose">Rosé</option>
+          <option value="lisa">Lisa</option>
+        </optgroup>
+        <!-- BABYMONSTER -->
+        <optgroup label="BABYMONSTER">
+          <option value="ruka">Ruka</option>
+          <option value="pharita">Pharita</option>
+          <option value="asa">Asa</option>
+          <option value="rami">Rami</option>
+          <option value="rora">Rora</option>
+          <option value="chiquita">Chiquita</option>
+        </optgroup>
+      </select>
+
+      <select id="perfMode" title="Performance Mode">
+        <option value="lite" selected>Lite (no models)</option>
+        <option value="pro">Pro (embeddings)</option>
+      </select>
+      <button id="loadPro" class="btn primary pulse" title="Load Pro features (optional)">🚀 Enable Pro</button>
+      <button id="clearCache" class="btn ghost" title="Clear caches">🧹</button>
+      <button id="exportAll" class="btn ok" title="Export data">⬇ Export</button>
+    </div>
+  </header>
+
+  <!-- ====== TABS ====== -->
+  <nav class="tabs" role="tablist" aria-label="Main tabs">
+    <button class="tab active" data-tab="docs">Documents</button>
+    <button class="tab" data-tab="summary">Summary</button>
+    <button class="tab" data-tab="graph">Topic Graph</button>
+    <button class="tab" data-tab="search">Semantic Search</button>
+    <button class="tab" data-tab="quiz">Quiz & Flashcards</button>
+    <button class="tab" data-tab="about">About</button>
+  </nav>
+
+  <main class="container">
+    <!-- DOCUMENTS -->
+    <section id="docs" class="panel active">
+      <div class="panel-head">
+        <h2>📄 Documents</h2>
+        <p class="muted small">Upload PDFs (parsed locally) and build your notebook.</p>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Upload PDFs</h3>
+          <input id="pdfFiles" type="file" accept="application/pdf" multiple />
+          <div id="pdfList" class="list muted small" style="margin-top:8px"></div>
+        </div>
+        <div class="card">
+          <h3>Notebook</h3>
+          <textarea id="notebook" placeholder="Your combined notes will live here…"></textarea>
+          <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap">
+            <button id="dedupeNotes" class="btn ghost">🧽 Clean/Dedup</button>
+            <button id="chunkNotes" class="btn ghost">✂ Chunk</button>
+            <span id="chunkInfo" class="muted small"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUMMARY -->
+    <section id="summary" class="panel">
+      <div class="panel-head">
+        <h2>🧠 TextRank Summary (No Model)</h2>
+        <p class="muted small">Works offline — adjustable length</p>
+      </div>
+      <textarea id="sumInput" placeholder="Paste text or leave empty to use your Notebook"></textarea>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:8px 0">
+        <label class="small">Sentences: <input id="sumCount" type="number" value="5" min="2" max="20" style="width:90px"></label>
+        <button id="runSum" class="btn primary">Summarize</button>
+      </div>
+      <pre id="sumOut" class="out"></pre>
+    </section>
+
+    <!-- GRAPH -->
+    <section id="graph" class="panel">
+      <div class="panel-head">
+        <h2>🕸 Topic Graph</h2>
+        <p class="muted small">Keyword co-occurrence — drag nodes, export PNG</p>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <label class="small">Top keywords: <input id="kwCount" type="number" value="28" min="10" max="120" style="width:110px"></label>
+        <button id="buildGraph" class="btn">Build Graph</button>
+        <button id="downloadGraph" class="btn ghost">Download Image</button>
+      </div>
+      <div class="graph-wrap"><svg id="graphSvg" role="img" aria-label="Topic graph"></svg></div>
+    </section>
+
+    <!-- SEARCH -->
+    <section id="search" class="panel">
+      <div class="panel-head">
+        <h2>🔎 Semantic Search</h2>
+        <p class="muted small">Lite = TF-IDF • Pro = Embeddings (optional load)</p>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap">
+        <input id="searchQuery" type="text" placeholder="Ask a question or search concept…" />
+        <button id="runSearch" class="btn">Search</button>
+      </div>
+      <ol id="searchResults" class="out" style="margin-top:8px; padding-left:18px"></ol>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz" class="panel">
+      <div class="panel-head">
+        <h2>🧩 Quiz & Flashcards</h2>
+        <p class="muted small">Smart rule-based generator (lightweight)</p>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center">
+        <label class="small">Questions: <input id="qCount" type="number" value="12" min="3" max="50" style="width:90px"></label>
+        <button id="genQuiz" class="btn primary">Generate</button>
+        <button id="exportCSV" class="btn ghost">Export CSV</button>
+      </div>
+      <div id="quizList" style="margin-top:8px"></div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" class="panel">
+      <div class="panel-head"><h2>About</h2></div>
+      <div class="card">
+        <p><strong>Design:</strong> BLACKPINK × BABYMONSTER with Member Modes.</p>
+        <p><strong>AI:</strong> All local. Default <em>Lite</em> uses classical NLP (TextRank summarizer + TF-IDF search). Optional <em>Pro</em> loads a tiny sentence embedding model for improved search — still 100% in the browser, free.</p>
+        <ul>
+          <li>PDF parsing: <code>pdf.js</code></li>
+          <li>Graph: <code>d3</code></li>
+          <li>Pro embeddings (optional): <code>@xenova/transformers</code> + <code>all-MiniLM-L6-v2</code></li>
+        </ul>
+        <p class="muted small">Tip: Use Pro mode only if you need higher-quality semantic search; Lite is fastest and works on all devices.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Made for BLINKs & MONSTERS · No tokens · No installs · 100% client-side</span>
+  </footer>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <!-- ====== SCRIPTS (lightweight by default; Pro loads lazily) ====== -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+
+  <script>
+  // ---------- Helpers ----------
+  const $ = (s, r=document)=>r.querySelector(s);
+  const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
+  const toasts = $("#toasts");
+  const toast=(msg,kind='ok',ms=2800)=>{ const el=document.createElement('div'); el.className='toast '+kind; el.textContent=msg; toasts.appendChild(el); setTimeout(()=>el.remove(), ms); };
+
+  // ---------- Brand & Member modes ----------
+  const brandSelect = $("#brandSelect");
+  const memberSelect = $("#memberSelect");
+  const body = document.body;
+  brandSelect.addEventListener("change", ()=>{ body.dataset.brand = brandSelect.value; pulseBrand(); });
+  memberSelect.addEventListener("change", ()=>{ body.dataset.member = memberSelect.value; pulseBrand(); });
+  function pulseBrand(){ document.querySelectorAll('.btn.primary').forEach(b=>{ b.classList.remove('pulse'); void b.offsetWidth; b.classList.add('pulse'); }); }
+
+  // ---------- Tabs ----------
+  $$('.tab').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      $$('.tab').forEach(x=>x.classList.remove('active'));
+      $$('.panel').forEach(p=>p.classList.remove('active'));
+      t.classList.add('active');
+      $('#'+t.dataset.tab).classList.add('active');
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+  });
+
+  // ---------- PDF.js parsing ----------
+  const pdfInput = $('#pdfFiles'); const pdfList = $('#pdfList'); const notebook = $('#notebook');
+  const pdfjsLib = window['pdfjs-dist/build/pdf'];
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+  pdfInput.addEventListener('change', async ()=>{
+    if (!pdfInput.files || !pdfInput.files.length) return;
+    for (const file of pdfInput.files){
+      try{
+        const buf = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({data:buf}).promise;
+        let text = '';
+        for (let i=1;i<=pdf.numPages;i++){
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          const t = content.items.map(it=>it.str).join(' ');
+          text += `\n\n# Page ${i}\n${t}`;
+        }
+        notebook.value = (notebook.value + `\n\n# ${file.name}\n` + text).trim();
+        const item = document.createElement('div'); item.className='card';
+        item.textContent = `Parsed: ${file.name} — ${text.length.toLocaleString()} chars, ${pdf.numPages} pages`;
+        pdfList.prepend(item);
+        toast(`Parsed ${file.name}`,'ok',2200);
+      }catch(e){ console.error(e); toast(`Failed: ${file.name}`,'err',3000); }
+    }
+  });
+
+  // ---------- Notebook utilities ----------
+  const dedupeNotesBtn = $('#dedupeNotes');
+  const chunkNotesBtn = $('#chunkNotes');
+  const chunkInfo = $('#chunkInfo');
+  let chunks = [];
+  const splitIntoChunks=(text,maxLen=800)=>{
+    const sents = text.split(/(?<=[.!?])\s+/); const out=[]; let buf='';
+    for(const s of sents){
+      if((buf+' '+s).trim().length>maxLen){ if(buf.trim()) out.push(buf.trim()); buf=s; } else buf=(buf?buf+' ':'')+s;
+    }
+    if(buf.trim()) out.push(buf.trim());
+    return out;
+  };
+  dedupeNotesBtn.addEventListener('click', ()=>{
+    const lines = notebook.value.split(/\n+/).map(s=>s.trim()).filter(Boolean);
+    const seen=new Set(); const clean=[];
+    for(const l of lines){ const k=l.toLowerCase(); if(!seen.has(k)){ seen.add(k); clean.push(l); } }
+    notebook.value = clean.join('\n');
+    toast('Deduped notebook','ok');
+  });
+  chunkNotesBtn.addEventListener('click', ()=>{
+    chunks = splitIntoChunks(notebook.value, 700);
+    chunkInfo.textContent = `${chunks.length} chunks ready`;
+    toast('Chunked notes','ok');
+  });
+
+  // ---------- TextRank Summarizer (extractive, model-free) ----------
+  const sumInput = $('#sumInput'); const sumCount = $('#sumCount'); const sumOut = $('#sumOut');
+  const runSumBtn = $('#runSum');
+  function textrankSummarize(text, k=5){
+    const sents = text.split(/(?<=[.!?])\s+/).filter(s=>s.trim().length>0);
+    if (sents.length<=k) return sents.join(' ');
+    const norm = s => s.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').replace(/\s+/g,' ').trim();
+    const bag = s => { const m=new Map(); norm(s).split(' ').forEach(w=>{ if(w.length>2){ m.set(w,(m.get(w)||0)+1); } }); return m; };
+    const cosine=(a,b)=>{
+      let dot=0,na=0,nb=0;
+      const keys = new Set([...a.keys(),...b.keys()]);
+      keys.forEach(w=>{ const x=a.get(w)||0, y=b.get(w)||0; dot+=x*y; na+=x*x; nb+=y*y; });
+      return dot/(Math.sqrt(na)*Math.sqrt(nb)||1);
+    };
+    const bags = sents.map(bag);
+    const n = sents.length; const sim = Array.from({length:n},()=>Array(n).fill(0));
+    for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){ const c=cosine(bags[i],bags[j]); sim[i][j]=sim[j][i]=c; }
+    let scores = Array(n).fill(1/n);
+    for(let it=0; it<20; it++){
+      const next = Array(n).fill(0.15/n);
+      for(let i=0;i<n;i++){
+        const denom = sim[i].reduce((a,b)=>a+b,0)||1;
+        for(let j=0;j<n;j++) if(i!==j) next[j]+=0.85*(sim[i][j]/denom)*scores[i];
+      }
+      scores = next;
+    }
+    const idx = scores.map((s,i)=>[s,i]).sort((a,b)=>b[0]-a[0]).slice(0,k).map(x=>x[1]).sort((a,b)=>a-b);
+    return idx.map(i=>sents[i]).join(' ');
+  }
+  runSumBtn.addEventListener('click', ()=>{
+    const src = (sumInput.value.trim() || notebook.value.trim());
+    if(!src) return toast('No text to summarize','warn');
+    const k = Math.max(2, Math.min(20, Number(sumCount.value)||5));
+    const out = textrankSummarize(src, k);
+    sumOut.textContent = out;
+  });
+
+  // ---------- Topic Graph (d3) ----------
+  const graphSvg = d3.select('#graphSvg');
+  const buildGraphBtn = $('#buildGraph'); const downloadGraphBtn = $('#downloadGraph');
+  function extractKeywords(text, topN=28){
+    const stop = new Set(("a,an,the,and,or,but,if,then,else,when,while,of,to,in,on,for,with,as,by,at,from,into,that,this,these,those,is,are,was,were,be,been,has,have,had,do,does,did,not,no,so,than,too,very,can,will,just,about,over,under,more,most,less,into,each,other,also,which,who,whom,whose,where,why,how").split(','));
+    const words = text.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w && !stop.has(w) && w.length>2);
+    const freq = new Map(); words.forEach(w=>freq.set(w,(freq.get(w)||0)+1));
+    return [...freq.entries()].sort((a,b)=>b[1]-a[1]).slice(0, topN).map(([w])=>w);
+  }
+  function buildGraph(text, topN){
+    const keywords = extractKeywords(text, topN);
+    const index = new Map(keywords.map((k,i)=>[k,i]));
+    const words = text.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/);
+    const windowSize = 6; const linkMap=new Map();
+    for(let i=0;i<words.length;i++){
+      const wi=words[i]; if(!index.has(wi)) continue;
+      for(let j=i+1;j<Math.min(i+windowSize, words.length); j++){
+        const wj=words[j]; if(!index.has(wj) || wi===wj) continue;
+        const a=index.get(wi), b=index.get(wj); const key=a<b?`${a}-${b}`:`${b}-${a}`;
+        linkMap.set(key,(linkMap.get(key)||0)+1);
+      }
+    }
+    const nodes = keywords.map((w,i)=>({id:i, label:w}));
+    const links = [...linkMap.entries()].map(([k,v])=>{ const [s,t]=k.split('-').map(Number); return {source:s, target:t, weight:v}; });
+    graphSvg.selectAll('*').remove();
+    const width = graphSvg.node().clientWidth || 800, height = 520;
+    const sim = d3.forceSimulation(nodes)
+      .force('link', d3.forceLink(links).id(d=>d.id).distance(d=>120/(1+Math.log1p(d.weight))))
+      .force('charge', d3.forceManyBody().strength(-260))
+      .force('center', d3.forceCenter(width/2, height/2));
+    const link = graphSvg.append('g').attr('stroke','rgba(255,255,255,.16)').selectAll('line')
+      .data(links).enter().append('line').attr('stroke-width', d=>Math.log2(1+d.weight)+.6);
+    const node = graphSvg.append('g').selectAll('g').data(nodes).enter().append('g').call(d3.drag()
+      .on('start', (e,d)=>{ if(!e.active) sim.alphaTarget(.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag', (e,d)=>{ d.fx=e.x; d.fy=e.y; })
+      .on('end',  (e,d)=>{ if(!e.active) sim.alphaTarget(0); d.fx=null; d.fy=null; }));
+    node.append('circle').attr('r', 11).attr('fill','url(#grad)').attr('stroke','rgba(255,255,255,.12)').attr('stroke-width',1.2);
+    node.append('text').text(d=>d.label).attr('x',14).attr('y',4).style('fill','#f5f7fb').style('font-size','12px');
+    sim.on('tick', ()=>{
+      link.attr('x1', d=>d.source.x).attr('y1', d=>d.source.y).attr('x2', d=>d.target.x).attr('y2', d=>d.target.y);
+      node.attr('transform', d=>`translate(${d.x},${d.y})`);
+    });
+  }
+  buildGraphBtn.addEventListener('click', ()=>{
+    const t = notebook.value.trim();
+    if(!t) return toast('Add some notes first','warn');
+    const n = Math.max(10, Math.min(120, Number($('#kwCount').value)||28));
+    buildGraph(t, n);
+  });
+  downloadGraphBtn.addEventListener('click', ()=>{
+    const svg = $('#graphSvg');
+    const xml = new XMLSerializer().serializeToString(svg);
+    const blob = new Blob([xml], {type:'image/svg+xml'}); const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download='topic-graph.svg'; a.click();
+  });
+
+  // ---------- Semantic Search ----------
+  // Lite: TF-IDF; Pro (optional): MiniLM embeddings
+  const perfMode = $('#perfMode'); const loadProBtn = $('#loadPro');
+  let proReady = false, embedder = null, proVectors = null, proTexts = null;
+
+  // Lite TF-IDF vectorizer
+  const tfidf = {
+    vocab: new Map(), idf: [], docs: [], texts: [],
+    addDocs(texts){ this.vocab.clear(); this.docs=[]; this.texts=texts;
+      const token = s=>s.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w.length>2);
+      const dterms = texts.map(t=>token(t));
+      // build vocab
+      const df = new Map();
+      dterms.forEach(terms=>{
+        const uniq = new Set(terms);
+        uniq.forEach(w=> df.set(w, (df.get(w)||0)+1 ));
+      });
+      const entries = [...df.keys()].sort();
+      entries.forEach((w,i)=> this.vocab.set(w,i));
+      const N = texts.length; this.idf = entries.map(w=> Math.log((N+1)/((df.get(w)||0)+1))+1 );
+      // docs -> sparse vectors
+      this.docs = dterms.map(terms=>{
+        const tf = new Map(); terms.forEach(w=> tf.set(w, (tf.get(w)||0)+1));
+        const vec = new Map();
+        tf.forEach((f,w)=>{ if(this.vocab.has(w)){ const i=this.vocab.get(w); vec.set(i, (f/terms.length)*this.idf[i]); }});
+        return vec;
+      });
+    },
+    vectorize(query){
+      const token = query.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w.length>2);
+      const tf = new Map(); token.forEach(w=> tf.set(w,(tf.get(w)||0)+1));
+      const vec = new Map(); tf.forEach((f,w)=>{ if(this.vocab.has(w)){ const i=this.vocab.get(w); vec.set(i,(f/token.length)*this.idf[i]); }});
+      return vec;
+    },
+    cosineSparse(a,b){
+      let dot=0, na=0, nb=0;
+      a.forEach((va,i)=>{ na+=va*va; const vb=b.get(i)||0; dot+=va*vb; });
+      b.forEach((vb,i)=>{ nb+=vb*vb; });
+      return dot/(Math.sqrt(na)*Math.sqrt(nb)||1);
+    },
+    search(query, topK=10){
+      const q=this.vectorize(query);
+      const scores = this.docs.map((d,i)=>({i, s:this.cosineSparse(q,d)})).sort((a,b)=>b.s-a.s).slice(0,topK);
+      return scores.map(({i,s})=>({text:this.texts[i], score:s}));
+    }
+  };
+
+  // Build Lite index on demand
+  function buildLiteIndex(){
+    const raw = notebook.value.trim();
+    if(!raw) return null;
+    const parts = splitIntoChunks(raw, 400);
+    tfidf.addDocs(parts);
+    return parts.length;
+  }
+
+  // Optional: load Pro embeddings lazily
+  loadProBtn.addEventListener('click', async ()=>{
+    if (proReady) return toast('Pro already enabled','ok');
+    try{
+      toast('Loading Pro embeddings…','warn',3800);
+      // Load transformers on demand
+      if (!window.transformers){
+        const s=document.createElement('script');
+        s.src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js";
+        await new Promise((res,rej)=>{ s.onload=res; s.onerror=rej; document.head.appendChild(s); });
+      }
+      const device = navigator.gpu ? 'webgpu' : 'wasm';
+      embedder = await window.transformers.pipeline('feature-extraction','Xenova/all-MiniLM-L6-v2',{ quantized:true, device, progress_callback:(ev)=>{ if(ev?.status) toast(ev.status,'warn',1400); } });
+      // Build vectors from notebook chunks
+      const raw = notebook.value.trim();
+      if(!raw) { proReady = true; toast('Pro ready — build embeddings after adding notes.','ok'); return; }
+      const parts = splitIntoChunks(raw, 400);
+      proTexts = parts;
+      proVectors = [];
+      for(let i=0;i<parts.length;i++){
+        const out = await embedder(parts[i], { pooling:'mean', normalize:true });
+        const vec = out.data ? Array.from(out.data) : Array.from(out[0]);
+        proVectors.push(vec);
+      }
+      proReady = true;
+      toast(`Pro ready with ${parts.length} chunks`,`ok`,3000);
+    }catch(e){ console.error(e); toast('Failed to enable Pro','err',3500); }
+  });
+
+  // Search click
+  $('#runSearch').addEventListener('click', async ()=>{
+    const q = $('#searchQuery').value.trim();
+    const out = $('#searchResults'); out.innerHTML='';
+    if(!q) return toast('Enter a query','warn');
+    if (perfMode.value === 'pro'){
+      if (!proReady){ return toast('Enable Pro first (button above)','warn'); }
+      // Ensure vectors exist
+      if (!proVectors || !proTexts){ toast('Building embeddings from notebook…','warn');
+        const raw = notebook.value.trim(); if(!raw) return toast('Notebook empty','warn');
+        const parts = splitIntoChunks(raw, 400);
+        proTexts = parts; proVectors=[];
+        for(let i=0;i<parts.length;i++){ const outv = await embedder(parts[i], {pooling:'mean', normalize:true}); const v = outv.data?Array.from(outv.data):Array.from(outv[0]); proVectors.push(v); }
+      }
+      // Query vector
+      const qvRaw = await embedder(q, {pooling:'mean', normalize:true});
+      const qv = qvRaw.data ? Array.from(qvRaw.data) : Array.from(qvRaw[0]);
+      const cos=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0);
+      const scores = proVectors.map((v,i)=>({i, s:cos(qv,v)})).sort((a,b)=>b.s-a.s).slice(0,10);
+      scores.forEach(({i,s})=>{
+        const li=document.createElement('li'); li.innerHTML=`<strong>${s.toFixed(3)}</strong> — ${escapeHtml(proTexts[i])}`; out.appendChild(li);
+      });
+    } else {
+      // Lite TF-IDF
+      if (!tfidf.docs.length){ const n = buildLiteIndex(); if(!n){ return toast('Notebook empty','warn'); } toast(`Lite index built (${n} chunks)`,'ok'); }
+      const res = tfidf.search(q, 10);
+      res.forEach(r=>{ const li=document.createElement('li'); li.innerHTML=`<strong>${r.score.toFixed(3)}</strong> — ${escapeHtml(r.text)}`; out.appendChild(li); });
+    }
+  });
+
+  // ---------- Quiz (rule-based, light) ----------
+  const genQuizBtn = $('#genQuiz'); const quizList = $('#quizList'); const exportCSVBtn = $('#exportCSV');
+  const qCount = $('#qCount');
+  function nounPhrases(text){
+    const tokens = text.match(/[A-Za-z0-9\-']+/g) || [];
+    const phrases=[]; let buf=[];
+    for(const t of tokens){
+      if (/^[A-Z][a-zA-Z0-9\-']+$/.test(t) || t.length>6){ buf.push(t); }
+      else { if(buf.length){ phrases.push(buf.join(' ')); buf=[]; } }
+    }
+    if(buf.length) phrases.push(buf.join(' '));
+    return Array.from(new Set(phrases)).filter(p=>p.length>4).slice(0,100);
+  }
+  function makeQuiz(text, n=12){
+    const parts = splitIntoChunks(text, 300);
+    const phrases = nounPhrases(text);
+    const items=[];
+    let i=0;
+    while(items.length<n && (parts[i]||phrases[i])){
+      const context = parts[i%parts.length] || text;
+      const term = phrases[i%phrases.length] || (context.split(/\s+/).find(w=>w.length>6) || 'the concept');
+      const q = `What does “${term}” refer to in this context?`;
+      const a = context;
+      items.push({q,a});
+      i++;
+    }
+    return items;
+  }
+  function renderQuiz(items){
+    quizList.innerHTML='';
+    items.forEach((p,idx)=>{
+      const card=document.createElement('div'); card.className='card';
+      card.innerHTML = `<strong>${idx+1}. ${escapeHtml(p.q)}</strong>
+        <details><summary>Show answer</summary><div style="margin-top:6px">${escapeHtml(p.a)}</div></details>`;
+      quizList.appendChild(card);
+    });
+  }
+  genQuizBtn.addEventListener('click', ()=>{
+    const src = (notebook.value.trim() || sumOut.textContent.trim());
+    if(!src) return toast('No source text for quiz','warn');
+    const n = Math.max(3, Math.min(50, Number(qCount.value)||12));
+    const items = makeQuiz(src, n);
+    renderQuiz(items);
+    toast('Quiz generated','ok');
+  });
+  exportCSVBtn.addEventListener('click', ()=>{
+    const cards = [...quizList.querySelectorAll('div.card')];
+    if(!cards.length) return toast('No quiz to export','warn');
+    const rows = [['Question','Answer']];
+    cards.forEach(c=>{
+      const q = c.querySelector('strong')?.innerText.replace(/^\d+\.\s*/,'') || '';
+      const a = c.querySelector('details div')?.innerText || '';
+      rows.push([q,a].map(s=>`"${s.replace(/"/g,'""')}"`).join(','));
+    });
+    const csv = rows.join('\n');
+    const blob = new Blob([csv], {type:'text/csv'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='flashcards.csv'; a.click();
+  });
+
+  // ---------- Export all ----------
+  $('#exportAll').addEventListener('click', ()=>{
+    const data = {
+      brand: body.dataset.brand, member: body.dataset.member,
+      mode: perfMode.value,
+      notebook: notebook.value,
+      summary: sumOut.textContent,
+      quiz: [...quizList.querySelectorAll('div.card')].map(c=>({
+        q: c.querySelector('strong')?.innerText.replace(/^\d+\.\s*/,'') || '',
+        a: c.querySelector('details div')?.innerText || ''
+      }))
+    };
+    const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='ai-forge-export.json'; a.click();
+  });
+
+  // ---------- Clear caches ----------
+  $('#clearCache').addEventListener('click', async ()=>{
+    try{
+      if (window.caches) { for (const k of await caches.keys()) await caches.delete(k); }
+      if (indexedDB && indexedDB.databases){
+        const dbs = await indexedDB.databases(); for (const d of dbs) if (d.name) indexedDB.deleteDatabase(d.name);
+      }
+      toast('Caches cleared (reload recommended)','ok',3000);
+    }catch(e){ console.warn(e); toast('Could not fully clear caches','warn',3000); }
+  });
+
+  // ---------- Utilities ----------
+  function escapeHtml(s){ return s.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[m]); }
+
+  // ---------- Init ----------
+  toast('Lite mode active — fast & device-friendly. Pro embeddings are optional.','ok',4200);
+  </script>
+</body>
+</html>
