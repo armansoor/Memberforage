@@ -12,25 +12,20 @@
 
 <!-- ====== STYLES ====== -->
 <style>
-  /* ------------------ THEME TOKENS ------------------ */
   :root{
     --radius:16px; --shadow: 0 8px 28px rgba(0,0,0,.35);
     --font-head:"Poppins", ui-sans-serif, system-ui;
     --font-body:"Inter", ui-sans-serif, system-ui;
 
-    /* base neutrals (used by both light & dark) */
     --ok:#2ecc71; --warn:#f1c40f; --err:#e74c3c;
 
-    /* light default */
     --bg:#f7f7fb; --bg2:#ffffff; --ink:#0c0c12; --muted:#5f667a;
     --card: #ffffff;
     --divider: rgba(12,12,18,.08);
 
-    /* brand defaults updated dynamically */
-    --accent:#ff4da6;         /* BLACKPINK */
+    --accent:#ff4da6;
     --accent-2:#2a2a2e;
 
-    /* gradients */
     --glow: radial-gradient(600px 300px at 10% -10%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%),
             radial-gradient(600px 300px at 100% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%);
   }
@@ -40,26 +35,22 @@
     --divider: rgba(255,255,255,.09);
   }
 
-  /* BRAND PALETTES */
   [data-brand="blackpink"]{ --accent:#ff4da6; --accent-2:#141414;}
   [data-brand="babymonster"]{ --accent:#00e2ff; --accent-2:#ff2c8b;}
 
-  /* MEMBER OVERLAYS (accent only; background keeps theme) */
   [data-member="jisoo"]{ --accent:#ff7bb7; --accent-2:#d4a9ff;}
   [data-member="jennie"]{ --accent:#ff3aa6; --accent-2:#333333;}
   [data-member="rose"]{ --accent:#ffa2c9; --accent-2:#6ec8ff;}
   [data-member="lisa"]{ --accent:#00ff9c; --accent-2:#ff62b6;}
 
-  /* BABYMONSTER 7 (includes Ahyeon) */
   [data-member="ahyeon"]{ --accent:#7ee6ff; --accent-2:#ff7cc3;}
   [data-member="ruka"]{ --accent:#b084ff; --accent-2:#ff7ab9;}
   [data-member="pharita"]{ --accent:#ffae4d; --accent-2:#ff66d4;}
   [data-member="asa"]{ --accent:#ff5b5b; --accent-2:#22e3ff;}
-  [data-member="rami"]{ --accent:#8df0ff; --accent-2:#ff9cf3;} /* (Haram stage name Rami) */
+  [data-member="rami"]{ --accent:#8df0ff; --accent-2:#ff9cf3;}
   [data-member="rora"]{ --accent:#7fff85; --accent-2:#a78bfa;}
   [data-member="chiquita"]{ --accent:#ffd34d; --accent-2:#ff7ad1;}
 
-  /* -------------- BASE LAYOUT -------------- */
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
@@ -118,21 +109,17 @@
   .toast.warn{border-color: color-mix(in srgb, var(--warn) 55%, var(--divider))}
   .toast.err{border-color: color-mix(in srgb, var(--err) 55%, var(--divider))}
 
-  /* perfect readable gradients on headers */
   .grad-title{
     background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent-2) 70%, var(--accent)));
     -webkit-background-clip: text; background-clip:text; color: transparent; font-family: var(--font-head); font-weight:800;
     text-shadow: 0 1px 0 rgba(0,0,0,.06);
   }
 
-  /* Graph */
   .graph-wrap{margin-top:10px; padding:10px; border-radius:12px; border:1px solid var(--divider); background: color-mix(in srgb, var(--bg) 24%, var(--bg2))}
   #graphSvg{width:100%; height:520px}
 
-  /* Canvas poster */
   #posterCanvas{width:100%; max-height:520px; border-radius:12px; border:1px solid var(--divider); background: #000}
 
-  /* micro pulse */
   .pulse{ position:relative; }
   .pulse::after{
     content:""; position:absolute; inset:-2px; border-radius:inherit; pointer-events:none;
@@ -144,7 +131,6 @@
 </head>
 
 <body data-theme="dark" data-brand="blackpink" data-member="jennie">
-  <!-- ====== TOP BAR ====== -->
   <header class="topbar">
     <div class="brand">
       <div class="logo">🎤</div>
@@ -177,7 +163,6 @@
     </div>
   </header>
 
-  <!-- ====== TABS ====== -->
   <nav class="tabs" role="tablist">
     <button class="tab active" data-tab="docs">Documents</button>
     <button class="tab" data-tab="summary">Summary</button>
@@ -192,7 +177,6 @@
   </nav>
 
   <main class="container">
-    <!-- DOCUMENTS -->
     <section id="docs" class="panel active">
       <div class="panel-head">
         <h2 class="grad-title">📄 Documents</h2>
@@ -216,7 +200,6 @@
       </div>
     </section>
 
-    <!-- SUMMARY -->
     <section id="summary" class="panel">
       <div class="panel-head">
         <h2 class="grad-title">🧠 TextRank Summary (Model-Free)</h2>
@@ -230,7 +213,6 @@
       <pre id="sumOut" class="out"></pre>
     </section>
 
-    <!-- GRAPH -->
     <section id="graph" class="panel">
       <div class="panel-head">
         <h2 class="grad-title">🕸 Topic Graph</h2>
@@ -244,7 +226,6 @@
       <div class="graph-wrap"><svg id="graphSvg" role="img" aria-label="Topic graph"></svg></div>
     </section>
 
-    <!-- SEARCH -->
     <section id="search" class="panel">
       <div class="panel-head">
         <h2 class="grad-title">🔎 Semantic Search</h2>
@@ -257,7 +238,6 @@
       <ol id="searchResults" class="out" style="margin-top:8px; padding-left:18px"></ol>
     </section>
 
-    <!-- IDOL CHAT -->
     <section id="idolchat" class="panel">
       <div class="panel-head">
         <h2 class="grad-title">💬 Idol Chat (Local Personality)</h2>
@@ -282,7 +262,6 @@
       </div>
     </section>
 
-    <!-- LYRICS & MOOD -->
     <section id="lyrics" class="panel">
       <div class="panel-head">
         <h2 class="grad-title">🎶 Lyrics Sentiment & Mood</h2>
@@ -298,7 +277,6 @@
       <div id="lyricsChart" class="graph-wrap" style="height:220px"></div>
     </section>
 
-    <!-- DIARY & RECS -->
     <section id="diary" class="panel">
       <div class="panel-head">
         <h2 class="grad-title">📔 Fan Diary & Song Recs</h2>
@@ -326,7 +304,6 @@
       </div>
     </section>
 
-    <!-- CREATIVE -->
     <section id="creative" class="panel">
       <div class="panel-head">
         <h2 class="grad-title">🎨 Caption & Palette</h2>
@@ -355,7 +332,6 @@
       </div>
     </section>
 
-    <!-- GAMES -->
     <section id="games" class="panel">
       <div class="panel-head">
         <h2 class="grad-title">🕹 Games: Who Said It? + Dance Challenge</h2>
@@ -380,18 +356,17 @@
       </div>
     </section>
 
-    <!-- ABOUT -->
     <section id="about" class="panel">
       <div class="panel-head"><h2 class="grad-title">About</h2></div>
       <div class="card">
         <p><strong>Groups:</strong> BLACKPINK & BABYMONSTER (7 members inc. Ahyeon). Fans: BLINKs & MONSTIEZ.</p>
-        <p><strong>AI stack:</strong> All local. <em>Lite</em> = classical NLP (TextRank summarizer, TF-IDF search, lexicon sentiment). <em>Pro</em> = optional embeddings via <code>@xenova/transformers</code> (MiniLM) with WebGPU→WASM fallback. No tokens, no servers.</p>
+        <p><strong>AI:</strong> All local. <em>Lite</em> = classical NLP (TextRank summarizer, TF-IDF search, lexicon sentiment). <em>Pro</em> = optional embeddings via <code>@xenova/transformers</code> (MiniLM) with WASM safe mode. No tokens, no servers.</p>
         <ul>
           <li>PDF parsing: <code>pdf.js</code></li>
           <li>Graphs & charts: <code>d3</code></li>
           <li>Speech: Web Speech Synthesis API (optional)</li>
         </ul>
-        <p class="muted small">Tip: Use Pro only if you need stronger semantic search. Lite is fastest & most compatible.</p>
+        <p class="muted small">Tip: Use Pro only if you need higher-quality semantic search; Lite is fastest and most compatible.</p>
       </div>
     </section>
   </main>
@@ -402,19 +377,19 @@
 
   <div id="toasts" class="toasts" aria-live="polite"></div>
 
-  <!-- ====== SCRIPTS ====== -->
+  <!-- libs -->
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 
   <script>
-  // ------------------ UTILITIES ------------------
-  const $ = (s, r=document)=>r.querySelector(s);
-  const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
-  const toasts=$("#toasts");
+  // ---------- Helpers ----------
+  const $ = (s,r=document)=>r.querySelector(s);
+  const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
+  const toasts = $("#toasts");
   const toast=(msg,kind='ok',ms=2600)=>{ const el=document.createElement('div'); el.className='toast '+kind; el.textContent=msg; toasts.appendChild(el); setTimeout(()=>el.remove(), ms); };
   const escapeHtml=s=>s.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[m]);
 
-  // ------------------ GROUPS / MEMBERS (AUTO SWITCH) ------------------
+  // ---------- GROUPS ----------
   const GROUPS = {
     blackpink:{
       label:'BLACKPINK', fans:'BLINKs',
@@ -430,7 +405,7 @@
         {id:'ruka', name:'Ruka'},
         {id:'pharita', name:'Pharita'},
         {id:'asa', name:'Asa'},
-        {id:'rami', name:'Rami'},     // (Haram)
+        {id:'rami', name:'Rami'},
         {id:'rora', name:'Rora'},
         {id:'chiquita', name:'Chiquita'}
       ]
@@ -446,10 +421,8 @@
     for(const m of members){
       const op=document.createElement('option'); op.value=m.id; op.textContent=m.name; memberSelect.appendChild(op);
     }
-    // default to first member of that brand
     memberSelect.value = members[0].id;
     document.body.dataset.member = members[0].id;
-    // update tagline fans
     $('.tag').textContent = `For ${GROUPS.blackpink.fans} & ${GROUPS.babymonster.fans} · Lite by default · Pro (embeddings) optional & local`;
   }
   brandSelect.addEventListener('change', ()=>{ populateMembers(); pulsePrimary(); });
@@ -457,17 +430,14 @@
   themeSelect.addEventListener('change', ()=>{ document.body.dataset.theme = themeSelect.value; pulsePrimary(); });
   const pulsePrimary=()=>$$('.btn.primary').forEach(b=>{ b.classList.remove('pulse'); void b.offsetWidth; b.classList.add('pulse'); });
 
-  // ------------------ TABS ------------------
-  $$('.tab').forEach(t=>{
-    t.addEventListener('click', ()=>{
-      $$('.tab').forEach(x=>x.classList.remove('active'));
-      $$('.panel').forEach(p=>p.classList.remove('active'));
-      t.classList.add('active'); $('#'+t.dataset.tab).classList.add('active');
-      window.scrollTo({top:0, behavior:'smooth'});
-    });
-  });
+  // ---------- Tabs ----------
+  $$('.tab').forEach(t=>t.addEventListener('click', ()=>{
+    $$('.tab').forEach(x=>x.classList.remove('active'));
+    $$('.panel').forEach(p=>p.classList.remove('active'));
+    t.classList.add('active'); $('#'+t.dataset.tab).classList.add('active'); window.scrollTo({top:0, behavior:'smooth'});
+  }));
 
-  // ------------------ PDF.js ------------------
+  // ---------- PDF.js ----------
   const pdfjsLib = window['pdfjs-dist/build/pdf'];
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
   $('#pdfFiles').addEventListener('change', async (ev)=>{
@@ -486,36 +456,28 @@
         note.value=(note.value+`\n\n# ${file.name}\n`+text).trim();
         const row=document.createElement('div'); row.className='card'; row.textContent=`Parsed: ${file.name} — ${text.length.toLocaleString()} chars, ${pdf.numPages} pages`; list.prepend(row);
         toast(`Parsed ${file.name}`,'ok');
-        tfidf.docs.length=0; // invalidate lite index so user rebuilds on next search
+        tfidf.docs.length=0;
       }catch(e){ console.error(e); toast(`Failed: ${file.name}`,'err',3000); }
     }
   });
 
-  // ------------------ NOTEBOOK UTILS ------------------
+  // ---------- Notebook ----------
   const notebook=$("#notebook"), chunkInfo=$("#chunkInfo");
   const splitIntoChunks=(text,maxLen=800)=>{
     const sents=text.split(/(?<=[.!?])\s+/).filter(Boolean); const out=[]; let buf='';
     for(const s of sents){ if((buf+' '+s).trim().length>maxLen){ if(buf.trim()) out.push(buf.trim()); buf=s; } else buf=(buf?buf+' ':'')+s; }
     if(buf.trim()) out.push(buf.trim()); return out;
   };
-  $('#dedupeNotes').addEventListener('click', ()=>{
-    const lines=notebook.value.split(/\n+/).map(s=>s.trim()).filter(Boolean);
-    const seen=new Set(), clean=[]; for(const l of lines){ const k=l.toLowerCase(); if(!seen.has(k)){ seen.add(k); clean.push(l); } }
-    notebook.value=clean.join('\n'); toast('Deduped notebook','ok');
-  });
-  $('#chunkNotes').addEventListener('click', ()=>{
-    const chunks=splitIntoChunks(notebook.value,700); chunkInfo.textContent=`${chunks.length} chunks ready`; toast('Chunked notes','ok');
-  });
+  $('#dedupeNotes').addEventListener('click', ()=>{ const lines=notebook.value.split(/\n+/).map(s=>s.trim()).filter(Boolean); const seen=new Set(), clean=[]; for(const l of lines){ const k=l.toLowerCase(); if(!seen.has(k)){ seen.add(k); clean.push(l); } } notebook.value=clean.join('\n'); toast('Deduped notebook','ok'); });
+  $('#chunkNotes').addEventListener('click', ()=>{ const chunks=splitIntoChunks(notebook.value,700); chunkInfo.textContent=`${chunks.length} chunks ready`; toast('Chunked notes','ok'); });
 
-  // ------------------ TEXTRANK SUMMARIZER ------------------
+  // ---------- TextRank ----------
   function textrankSummarize(text,k=5){
     const sents=text.split(/(?<=[.!?])\s+/).filter(s=>s.trim().length>0);
     if (sents.length<=k) return sents.join(' ');
     const norm=s=>s.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').replace(/\s+/g,' ').trim();
     const bag=s=>{ const m=new Map(); norm(s).split(' ').forEach(w=>{ if(w.length>2){ m.set(w,(m.get(w)||0)+1); } }); return m; };
-    const cosine=(a,b)=>{ let dot=0,na=0,nb=0; const keys=new Set([...a.keys(),...b.keys()]);
-      keys.forEach(w=>{ const x=a.get(w)||0, y=b.get(w)||0; dot+=x*y; na+=x*x; nb+=y*y; }); return dot/(Math.sqrt(na)*Math.sqrt(nb)||1);
-    };
+    const cosine=(a,b)=>{ let dot=0,na=0,nb=0; const keys=new Set([...a.keys(),...b.keys()]); keys.forEach(w=>{ const x=a.get(w)||0, y=b.get(w)||0; dot+=x*y; na+=x*x; nb+=y*y; }); return dot/(Math.sqrt(na)*Math.sqrt(nb)||1); };
     const bags=sents.map(bag); const n=sents.length; const sim=Array.from({length:n},()=>Array(n).fill(0));
     for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){ const c=cosine(bags[i],bags[j]); sim[i][j]=sim[j][i]=c; }
     let scores=Array(n).fill(1/n);
@@ -530,12 +492,9 @@
     const idx=scores.map((s,i)=>[s,i]).sort((a,b)=>b[0]-a[0]).slice(0,k).map(x=>x[1]).sort((a,b)=>a-b);
     return idx.map(i=>sents[i]).join(' ');
   }
-  $('#runSum').addEventListener('click', ()=>{
-    const src=($('#sumInput').value.trim()||notebook.value.trim()); if(!src) return toast('No text to summarize','warn');
-    const k=Math.max(2,Math.min(20, Number($('#sumCount').value)||5)); $('#sumOut').textContent=textrankSummarize(src,k);
-  });
+  $('#runSum').addEventListener('click', ()=>{ const src=($('#sumInput').value.trim()||notebook.value.trim()); if(!src) return toast('No text to summarize','warn'); const k=Math.max(2,Math.min(20, Number($('#sumCount').value)||5)); $('#sumOut').textContent=textrankSummarize(src,k); });
 
-  // ------------------ GRAPH (d3) ------------------
+  // ---------- Graph (d3) ----------
   const graphSvg=d3.select('#graphSvg');
   function extractKeywords(text, topN=28){
     const stop=new Set(("a,an,the,and,or,but,if,then,else,when,while,of,to,in,on,for,with,as,by,at,from,into,that,this,these,those,is,are,was,were,be,been,has,have,had,do,does,did,not,no,so,than,too,very,can,will,just,about,over,under,more,most,less,each,other,also,which,who,whom,whose,where,why,how").split(','));
@@ -572,102 +531,103 @@
     );
     node.append('circle').attr('r', 11).attr('fill','url(#grad)').attr('stroke','rgba(255,255,255,.22)').attr('stroke-width',1);
     node.append('text').text(d=>d.label).attr('x',14).attr('y',4).style('fill','currentColor').style('font-size','12px');
-    sim.on('tick', ()=>{
-      link.attr('x1', d=>d.source.x).attr('y1', d=>d.source.y).attr('x2', d=>d.target.x).attr('y2', d=>d.target.y);
-      node.attr('transform', d=>`translate(${d.x},${d.y})`);
-    });
+    sim.on('tick', ()=>{ link.attr('x1', d=>d.source.x).attr('y1', d=>d.source.y).attr('x2', d=>d.target.x).attr('y2', d=>d.target.y); node.attr('transform', d=>`translate(${d.x},${d.y})`); });
   }
   $('#buildGraph').addEventListener('click', ()=>{ const t=notebook.value.trim(); if(!t) return toast('Add some notes first','warn'); const n=Math.max(10,Math.min(120, Number($('#kwCount').value)||28)); buildGraph(t,n); });
-  $('#downloadGraph').addEventListener('click', ()=>{
-    const svg=$('#graphSvg'); const xml=new XMLSerializer().serializeToString(svg); const blob=new Blob([xml],{type:'image/svg+xml'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='topic-graph.svg'; a.click();
-  });
+  $('#downloadGraph').addEventListener('click', ()=>{ const svg=$('#graphSvg'); const xml=new XMLSerializer().serializeToString(svg); const blob=new Blob([xml],{type:'image/svg+xml'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='topic-graph.svg'; a.click(); });
 
-  // ------------------ SEMANTIC SEARCH ------------------
+  // ---------- Semantic Search: Lite TF-IDF + Robust Pro (WASM safe) ----------
   const perfMode=$("#perfMode"), enablePro=$("#enablePro"), rebuildPro=$("#rebuildPro"), resetPro=$("#resetPro");
-  // Lite TF-IDF
-  const tfidf = {
-    vocab:new Map(), idf:[], docs:[], texts:[],
-    addDocs(texts){
-      this.vocab.clear(); this.docs=[]; this.texts=texts;
-      const token=s=>s.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w.length>2);
-      const dterms=texts.map(t=>token(t));
-      const df=new Map();
-      dterms.forEach(terms=>{ const uniq=new Set(terms); uniq.forEach(w=>df.set(w,(df.get(w)||0)+1));});
-      const entries=[...df.keys()].sort(); entries.forEach((w,i)=>this.vocab.set(w,i));
-      const N=texts.length; this.idf=entries.map(w=>Math.log((N+1)/((df.get(w)||0)+1))+1);
-      this.docs=dterms.map(terms=>{
-        const tf=new Map(); terms.forEach(w=>tf.set(w,(tf.get(w)||0)+1));
-        const vec=new Map(); tf.forEach((f,w)=>{ if(this.vocab.has(w)){ const i=this.vocab.get(w); vec.set(i,(f/terms.length)*this.idf[i]); }});
-        return vec;
-      });
-    },
-    vectorize(q){ const token=q.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w.length>2);
-      const tf=new Map(); token.forEach(w=>tf.set(w,(tf.get(w)||0)+1)); const vec=new Map();
-      tf.forEach((f,w)=>{ if(this.vocab.has(w)){ const i=this.vocab.get(w); vec.set(i,(f/token.length)*this.idf[i]); }}); return vec;
-    },
-    cosine(a,b){ let dot=0,na=0,nb=0; a.forEach((va,i)=>{ na+=va*va; const vb=b.get(i)||0; dot+=va*vb; }); b.forEach((vb,i)=>nb+=vb*vb);
-      return dot/(Math.sqrt(na)*Math.sqrt(nb)||1);
-    },
-    search(q, k=10){
-      const v=this.vectorize(q); const scores=this.docs.map((d,i)=>({i, s:this.cosine(v,d)})).sort((a,b)=>b.s-a.s).slice(0,k);
-      return scores.map(({i,s})=>({text:this.texts[i], score:s}));
-    }
+  const tfidf = { vocab:new Map(), idf:[], docs:[], texts:[],
+    addDocs(texts){ this.vocab.clear(); this.docs=[]; this.texts=texts; const token=s=>s.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w.length>2); const dterms=texts.map(t=>token(t)); const df=new Map(); dterms.forEach(terms=>{ const uniq=new Set(terms); uniq.forEach(w=>df.set(w,(df.get(w)||0)+1));}); const entries=[...df.keys()].sort(); entries.forEach((w,i)=>this.vocab.set(w,i)); const N=texts.length; this.idf=entries.map(w=>Math.log((N+1)/((df.get(w)||0)+1))+1); this.docs=dterms.map(terms=>{ const tf=new Map(); terms.forEach(w=>tf.set(w,(tf.get(w)||0)+1)); const vec=new Map(); tf.forEach((f,w)=>{ if(this.vocab.has(w)){ const i=this.vocab.get(w); vec.set(i,(f/terms.length)*this.idf[i]); }}); return vec; }); },
+    vectorize(q){ const token=q.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(w=>w.length>2); const tf=new Map(); token.forEach(w=>tf.set(w,(tf.get(w)||0)+1)); const vec=new Map(); tf.forEach((f,w)=>{ if(this.vocab.has(w)){ const i=this.vocab.get(w); vec.set(i,(f/token.length)*this.idf[i]); }}); return vec; },
+    cosine(a,b){ let dot=0,na=0,nb=0; a.forEach((va,i)=>{ na+=va*va; const vb=b.get(i)||0; dot+=va*vb; }); b.forEach((vb,i)=>nb+=vb*vb); return dot/(Math.sqrt(na)*Math.sqrt(nb)||1); },
+    search(q,k=10){ const v=this.vectorize(q); const scores=this.docs.map((d,i)=>({i, s:this.cosine(v,d)})).sort((a,b)=>b.s-a.s).slice(0,k); return scores.map(({i,s})=>({text:this.texts[i], score:s})); }
   };
   function buildLiteIndex(){ const raw=notebook.value.trim(); if(!raw) return 0; const parts=splitIntoChunks(raw,400); tfidf.addDocs(parts); return parts.length; }
 
-  // Pro embeddings
+  // ===== PRO EMBEDDINGS — BULLETPROOF WASM (NO WEBGPU, NO THREADS, NO SIMD) =====
   let proReady=false, embedder=null, proVectors=null, proTexts=null, proDevice='wasm';
-  async function ensureTransformers(){
+
+  async function ensureTransformersSafe(){
     if (window.transformers) return;
-    await new Promise((res,rej)=>{ const s=document.createElement('script'); s.src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js"; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
+    await new Promise((res, rej)=>{ const s=document.createElement('script'); s.src="https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2/dist/transformers.min.js"; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
+    try{
+      const env = window.transformers.env;
+      env.allowLocalModels = false;
+      env.allowRemoteModels = true;
+      env.useBrowserCache = true;
+      env.backends.onnx.wasm.wasmPaths = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.0/dist/";
+      env.backends.onnx.wasm.numThreads = 1;
+      env.backends.onnx.wasm.simd = false;
+      env.backends.onnx.wasm.proxy = false;
+    }catch(e){ console.warn('Env patch non-fatal:', e); }
   }
+
+  function showErrorToast(prefix, err){
+    let msg = (err && (err.message || err.toString())) || 'Unknown error';
+    if (msg.length > 160) msg = msg.slice(0,160) + '…';
+    toast(`${prefix}: ${msg}`, 'err', 5000);
+  }
+
   async function enableProFlow(){
     if (proReady) return toast('Pro already enabled','ok');
     try{
-      toast('Loading Pro…','warn',3800);
-      await ensureTransformers();
-      proDevice = (navigator.gpu ? 'webgpu' : 'wasm');
-      embedder = await window.transformers.pipeline('feature-extraction','Xenova/all-MiniLM-L6-v2',{ quantized:true, device:proDevice, progress_callback:(e)=>{ if(e?.status) toast(e.status,'warn',1200);} });
-      proReady=true; toast(`Pro ready (${proDevice})`,'ok',2600);
-    }catch(e){
-      console.warn('Pro load failed, retrying with wasm…', e);
-      try{
-        embedder = await window.transformers.pipeline('feature-extraction','Xenova/all-MiniLM-L6-v2',{ quantized:true, device:'wasm' });
-        proDevice='wasm'; proReady=true; toast('Pro ready (wasm fallback)','ok',2600);
-      }catch(err){ console.error(err); proReady=false; toast('Pro failed to enable. Use Lite or check CSP.', 'err',3600); }
-    }
+      toast('Loading Pro (WASM safe mode)…','warn',3800);
+      await ensureTransformersSafe();
+      embedder = await window.transformers.pipeline('feature-extraction','Xenova/all-MiniLM-L6-v2',{ quantized:true, device:'wasm', progress_callback:(e)=>{ if(e?.status) toast(e.status,'warn',1200);} });
+      const testOut = await embedder('ok');
+      const vec = testOut?.data ? testOut.data : testOut?.[0];
+      if (!vec || (Array.isArray(vec) && vec.length===0)) throw new Error('Sanity check failed (no embedding vector).');
+      proReady=true; toast('Pro ready (WASM safe mode)','ok',2600);
+    }catch(e){ proReady=false; embedder=null; showErrorToast('Pro failed to enable', e); }
   }
+
+  async function buildProEmbeddings(){
+    if (!proReady){ toast('Enable Pro first','warn'); return false; }
+    const raw=notebook.value.trim(); if(!raw){ toast('Notebook empty','warn'); return false; }
+    const parts=splitIntoChunks(raw,400); proTexts=parts; proVectors=[];
+    try{
+      for(let i=0;i<parts.length;i++){
+        const out = await embedder(parts[i], { pooling:'mean', normalize:true });
+        const v = out?.data ? Array.from(out.data) : Array.from(out?.[0]||[]);
+        if (!v.length) throw new Error('Empty embedding vector');
+        proVectors.push(v);
+        if ((i+1)%6===0) toast(`Embedded ${i+1}/${parts.length}…`, 'warn', 1200);
+      }
+      toast(`Built ${parts.length} embeddings`, 'ok', 2800);
+      return true;
+    }catch(e){ proVectors=null; proTexts=null; showErrorToast('Embedding build failed', e); return false; }
+  }
+
   enablePro.addEventListener('click', enableProFlow);
-  rebuildPro.addEventListener('click', async ()=>{
-    if(!proReady){ toast('Enable Pro first','warn'); return; }
-    const raw=notebook.value.trim(); if(!raw){ toast('Notebook empty','warn'); return; }
-    const parts=splitIntoChunks(raw, 400); proTexts=parts; proVectors=[];
-    for(let i=0;i<parts.length;i++){ const out=await embedder(parts[i],{pooling:'mean', normalize:true}); const v=out.data?Array.from(out.data):Array.from(out[0]); proVectors.push(v); }
-    toast(`Built ${parts.length} embeddings`,'ok',2800);
-  });
+  rebuildPro.addEventListener('click', buildProEmbeddings);
   resetPro.addEventListener('click', ()=>{ proReady=false; embedder=null; proVectors=null; proTexts=null; toast('Pro reset','ok'); });
 
+  // search handler with graceful fallback
   $('#runSearch').addEventListener('click', async ()=>{
     const q=$('#searchQuery').value.trim(); const out=$('#searchResults'); out.innerHTML='';
     if(!q) return toast('Enter a query','warn');
     if (perfMode.value==='pro'){
-      if(!proReady) return toast('Enable Pro first','warn');
-      if(!proVectors || !proTexts){ await rebuildPro.click(); if(!proVectors){ return; } }
-      const qvRaw=await embedder(q,{pooling:'mean', normalize:true});
-      const qv=qvRaw.data?Array.from(qvRaw.data):Array.from(qvRaw[0]);
-      const cos=(a,b)=>a.reduce((s,x,i)=>s+x*(b[i]||0),0);
-      const scores=proVectors.map((v,i)=>({i,s:cos(qv,v)})).sort((a,b)=>b.s-a.s).slice(0,10);
-      scores.forEach(({i,s})=>{ const li=document.createElement('li'); li.innerHTML=`<strong>${s.toFixed(3)}</strong> — ${escapeHtml(proTexts[i])}`; out.appendChild(li); });
-    }else{
-      if(!tfidf.docs.length){ const n=buildLiteIndex(); if(!n) return toast('Notebook empty','warn'); toast(`Lite index built (${n} chunks)`,'ok'); }
-      const res=tfidf.search(q,10); res.forEach(r=>{ const li=document.createElement('li'); li.innerHTML=`<strong>${r.score.toFixed(3)}</strong> — ${escapeHtml(r.text)}`; out.appendChild(li); });
+      if(!proReady){ toast('Pro not ready — falling back to Lite','warn',2800); perfMode.value='lite'; }
+      else{
+        try{
+          if(!proVectors || !proTexts){ const ok = await buildProEmbeddings(); if(!ok) return; }
+          const qvRaw = await embedder(q, { pooling:'mean', normalize:true });
+          const qv = qvRaw?.data ? Array.from(qvRaw.data) : Array.from(qvRaw?.[0]||[]);
+          const cos=(a,b)=>a.reduce((s,x,i)=>s+x*(b[i]||0),0);
+          const scores=proVectors.map((v,i)=>({i,s:cos(qv,v)})).sort((a,b)=>b.s-a.s).slice(0,10);
+          scores.forEach(({i,s})=>{ const li=document.createElement('li'); li.innerHTML=`<strong>${s.toFixed(3)}</strong> — ${escapeHtml(proTexts[i])}`; out.appendChild(li); });
+          return;
+        }catch(e){ showErrorToast('Pro search failed (fallback to Lite)', e); perfMode.value='lite'; }
+      }
     }
+    if(!tfidf.docs.length){ const n=buildLiteIndex(); if(!n) return toast('Notebook empty','warn'); toast(`Lite index built (${n} chunks)`,'ok'); }
+    const res=tfidf.search(q,10); res.forEach(r=>{ const li=document.createElement('li'); li.innerHTML=`<strong>${r.score.toFixed(3)}</strong> — ${escapeHtml(r.text)}`; out.appendChild(li); });
   });
 
-  // ------------------ IDOL CHAT (light persona + optional retrieval + TTS) ------------------
+  // ---------- Idol Chat ----------
   const CHAT_TEMPLATES={
-    // brief styles; more flair handled with member accent
     jisoo: {tone:["sweet","calm","playful"], emoji:"🌸"}, jennie:{tone:["confident","cool","witty"], emoji:"🖤"},
     rose:{tone:["warm","dreamy","artsy"], emoji:"🌹"}, lisa:{tone:["energetic","fun","bold"], emoji:"💚"},
     ahyeon:{tone:["bright","powerful","cheeky"], emoji:"✨"}, ruka:{tone:["chill","stylish","grounded"], emoji:"💜"},
@@ -676,233 +636,88 @@
     chiquita:{tone:["cute","quick","sparkplug"], emoji:"🔷"}
   };
   const chatLog=$("#chatLog"), chatInput=$("#chatInput"), chatInfo=$("#chatInfo");
-  function retrieveLite(q){ // small retrieval from notebook to ground reply
-    if(!tfidf.docs.length){ const n=buildLiteIndex(); if(!n) return null; }
-    const top=tfidf.search(q,3).map(x=>x.text).join('\n');
-    return top || null;
-  }
+  function retrieveLite(q){ if(!tfidf.docs.length){ const n=buildLiteIndex(); if(!n) return null; } const top=tfidf.search(q,3).map(x=>x.text).join('\n'); return top || null; }
   function synthReply(user, member){
     const t=CHAT_TEMPLATES[member]||{tone:["friendly"],emoji:"🎤"};
     const tone=t.tone[Math.floor(Math.random()*t.tone.length)];
     const facts=retrieveLite(user);
     let reply = `${t.emoji} **${member.toUpperCase()}** (${tone}): `;
-    const openers=[
-      "Love that question!",
-      "Let me share a quick tip:",
-      "Here’s how I think about it:",
-      "From practice room to stage—",
-      "Backstage secret:"
-    ];
-    const closer=[
-      "You got this. 💪",
-      "Keep shining!", "Teamwork makes it iconic.",
-      "Practice smart, not just hard.",
-      "Let’s make it legendary."
-    ];
+    const openers=["Love that question!","Let me share a quick tip:","Here’s how I think about it:","From practice room to stage—","Backstage secret:"];
+    const closer=["You got this. 💪","Keep shining!","Teamwork makes it iconic.","Practice smart, not just hard.","Let’s make it legendary."];
     reply += `${openers[Math.floor(Math.random()*openers.length)]} `;
-    if (facts){ reply += `I peeked at your notes and found this helpful: “${facts.slice(0,180)}”. `; }
-    reply += `For “${user.slice(0,80)}”, try breaking it into small reps, record yourself, then iterate. ${closer[Math.floor(Math.random()*closer.length)]}`;
+    if (facts){ reply += `I peeked at your notes: “${facts.slice(0,180)}”. `; }
+    reply += `For “${user.slice(0,80)}”, try small reps, record, then iterate. ${closer[Math.floor(Math.random()*closer.length)]}`;
     return reply;
   }
-  $('#sendChat').addEventListener('click', ()=>{
-    const msg=chatInput.value.trim(); if(!msg) return;
-    const mem=memberSelect.value;
-    chatLog.innerHTML += `\n👤 You: ${escapeHtml(msg)}\n` + synthReply(msg, mem);
-    chatInput.value=''; chatLog.scrollTop=chatLog.scrollHeight;
-  });
+  $('#sendChat').addEventListener('click', ()=>{ const msg=chatInput.value.trim(); if(!msg) return; const mem=memberSelect.value; chatLog.innerHTML += `\n👤 You: ${escapeHtml(msg)}\n` + synthReply(msg, mem); chatInput.value=''; chatLog.scrollTop=chatLog.scrollHeight; });
 
   // TTS voices
-  const voiceSelect=$("#voiceSelect"); const ttsBtn=$("#ttsChat");
-  function loadVoices(){
-    const voices=speechSynthesis.getVoices();
-    voiceSelect.innerHTML=''; voices.forEach(v=>{ const op=document.createElement('option'); op.value=v.name; op.textContent=`${v.name} (${v.lang})`; voiceSelect.appendChild(op); });
-    chatInfo.textContent = voices.length? `${voices.length} voices available` : 'No system voices available';
-  }
+  const voiceSelect=$("#voiceSelect"), ttsBtn=$("#ttsChat");
+  function loadVoices(){ const voices=speechSynthesis.getVoices(); voiceSelect.innerHTML=''; voices.forEach(v=>{ const op=document.createElement('option'); op.value=v.name; op.textContent=`${v.name} (${v.lang})`; voiceSelect.appendChild(op); }); chatInfo.textContent = voices.length? `${voices.length} voices available` : 'No system voices available'; }
   if ('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged=loadVoices; }
-  ttsBtn.addEventListener('click', ()=>{
-    if(!('speechSynthesis' in window)) return toast('TTS not supported on this device','warn');
-    const text=(chatLog.textContent||'').slice(-450) || 'Hello BLINKs and MONSTIEZ!';
-    const u=new SpeechSynthesisUtterance(text); const v=[...speechSynthesis.getVoices()].find(v=>v.name===voiceSelect.value);
-    if(v) u.voice=v; u.rate=1.03; u.pitch=1; u.volume=1; speechSynthesis.speak(u);
-  });
+  ttsBtn.addEventListener('click', ()=>{ if(!('speechSynthesis' in window)) return toast('TTS not supported','warn'); const text=(chatLog.textContent||'').slice(-450) || 'Hello BLINKs and MONSTIEZ!'; const u=new SpeechSynthesisUtterance(text); const v=[...speechSynthesis.getVoices()].find(v=>v.name===voiceSelect.value); if(v) u.voice=v; u.rate=1.03; u.pitch=1; u.volume=1; speechSynthesis.speak(u); });
 
-  // ------------------ LYRICS SENTIMENT & MOOD ------------------
+  // ---------- Lyrics sentiment ----------
   const LEX_POS=['love','shine','bright','happy','bloom','wow','power','win','free','fun','light','sweet','dream','glow','good','brave','fire'];
   const LEX_NEG=['sad','cry','tears','alone','cold','hate','dark','fear','bad','break','pain','fall','lost','angry'];
-  function lexSentiment(text){
-    const toks=(text.toLowerCase().match(/[a-z0-9']+/g)||[]);
-    let pos=0,neg=0; for(const t of toks){ if(LEX_POS.includes(t)) pos++; if(LEX_NEG.includes(t)) neg++; }
-    const score=pos-neg; return {score,pos,neg};
-  }
   $('#analyzeLyrics').addEventListener('click', ()=>{
-    const src=$('#lyricsInput').value.trim(); if(!src) return toast('Paste lyrics or text','warn');
-    const {score,pos,neg}=lexSentiment(src);
-    $('#lyricsScore').textContent=`Score: ${score} (pos ${pos} / neg ${neg})`;
-    // highlight
-    let out=escapeHtml(src);
-    for(const w of [...LEX_POS,...LEX_NEG]){
-      const re=new RegExp(`\\b(${w})\\b`,'gi');
-      out = out.replace(re, (m)=>LEX_POS.includes(w)?`<mark style="background:rgba(46,204,113,.35)">${m}</mark>`:`<mark style="background:rgba(231,76,60,.35)">${m}</mark>`);
-    }
+    const src=$('#lyricsInput').value.trim(); if(!src) return toast('Paste lyrics or text','warn'); const toks=(src.toLowerCase().match(/[a-z0-9']+/g)||[]); let pos=0,neg=0; for(const t of toks){ if(LEX_POS.includes(t)) pos++; if(LEX_NEG.includes(t)) neg++; } const score=pos-neg; $('#lyricsScore').textContent=`Score: ${score} (pos ${pos} / neg ${neg})`;
+    let out=escapeHtml(src); for(const w of [...LEX_POS,...LEX_NEG]){ const re=new RegExp('\\b('+w+')\\b','gi'); out = out.replace(re, (m)=>LEX_POS.includes(w)?`<mark style="background:rgba(46,204,113,.35)">${m}</mark>`:`<mark style="background:rgba(231,76,60,.35)">${m}</mark>`); }
     $('#lyricsOut').innerHTML=out;
-    // chart
     const data=[{k:'Positive', v:pos},{k:'Negative', v:neg},{k:'Net', v:Math.max(0,score)}];
-    const el=d3.select('#lyricsChart'); el.selectAll('*').remove();
-    const w=el.node().clientWidth||600, h=+el.style('height').replace('px','')||220, m={t:12,r:10,b:30,l:30};
-    const x=d3.scaleBand().domain(data.map(d=>d.k)).range([m.l, w-m.r]).padding(0.25);
-    const y=d3.scaleLinear().domain([0, d3.max(data,d=>d.v)||1]).nice().range([h-m.b, m.t]);
-    const svg=el.append('svg').attr('width','100%').attr('height',h);
-    svg.append('g').attr('transform',`translate(0,${h-m.b})`).call(d3.axisBottom(x));
-    svg.append('g').attr('transform',`translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4));
-    svg.append('g').selectAll('rect').data(data).enter().append('rect')
-      .attr('x',d=>x(d.k)).attr('y',d=>y(d.v)).attr('width',x.bandwidth()).attr('height',d=>h-m.b - y(d.v))
-      .attr('fill','url(#grad)');
+    const el=d3.select('#lyricsChart'); el.selectAll('*').remove(); const w=el.node().clientWidth||600, h=+el.style('height').replace('px','')||220, m={t:12,r:10,b:30,l:30};
+    const x=d3.scaleBand().domain(data.map(d=>d.k)).range([m.l, w-m.r]).padding(0.25); const y=d3.scaleLinear().domain([0, d3.max(data,d=>d.v)||1]).nice().range([h-m.b, m.t]); const svg=el.append('svg').attr('width','100%').attr('height',h);
+    svg.append('g').attr('transform',`translate(0,${h-m.b})`).call(d3.axisBottom(x)); svg.append('g').attr('transform',`translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4));
+    svg.append('g').selectAll('rect').data(data).enter().append('rect').attr('x',d=>x(d.k)).attr('y',d=>y(d.v)).attr('width',x.bandwidth()).attr('height',d=>h-m.b - y(d.v)).attr('fill','url(#grad)');
   });
   $('#lyricsClear').addEventListener('click', ()=>{ $('#lyricsInput').value=''; $('#lyricsOut').textContent=''; $('#lyricsScore').textContent='Score: 0'; d3.select('#lyricsChart').selectAll('*').remove(); });
 
-  // ------------------ DIARY (localStorage) + MOOD GRAPH + RECS ------------------
+  // ---------- Diary ----------
   const DIARY_KEY='bp_bm_diary_v1';
   function getDiary(){ try{ return JSON.parse(localStorage.getItem(DIARY_KEY)||'[]'); }catch{ return []; } }
   function setDiary(arr){ localStorage.setItem(DIARY_KEY, JSON.stringify(arr)); }
-  function diaryMood(s){ return lexSentiment(s).score; }
-  function renderDiary(){
-    const data=getDiary();
-    $('#diaryList').textContent = data.map(d=>`• ${new Date(d.t).toLocaleString()} [${d.m>=0?'+':''}${d.m}] — ${d.text.slice(0,120)}`).join('\n');
-    const el=d3.select('#diaryChart'); el.selectAll('*').remove();
-    const w=el.node().clientWidth||600, h=+el.style('height').replace('px','')||280, m={t:10,r:10,b:30,l:36};
-    const x=d3.scaleLinear().domain([0, Math.max(1,data.length-1)]).range([m.l, w-m.r]);
-    const y=d3.scaleLinear().domain([d3.min(data,d=>d.m)||-3, d3.max(data,d=>d.m)||3]).nice().range([h-m.b, m.t]);
-    const svg=el.append('svg').attr('width','100%').attr('height',h);
-    svg.append('g').attr('transform',`translate(0,${h-m.b})`).call(d3.axisBottom(x).ticks(Math.min(6, data.length)));
-    svg.append('g').attr('transform',`translate(${m.l},0)`).call(d3.axisLeft(y));
-    const line=d3.line().x((d,i)=>x(i)).y(d=>y(d.m));
-    svg.append('path').datum(data).attr('d',line).attr('fill','none').attr('stroke','currentColor').attr('stroke-width',2);
+  function diaryMood(s){ const toks=(s.toLowerCase().match(/[a-z0-9']+/g)||[]); let pos=0,neg=0; for(const t of toks){ if(LEX_POS.includes(t)) pos++; if(LEX_NEG.includes(t)) neg++; } return pos-neg; }
+  function renderDiary(){ const data=getDiary(); $('#diaryList').textContent = data.map(d=>`• ${new Date(d.t).toLocaleString()} [${d.m>=0?'+':''}${d.m}] — ${d.text.slice(0,120)}`).join('\n');
+    const el=d3.select('#diaryChart'); el.selectAll('*').remove(); const w=el.node().clientWidth||600, h=+el.style('height').replace('px','')||280, m={t:10,r:10,b:30,l:36};
+    const x=d3.scaleLinear().domain([0, Math.max(1,data.length-1)]).range([m.l, w-m.r]); const y=d3.scaleLinear().domain([d3.min(data,d=>d.m)||-3, d3.max(data,d=>d.m)||3]).nice().range([h-m.b, m.t]);
+    const svg=el.append('svg').attr('width','100%').attr('height',h); svg.append('g').attr('transform',`translate(0,${h-m.b})`).call(d3.axisBottom(x).ticks(Math.min(6, data.length))); svg.append('g').attr('transform',`translate(${m.l},0)`).call(d3.axisLeft(y));
+    const line=d3.line().x((d,i)=>x(i)).y(d=>y(d.m)); svg.append('path').datum(data).attr('d',line).attr('fill','none').attr('stroke','currentColor').attr('stroke-width',2);
     svg.append('g').selectAll('circle').data(data).enter().append('circle').attr('cx',(d,i)=>x(i)).attr('cy',d=>y(d.m)).attr('r',3.5).attr('fill','url(#grad)');
   }
-  function recSongs(mood){
-    // lightweight curated suggestions
-    const picks = [
-      {g:'blackpink', title:'DDU-DU DDU-DU', mood:2},
-      {g:'blackpink', title:'As If It’s Your Last', mood:3},
-      {g:'blackpink', title:'Kill This Love', mood:1},
-      {g:'blackpink', title:'Stay', mood:-1},
-      {g:'babymonster', title:'SHEESH', mood:2},
-      {g:'babymonster', title:'Stuck In The Middle', mood:-2},
-      {g:'babymonster', title:'Batter Up', mood:1},
-      {g:'babymonster', title:'Dream', mood:3}
-    ];
-    // near mood
-    const near = picks.filter(p=>Math.abs(p.mood - mood)<=1);
-    return (near.length?near:picks).slice(0,4);
-  }
-  $('#saveDiary').addEventListener('click', ()=>{
-    const text=$('#diaryText').value.trim(); if(!text) return toast('Write something first','warn');
-    const data=getDiary(); const m=diaryMood(text);
-    data.push({t:Date.now(), text, m}); setDiary(data); $('#diaryText').value=''; renderDiary();
-    // recs
-    $('#recList').innerHTML='';
-    for(const r of recSongs(m)){ const li=document.createElement('li'); li.textContent=`${GROUPS[r.g].label}: ${r.title}`; $('#recList').appendChild(li); }
-    $('#diaryInfo').textContent = `Saved. Mood score ${m>=0?'+':''}${m}`;
-  });
-  $('#sumDiary').addEventListener('click', ()=>{
-    const data=getDiary(); if(!data.length) return toast('No entries yet','warn');
-    const combined=data.map(d=>d.text).join(' ');
-    const s=textrankSummarize(combined, 4); $('#diaryInfo').textContent='Summary: '+s.slice(0,180)+'…';
-  });
+  function recSongs(mood){ const picks = [ {g:'blackpink', title:'DDU-DU DDU-DU', mood:2}, {g:'blackpink', title:'As If It’s Your Last', mood:3}, {g:'blackpink', title:'Kill This Love', mood:1}, {g:'blackpink', title:'Stay', mood:-1}, {g:'babymonster', title:'SHEESH', mood:2}, {g:'babymonster', title:'Stuck In The Middle', mood:-2}, {g:'babymonster', title:'Batter Up', mood:1}, {g:'babymonster', title:'Dream', mood:3} ]; const near = picks.filter(p=>Math.abs(p.mood - mood)<=1); return (near.length?near:picks).slice(0,4); }
+  $('#saveDiary').addEventListener('click', ()=>{ const text=$('#diaryText').value.trim(); if(!text) return toast('Write something first','warn'); const data=getDiary(); const m=diaryMood(text); data.push({t:Date.now(), text, m}); setDiary(data); $('#diaryText').value=''; renderDiary(); $('#recList').innerHTML=''; for(const r of recSongs(m)){ const li=document.createElement('li'); li.textContent=`${GROUPS[r.g].label}: ${r.title}`; $('#recList').appendChild(li); } $('#diaryInfo').textContent = `Saved. Mood score ${m>=0?'+':''}${m}`; });
+  $('#sumDiary').addEventListener('click', ()=>{ const data=getDiary(); if(!data.length) return toast('No entries yet','warn'); const combined=data.map(d=>d.text).join(' '); const s=textrankSummarize(combined, 4); $('#diaryInfo').textContent='Summary: '+s.slice(0,180)+'…'; });
   $('#clearDiary').addEventListener('click', ()=>{ if(confirm('Clear all diary entries?')){ setDiary([]); renderDiary(); $('#recList').innerHTML=''; $('#diaryInfo').textContent=''; }});
   renderDiary();
 
-  // ------------------ CREATIVE: CAPTION & PALETTE ------------------
-  const CAPTION_TEMPLATES=[
-    "Born {vibe} • {member} mode.",
-    "Glow up in {city} • {group} energy.",
-    "No skips • {group} playlist on repeat.",
-    "Practice. Pink. Power. {emoji}",
-    "Legendary incoming • {member} says hi!"
-  ];
+  // ---------- Creative poster & palette ----------
+  const CAPTION_TEMPLATES=["Born {vibe} • {member} mode.","Glow up in {city} • {group} energy.","No skips • {group} playlist on repeat.","Practice. Pink. Power. {emoji}","Legendary incoming • {member} says hi!"];
   function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-  function genCaption(){
-    const brand=brandSelect.value, member=memberSelect.options[memberSelect.selectedIndex].textContent;
-    const map={blackpink:'BLACKPINK', babymonster:'BABYMONSTER'}; const data={
-      vibe:rand(['loud','soft','fierce','glitter','neon','stellar']),
-      member, group:map[brand], emoji:'✨'
-    };
-    let s=rand(CAPTION_TEMPLATES); for(const k of Object.keys(data)) s=s.replace(`{${k}}`, data[k]); return s;
-  }
+  function genCaption(){ const brand=brandSelect.value, member=memberSelect.options[memberSelect.selectedIndex].textContent; const map={blackpink:'BLACKPINK', babymonster:'BABYMONSTER'}; const data={ vibe:rand(['loud','soft','fierce','glitter','neon','stellar']), member, group:map[brand], emoji:'✨' }; let s=rand(CAPTION_TEMPLATES); for(const k of Object.keys(data)) s=s.replace(`{${k}}`, data[k]); return s; }
   $('#genCaption').addEventListener('click', ()=>{ $('#posterCaption').value = genCaption(); });
 
   const posterCanvas=$("#posterCanvas"); const ctx=posterCanvas.getContext('2d'); let posterImg=null;
-  $('#posterFile').addEventListener('change', async (e)=>{
-    posterImg=null; const f=e.target.files[0]; if(!f) return;
-    const url=URL.createObjectURL(f); const img=new Image(); img.onload=()=>{ posterImg=img; drawPoster(); URL.revokeObjectURL(url); }; img.src=url;
-  });
+  $('#posterFile').addEventListener('change', async (e)=>{ posterImg=null; const f=e.target.files[0]; if(!f) return; const url=URL.createObjectURL(f); const img=new Image(); img.onload=()=>{ posterImg=img; drawPoster(); URL.revokeObjectURL(url); }; img.src=url; });
   function drawPoster(){
-    const caption = ($('#posterCaption').value.trim()||genCaption());
-    const w=posterCanvas.width, h=posterCanvas.height;
+    const caption = ($('#posterCaption').value.trim()||genCaption()); const w=posterCanvas.width, h=posterCanvas.height;
     ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg2'); ctx.fillRect(0,0,w,h);
-    if(posterImg){
-      const scale=Math.min(w/posterImg.width, h/posterImg.height);
-      const nw=posterImg.width*scale, nh=posterImg.height*scale;
-      ctx.drawImage(posterImg, (w-nw)/2, (h-nh)/2, nw, nh);
-    }
-    // overlay gradient from member accent
+    if(posterImg){ const scale=Math.min(w/posterImg.width, h/posterImg.height); const nw=posterImg.width*scale, nh=posterImg.height*scale; ctx.drawImage(posterImg, (w-nw)/2, (h-nh)/2, nw, nh); }
     const accent=getComputedStyle(document.body).getPropertyValue('--accent').trim();
-    const grad=ctx.createLinearGradient(0,h*0.65,0,h);
-    grad.addColorStop(0, hexToRgba(accent,0));
-    grad.addColorStop(1, hexToRgba(accent,0.85));
-    ctx.fillStyle=grad; ctx.fillRect(0,h*0.6,w,h*0.4);
-
-    ctx.fillStyle='#000'; ctx.font='700 40px Poppins, sans-serif';
-    ctx.shadowColor='rgba(0,0,0,.25)'; ctx.shadowBlur=4; ctx.shadowOffsetY=2;
+    const grad=ctx.createLinearGradient(0,h*0.65,0,h); grad.addColorStop(0, hexToRgba(accent,0)); grad.addColorStop(1, hexToRgba(accent,0.85)); ctx.fillStyle=grad; ctx.fillRect(0,h*0.6,w,h*0.4);
+    ctx.fillStyle='#000'; ctx.font='700 40px Poppins, sans-serif'; ctx.shadowColor='rgba(0,0,0,.25)'; ctx.shadowBlur=4; ctx.shadowOffsetY=2;
     wrapText(ctx, caption, 28, h-80, w-56, 44, '#fff');
   }
-  function hexToRgba(hex, a=1){ const c=hex.replace('#',''); const n=parseInt(c,16); const r=(n>>16)&255, g=(n>>8)&255, b=n&255; return `rgba(${r},${g},${b},${a})`; }
-  function wrapText(ctx, text, x, y, maxWidth, lineHeight, color='#fff'){
-    const words=text.split(' '); let line=''; ctx.fillStyle=color;
-    for(let n=0;n<words.length;n++){
-      const testLine = line + words[n] + ' '; const metrics = ctx.measureText(testLine);
-      if(metrics.width > maxWidth && n>0){ ctx.fillText(line, x, y); line = words[n]+' '; y += lineHeight;
-      } else line = testLine;
-    } ctx.fillText(line, x, y);
-  }
+  function hexToRgba(hex,a=1){ const c=hex.replace('#',''); const n=parseInt(c,16); const r=(n>>16)&255, g=(n>>8)&255, b=n&255; return `rgba(${r},${g},${b},${a})`; }
+  function wrapText(ctx, text, x, y, maxWidth, lineHeight, color='#fff'){ const words=text.split(' '); let line=''; ctx.fillStyle=color; for(let n=0;n<words.length;n++){ const testLine = line + words[n] + ' '; const metrics = ctx.measureText(testLine); if(metrics.width > maxWidth && n>0){ ctx.fillText(line, x, y); line = words[n]+' '; y += lineHeight; } else line = testLine; } ctx.fillText(line, x, y); }
   $('#drawPoster').addEventListener('click', drawPoster);
   $('#downloadPoster').addEventListener('click', ()=>{ const a=document.createElement('a'); a.href=posterCanvas.toDataURL('image/png'); a.download='poster.png'; a.click(); });
 
-  // Palette generator from current accent
-  $('#genPalette').addEventListener('click', ()=>{
-    const base = getComputedStyle(document.body).getPropertyValue('--accent').trim();
-    const colors = generatePalette(base); const wrap=$("#paletteWrap"); wrap.innerHTML='';
-    for(const c of colors){
-      const div=document.createElement('div'); div.style.cssText=`height:72px; border-radius:10px; border:1px solid var(--divider); background:${c}; display:flex; align-items:end; justify-content:center; padding:6px; font-weight:800`;
-      div.textContent=c; div.title='Click to copy';
-      div.addEventListener('click', ()=>{ navigator.clipboard.writeText(c); toast('Copied '+c,'ok'); });
-      wrap.appendChild(div);
-    }
-  });
-  function generatePalette(hex){
-    const hsl=hexToHsl(hex); const out=[];
-    const shifts=[0,30,210,150,330]; // base, triad, etc.
-    for(const s of shifts){ const t=(hsl.h+s)%360; out.push(hslToHex({h:t, s:Math.min(100,hsl.s+5), l:Math.min(70,hsl.l+10)})); }
-    return out;
-  }
-  function hexToHsl(H){
-    let r=0,g=0,b=0; H=H.replace('#',''); if(H.length===3) H=H.split('').map(x=>x+x).join('');
-    r=parseInt(H.substring(0,2),16)/255; g=parseInt(H.substring(2,4),16)/255; b=parseInt(H.substring(4,6),16)/255;
-    const cmin=Math.min(r,g,b), cmax=Math.max(r,g,b), delta=cmax-cmin; let h=0,s=0,l=0;
-    if(delta===0) h=0; else if(cmax===r) h=((g-b)/delta)%6; else if(cmax===g) h=(b-r)/delta+2; else h=(r-g)/delta+4;
-    h=Math.round(h*60); if(h<0) h+=360; l=(cmax+cmin)/2; s=delta===0?0:delta/(1-Math.abs(2*l-1)); s=+(s*100).toFixed(1); l=+(l*100).toFixed(1);
-    return {h,s,l};
-  }
-  function hslToHex({h,s,l}){ s/=100; l/=100; const C=(1-Math.abs(2*l-1))*s; const X=C*(1-Math.abs((h/60)%2-1)); const m=l-C/2;
-    let r=0,g=0,b=0;
-    if(0<=h && h<60){ r=C; g=X; b=0; } else if(60<=h && h<120){ r=X; g=C; b=0;}
-    else if(120<=h && h<180){ r=0; g=C; b=X; } else if(180<=h && h<240){ r=0; g=X; b=C;}
-    else if(240<=h && h<300){ r=X; g=0; b=C;} else { r=C; g=0; b=X;}
-    r=Math.round((r+m)*255).toString(16).padStart(2,'0'); g=Math.round((g+m)*255).toString(16).padStart(2,'0'); b=Math.round((b+m)*255).toString(16).padStart(2,'0');
-    return `#${r}${g}${b}`;
-  }
+  $('#genPalette').addEventListener('click', ()=>{ const base = getComputedStyle(document.body).getPropertyValue('--accent').trim(); const colors = generatePalette(base); const wrap=$("#paletteWrap"); wrap.innerHTML=''; for(const c of colors){ const div=document.createElement('div'); div.style.cssText=`height:72px; border-radius:10px; border:1px solid var(--divider); background:${c}; display:flex; align-items:end; justify-content:center; padding:6px; font-weight:800`; div.textContent=c; div.title='Click to copy'; div.addEventListener('click', ()=>{ navigator.clipboard.writeText(c); toast('Copied '+c,'ok'); }); wrap.appendChild(div); } });
+  function generatePalette(hex){ const hsl=hexToHsl(hex); const out=[]; const shifts=[0,30,210,150,330]; for(const s of shifts){ const t=(hsl.h+s)%360; out.push(hslToHex({h:t, s:Math.min(100,hsl.s+5), l:Math.min(70,hsl.l+10)})); } return out; }
+  function hexToHsl(H){ let r=0,g=0,b=0; H=H.replace('#',''); if(H.length===3) H=H.split('').map(x=>x+x).join(''); r=parseInt(H.substring(0,2),16)/255; g=parseInt(H.substring(2,4),16)/255; b=parseInt(H.substring(4,6),16)/255; const cmin=Math.min(r,g,b), cmax=Math.max(r,g,b), delta=cmax-cmin; let h=0,s=0,l=0; if(delta===0) h=0; else if(cmax===r) h=((g-b)/delta)%6; else if(cmax===g) h=(b-r)/delta+2; else h=(r-g)/delta+4; h=Math.round(h*60); if(h<0) h+=360; l=(cmax+cmin)/2; s=delta===0?0:delta/(1-Math.abs(2*l-1)); s=+(s*100).toFixed(1); l=+(l*100).toFixed(1); return {h,s,l}; }
+  function hslToHex({h,s,l}){ s/=100; l/=100; const C=(1-Math.abs(2*l-1))*s; const X=C*(1-Math.abs((h/60)%2-1)); const m=l-C/2; let r=0,g=0,b=0; if(0<=h && h<60){ r=C; g=X; b=0; } else if(60<=h && h<120){ r=X; g=C; b=0;} else if(120<=h && h<180){ r=0; g=C; b=X; } else if(180<=h && h<240){ r=0; g=X; b=C;} else if(240<=h && h<300){ r=X; g=0; b=C;} else { r=C; g=0; b=X;} r=Math.round((r+m)*255).toString(16).padStart(2,'0'); g=Math.round((g+m)*255).toString(16).padStart(2,'0'); b=Math.round((b+m)*255).toString(16).padStart(2,'0'); return `#${r}${g}${b}`; }
 
-  // ------------------ GAMES ------------------
+  // ---------- Games ----------
   const QUOTES={
     blackpink:{
       jisoo:["Stay soft, but never weak.","Confidence is a habit you practice.","Good vibes, better timing."],
@@ -920,66 +735,23 @@
       chiquita:["Tiny but thunder.","Speed is nothing without control.","Cute is also strong."]
     }
   };
-  function nextWhoSaid(){
-    const brand=brandSelect.value; const pool=QUOTES[brand]; const members=Object.keys(pool);
-    const pick=members[Math.floor(Math.random()*members.length)];
-    const quote=rand(pool[pick]);
-    $('#quoteBox').textContent='“'+quote+'”';
-    const choices=new Set([pick]); while(choices.size<Math.min(4,members.length)){ choices.add(rand(members)); }
-    const wrap=$('#choiceWrap'); wrap.innerHTML='';
-    [...choices].sort(()=>Math.random()-0.5).forEach(name=>{
-      const b=document.createElement('button'); b.className='btn'; b.textContent=name.toUpperCase(); b.addEventListener('click', ()=>{
-        $('#wsInfo').textContent = name===pick? 'Correct! 🎉' : `Oops—It was ${pick.toUpperCase()}`;
-      }); wrap.appendChild(b);
-    });
-  }
+  function nextWhoSaid(){ const brand=brandSelect.value; const pool=QUOTES[brand]; const members=Object.keys(pool); const pick=members[Math.floor(Math.random()*members.length)]; const quote=rand(pool[pick]); $('#quoteBox').textContent='“'+quote+'”'; const choices=new Set([pick]); while(choices.size<Math.min(4,members.length)){ choices.add(rand(members)); } const wrap=$('#choiceWrap'); wrap.innerHTML=''; [...choices].sort(()=>Math.random()-0.5).forEach(name=>{ const b=document.createElement('button'); b.className='btn'; b.textContent=name.toUpperCase(); b.addEventListener('click', ()=>{ $('#wsInfo').textContent = name===pick? 'Correct! 🎉' : `Oops—It was ${pick.toUpperCase()}`; }); wrap.appendChild(b); }); }
   $('#nextQuote').addEventListener('click', nextWhoSaid); nextWhoSaid();
 
-  // Dance Challenge
   const MOVES=["Finger hearts","Body roll","High-kick pose","Shoulder pop x4","Spin & point","Wave wave clap","Walk walk hit","Slide & snap"];
   let danceTimer=null, danceT=0;
-  function startDance(){ if(danceTimer) return; const seq=Array.from({length:6}, ()=>rand(MOVES)); danceT=20;
-    $('#danceBox').textContent = `Do this sequence:\n• ${seq.join('\n• ')}\n\nTimer: ${danceT}s`;
-    danceTimer=setInterval(()=>{ danceT--; $('#danceBox').textContent = `Do this sequence:\n• ${seq.join('\n• ')}\n\nTimer: ${danceT}s`; if(danceT<=0){ stopDance(); toast('Challenge over! Score yourself 1-10.','ok'); } }, 1000);
-  }
+  function startDance(){ if(danceTimer) return; const seq=Array.from({length:6}, ()=>rand(MOVES)); danceT=20; $('#danceBox').textContent = `Do this sequence:\n• ${seq.join('\n• ')}\n\nTimer: ${danceT}s`; danceTimer=setInterval(()=>{ danceT--; $('#danceBox').textContent = `Do this sequence:\n• ${seq.join('\n• ')}\n\nTimer: ${danceT}s`; if(danceT<=0){ stopDance(); toast('Challenge over! Score yourself 1-10.','ok'); } }, 1000); }
   function stopDance(){ clearInterval(danceTimer); danceTimer=null; }
   $('#startDance').addEventListener('click', startDance); $('#stopDance').addEventListener('click', stopDance);
 
-  // ------------------ EXPORT & CACHE ------------------
-  $('#exportAll').addEventListener('click', ()=>{
-    const data={
-      brand: brandSelect.value, member: memberSelect.value, theme: themeSelect.value, mode: perfMode.value,
-      notebook: notebook.value, summary: $('#sumOut').textContent, chat: $('#chatLog').textContent,
-      diary: getDiary()
-    };
-    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='playground-export.json'; a.click();
-  });
-  $('#clearCache').addEventListener('click', async ()=>{
-    try{
-      if (window.caches) for (const k of await caches.keys()) await caches.delete(k);
-      if (indexedDB && indexedDB.databases){ const dbs=await indexedDB.databases(); for(const d of dbs) if(d.name) indexedDB.deleteDatabase(d.name); }
-      toast('Caches cleared (reload recommended)','ok',2800);
-    }catch(e){ console.warn(e); toast('Could not fully clear caches','warn'); }
-  });
+  // ---------- Export & cache ----------
+  $('#exportAll').addEventListener('click', ()=>{ const data={ brand: brandSelect.value, member: memberSelect.value, theme: themeSelect.value, mode: perfMode.value, notebook: notebook.value, summary: $('#sumOut').textContent, chat: $('#chatLog').textContent, diary: getDiary() }; const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='playground-export.json'; a.click(); });
+  $('#clearCache').addEventListener('click', async ()=>{ try{ if (window.caches) for (const k of await caches.keys()) await caches.delete(k); if (indexedDB && indexedDB.databases){ const dbs=await indexedDB.databases(); for(const d of dbs) if(d.name) indexedDB.deleteDatabase(d.name); } toast('Caches cleared (reload recommended)','ok',2800); }catch(e){ console.warn(e); toast('Could not fully clear caches','warn'); } });
 
-  // ------------------ SUMMARY / QUIZ (kept compact) ------------------
-  // (Quiz is available in previous version; to keep lightweight, we retain core learning features via Diary & Graph.)
-
-  // ------------------ INIT ------------------
-  function initGradDef(){
-    // add a reusable gradient fill to the page for visuals
-    const svg = d3.select('body').append('svg').attr('width',0).attr('height',0);
-    const defs=svg.append('defs'); const grad=defs.append('linearGradient').attr('id','grad');
-    grad.append('stop').attr('offset','0%').attr('stop-color', getComputedStyle(document.body).getPropertyValue('--accent').trim());
-    grad.append('stop').attr('offset','100%').attr('stop-color', getComputedStyle(document.body).getPropertyValue('--accent-2').trim());
-  }
-  populateMembers(); initGradDef();
-  toast('Lite mode active — fast & device-friendly. Pro embeddings are optional.','ok',4200);
-
-  // Accessibility: keyboard send on Ctrl+Enter
+  // ---------- Init ----------
+  function initGradDef(){ const svg = d3.select('body').append('svg').attr('width',0).attr('height',0); const defs=svg.append('defs'); const grad=defs.append('linearGradient').attr('id','grad'); grad.append('stop').attr('offset','0%').attr('stop-color', getComputedStyle(document.body).getPropertyValue('--accent').trim()); grad.append('stop').attr('offset','100%').attr('stop-color', getComputedStyle(document.body).getPropertyValue('--accent-2').trim()); }
+  populateMembers(); initGradDef(); toast('Lite mode active — fast & device-friendly. Pro embeddings are optional.','ok',4200);
   $('#chatInput').addEventListener('keydown', (e)=>{ if((e.ctrlKey||e.metaKey) && e.key==='Enter') $('#sendChat').click(); });
-
   </script>
 </body>
 </html>
